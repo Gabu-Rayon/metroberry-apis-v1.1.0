@@ -1,0 +1,91 @@
+@extends('layouts.app')
+
+@section('title', 'Repairs Report')
+
+@section('content')
+
+    <body class="fixed sidebar-mini">
+        @include('components.preloader')
+        <div id="app">
+            <div class="wrapper">
+                @include('components.sidebar.sidebar')
+                <div class="content-wrapper">
+                    <div class="main-content">
+                        @include('components.navbar')
+                        <div class="body-content">
+                            <div class="tile">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="fs-17 fw-semi-bold mb-0">Repairs report</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div>
+                                            <div class="table-responsive">
+                                                <table class="table" id="driver-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th title="Vehicle">Vehicle</th>
+                                                            <th title="Requested By">Requested By</th>
+                                                            <th title="Status">Status</th>
+                                                            <th title="Income">Income</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($repairs as $repair)
+                                                            <tr>
+                                                                <td>{{ $repair->vehicle->plate_number }}</td>
+                                                                <td>{{ $repair->creator->name }}</td>
+                                                                <td>
+                                                                    @if ($repair->repair_status == 'pending')
+                                                                        <span class="badge bg-secondary">Pending</span>
+                                                                    @elseif ($repair->repair_status == 'billed')
+                                                                        <span class="badge bg-success">Billed</span>
+                                                                    @elseif ($repair->repair_status == 'approved')
+                                                                        <span class="badge bg-info">Approved</span>
+                                                                    @elseif ($repair->repair_status == 'rejected')
+                                                                        <span class="badge bg-danger">Rejected</span>
+                                                                    @else
+                                                                        <span class="badge bg-warning">Invalid Status</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="{{ $repair->repair_cost ? '' : 'text-center' }}">
+                                                                    {{ $repair->repair_cost ?? '-' }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                        <tr>
+                                                            <td colspan="3" class="text-center font-bold"><strong>Total
+                                                                    Expenses</strong></td>
+                                                            @php
+                                                                $totalExpense = 0;
+                                                                foreach ($repairs as $repair) {
+                                                                    if ($repair->repair_status == 'billed') {
+                                                                        $totalExpense += $repair->repair_cost;
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            <td class="text-center font-bold">
+                                                                <strong>{{ $totalExpense }}</strong></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overlay"></div>
+                    @include('components.footer')
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+        </div>
+    </body>
+@endsection
