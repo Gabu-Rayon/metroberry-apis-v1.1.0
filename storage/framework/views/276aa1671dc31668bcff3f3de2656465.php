@@ -1,7 +1,7 @@
-@extends('layouts.app')
 
-@section('title', 'Drivers')
-@section('content')
+
+<?php $__env->startSection('title', 'Drivers'); ?>
+<?php $__env->startSection('content'); ?>
 
     <head>
         <style>
@@ -21,13 +21,13 @@
     </head>
 
     <body class="fixed sidebar-mini">
-        @include('components.preloader')
+        <?php echo $__env->make('components.preloader', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
         <div id="app">
             <div class="wrapper">
-                @include('components.sidebar.sidebar')
+                <?php echo $__env->make('components.sidebar.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 <div class="content-wrapper">
                     <div class="main-content">
-                        @include('components.navbar')
+                        <?php echo $__env->make('components.navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                         <div class="body-content">
                             <div class="tile">
                                 <div class="card mb-4">
@@ -40,28 +40,28 @@
                                                 <div class="actions">
                                                     <div class="accordion-header d-flex justify-content-end align-items-center"
                                                         id="flush-headingOne">
-                                                        @if (\Auth::user()->can('create driver'))
-                                                        <a class="btn btn-success btn-sm" href="{{route('driver.export')}}"
+                                                        <?php if(\Auth::user()->can('create driver')): ?>
+                                                        <a class="btn btn-success btn-sm" href="<?php echo e(route('driver.export')); ?>"
                                                             title="Export to xlsx excel file">
                                                             <i class="fa-solid fa-file-export"></i>&nbsp; Export
                                                         </a>
-                                                        @endif
+                                                        <?php endif; ?>
                                                         <span class='m-1'></span>
-                                                        @if (\Auth::user()->can('create driver'))
+                                                        <?php if(\Auth::user()->can('create driver')): ?>
                                                         <a class="btn btn-success btn-sm" href="javascript:void(0);"
                                                             onclick="axiosModal('driver/import')"
                                                             title="Import From csv excel file">
                                                             <i class="fa-solid fa-file-arrow-up"></i>&nbsp; Import
                                                         </a>
-                                                        @endif
+                                                        <?php endif; ?>
                                                         <span class='m-1'></span>
-                                                        @if (\Auth::user()->can('create driver'))
+                                                        <?php if(\Auth::user()->can('create driver')): ?>
                                                             <button type="button" class="btn btn-success btn-sm"
                                                                 data-bs-toggle="modal" data-bs-target="#driverModal">
                                                                 <i class="fa-solid fa-user-plus"></i>&nbsp;
                                                                 Add Driver
                                                             </button>
-                                                        @endif
+                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                             </div>
@@ -79,23 +79,24 @@
                                                         <th title="Address">Address</th>
                                                         <th title="Vehicle">Vehicle</th>
                                                         <th title="Status">Status</th>
-                                                        @if (\Auth::user()->role == 'admin')
+                                                        <?php if(\Auth::user()->role == 'admin'): ?>
                                                             <th title="Action" width="80">Action</th>
-                                                        @endif
+                                                        <?php endif; ?>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($drivers as $driver)
+                                                    <?php $__currentLoopData = $drivers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $driver): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <tr>
-                                                            <td>{{ $driver->user->name }}</td>
-                                                            <td>{{ $driver->user->email }}</td>
-                                                            <td>{{ $driver->user->phone }}</td>
-                                                            <td>{{ $driver->user->address }}</td>
+                                                            <td><?php echo e($driver->user->name); ?></td>
+                                                            <td><?php echo e($driver->user->email); ?></td>
+                                                            <td><?php echo e($driver->user->phone); ?></td>
+                                                            <td><?php echo e($driver->user->address); ?></td>
                                                             <td class="text-center">
-                                                                {{ $driver->vehicle ? $driver->vehicle->plate_number : '-' }}
+                                                                <?php echo e($driver->vehicle ? $driver->vehicle->plate_number : '-'); ?>
+
                                                             </td>
                                                             <td>
-                                                                @php
+                                                                <?php
                                                                     $license = $driver->driverLicense;
                                                                     $psvBadge = $driver->psvBadge;
 
@@ -120,63 +121,63 @@
                                                                             $badgeText = 'Active';
                                                                         }
                                                                     }
-                                                                @endphp
-                                                                <span class="{{ $badgeClass }}">{{ $badgeText }}</span>
+                                                                ?>
+                                                                <span class="<?php echo e($badgeClass); ?>"><?php echo e($badgeText); ?></span>
                                                             </td>
-                                                            @if (\Auth::user()->role == 'admin')
+                                                            <?php if(\Auth::user()->role == 'admin'): ?>
                                                                 <td class="text-center">
-                                                                    @if (\Auth::user()->can('edit driver'))
+                                                                    <?php if(\Auth::user()->can('edit driver')): ?>
                                                                         <a href="javascript:void(0);"
                                                                             class="btn btn-sm btn-primary"
-                                                                            onclick="axiosModal('driver/{{ $driver->id }}/edit')"
+                                                                            onclick="axiosModal('driver/<?php echo e($driver->id); ?>/edit')"
                                                                             title="Edit Driver">
                                                                             <i class="fas fa-edit"></i>
                                                                         </a>
-                                                                    @endif
+                                                                    <?php endif; ?>
                                                                     <span class='m-1'></span>
-                                                                    @if ($driver->status == 'active')
-                                                                        @if (\Auth::user()->can('deactivate driver'))
+                                                                    <?php if($driver->status == 'active'): ?>
+                                                                        <?php if(\Auth::user()->can('deactivate driver')): ?>
                                                                             <a href="javascript:void(0);"
                                                                                 class="btn btn-sm btn-success"
-                                                                                onclick="axiosModal('driver/{{ $driver->id }}/deactivate')"
+                                                                                onclick="axiosModal('driver/<?php echo e($driver->id); ?>/deactivate')"
                                                                                 title="Dectivate Driver">
                                                                                 <i class="fas fa-toggle-on"></i>
                                                                             </a>
-                                                                        @endif
-                                                                    @else
-                                                                        @if (\Auth::user()->can('activate driver'))
+                                                                        <?php endif; ?>
+                                                                    <?php else: ?>
+                                                                        <?php if(\Auth::user()->can('activate driver')): ?>
                                                                             <a href="javascript:void(0);"
                                                                                 class="btn btn-sm btn-secondary"
-                                                                                onclick="axiosModal('driver/{{ $driver->id }}/activate')"
+                                                                                onclick="axiosModal('driver/<?php echo e($driver->id); ?>/activate')"
                                                                                 title="Activate Driver">
                                                                                 <i class="fas fa-toggle-off"></i>
                                                                             </a>
-                                                                        @endif
-                                                                    @endif
-                                                                    @if (\Auth::user()->can('delete driver'))
+                                                                        <?php endif; ?>
+                                                                    <?php endif; ?>
+                                                                    <?php if(\Auth::user()->can('delete driver')): ?>
                                                                         <span class='m-1'></span>
                                                                         <a href="javascript:void(0);"
                                                                             class="btn btn-sm btn-danger"
-                                                                            onclick="deleteDriver({{ $driver->id }})"
+                                                                            onclick="deleteDriver(<?php echo e($driver->id); ?>)"
                                                                             title="Delete Driver">
                                                                             <i class="fas fa-trash"></i>
                                                                         </a>
-                                                                    @endif
+                                                                    <?php endif; ?>
                                                                     <span class='m-1'></span>
-                                                                    @if (!$driver->vehicle && $driver->status == 'active')
-                                                                        @if (\Auth::user()->can('assign vehicle'))
+                                                                    <?php if(!$driver->vehicle && $driver->status == 'active'): ?>
+                                                                        <?php if(\Auth::user()->can('assign vehicle')): ?>
                                                                             <a href="javascript:void(0);"
                                                                                 class="btn btn-sm btn-info"
-                                                                                onclick="axiosModal('{{ route('driver.vehicle.assign', $driver->id) }}')"
+                                                                                onclick="axiosModal('<?php echo e(route('driver.vehicle.assign', $driver->id)); ?>')"
                                                                                 title="Assign Vehicle">
                                                                                 <i class="fa-solid fa-key"></i>
                                                                             </a>
-                                                                        @endif
-                                                                    @endif
+                                                                        <?php endif; ?>
+                                                                    <?php endif; ?>
                                                                 </td>
-                                                            @endif
+                                                            <?php endif; ?>
                                                         </tr>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -186,17 +187,17 @@
                         </div>
                     </div>
                     <div class="overlay"></div>
-                    @include('components.footer')
+                    <?php echo $__env->make('components.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 </div>
             </div>
         </div>
 
-        {{-- Driver Modal --}}
+        
         <div class="modal fade" id="driverModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
-                <form action="{{ route('driver.store') }}" method="POST" class="needs-validation modal-content"
+                <form action="<?php echo e(route('driver.store')); ?>" method="POST" class="needs-validation modal-content"
                     enctype="multipart/form-data">
-                    @csrf
+                    <?php echo csrf_field(); ?>
                     <div class="card-header my-3 p-2 border-bottom">
                         <h4>Add Driver</h4>
                     </div>
@@ -211,7 +212,7 @@
                                     </label>
                                     <div class="col-sm-7">
                                         <input name="name" class="form-control" type="text" placeholder="Name"
-                                            id="name" required value="{{ old('name') }}" />
+                                            id="name" required value="<?php echo e(old('name')); ?>" />
                                     </div>
                                 </div>
 
@@ -222,11 +223,11 @@
                                     </label>
                                     <div class="col-sm-7">
                                         <input name="phone" class="form-control" type="text" placeholder="Phone"
-                                            id="phone" required value="{{ old('phone') }}" />
+                                            id="phone" required value="<?php echo e(old('phone')); ?>" />
                                     </div>
                                 </div>
 
-                                @if (Auth::user()->role == 'admin')
+                                <?php if(Auth::user()->role == 'admin'): ?>
 
                                     <div class="form-group row my-2">
                                         <label for="organisation" class="col-sm-5 col-form-label">
@@ -236,15 +237,16 @@
                                         <div class="col-sm-7">
                                             <select name="organisation" id="organisation" class="form-control" required>
                                                 <option value="">Select Organisation</option>
-                                                @foreach ($organisations as $organisation)
-                                                    <option value="{{ $organisation->organisation_code }}">
-                                                        {{ $organisation->user->name }}
+                                                <?php $__currentLoopData = $organisations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $organisation): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($organisation->organisation_code); ?>">
+                                                        <?php echo e($organisation->user->name); ?>
+
                                                     </option>
-                                                @endforeach
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <div class="form-group row my-2">
                                         <label for="organisation" class="col-sm-5 col-form-label">
                                             Organisation
@@ -253,21 +255,22 @@
                                         <div class="col-sm-7">
                                             <select name="organisation" id="organisation" class="form-control" required
                                                 readonly>
-                                                @php
+                                                <?php
                                                     $organisation = $organisations
                                                         ->where('user_id', Auth::user()->id)
                                                         ->first();
                                                     Log::info('ORGANISATION');
                                                     Log::info($organisation);
-                                                @endphp
-                                                <option value="{{ $organisation->organisation_code }}">
-                                                    {{ $organisation->user->name }}
+                                                ?>
+                                                <option value="<?php echo e($organisation->organisation_code); ?>">
+                                                    <?php echo e($organisation->user->name); ?>
+
                                                 </option>
                                             </select>
                                         </div>
                                     </div>
 
-                                @endif
+                                <?php endif; ?>
 
 
                                 <div class="form-group row my-2">
@@ -277,7 +280,7 @@
                                     <div class="col-sm-7">
                                         <input name="front_page_id" class="form-control" type="file"
                                             placeholder="Front Page ID Picture" id="front_page_id"
-                                            value="{{ old('front_page_id') }}" />
+                                            value="<?php echo e(old('front_page_id')); ?>" />
                                     </div>
                                 </div>
 
@@ -287,7 +290,7 @@
                                     </label>
                                     <div class="col-sm-7">
                                         <input name="avatar" class="form-control" type="file" placeholder="Avatar"
-                                            id="avatar" value="{{ old('avatar') }}" />
+                                            id="avatar" value="<?php echo e(old('avatar')); ?>" />
                                     </div>
                                 </div>
                             </div>
@@ -300,7 +303,7 @@
                                     </label>
                                     <div class="col-sm-7">
                                         <input name="email" class="form-control" type="email" placeholder="Email"
-                                            id="email" value="{{ old('email') }}" required />
+                                            id="email" value="<?php echo e(old('email')); ?>" required />
                                     </div>
                                 </div>
 
@@ -311,7 +314,7 @@
                                     </label>
                                     <div class="col-sm-7">
                                         <input name="address" class="form-control" type="text" placeholder="Address"
-                                            id="address" value="{{ old('address') }}" required />
+                                            id="address" value="<?php echo e(old('address')); ?>" required />
                                     </div>
                                 </div>
 
@@ -323,7 +326,7 @@
                                     <div class="col-sm-7">
                                         <input name="national_id" class="form-control" type="text"
                                             placeholder="National ID number" id="national_id"
-                                            value="{{ old('national_id') }}" </div>
+                                            value="<?php echo e(old('national_id')); ?>" </div>
                                     </div>
 
                                     <div class="form-group row my-2">
@@ -333,7 +336,7 @@
                                         <div class="col-sm-7">
                                             <input name="back_page_id" class="form-control" type="file"
                                                 placeholder="Back Page ID Picture" id="back_page_id"
-                                                value="{{ old('back_page_id') }}" </div>
+                                                value="<?php echo e(old('back_page_id')); ?>" </div>
                                         </div>
 
                                         <div class="form-group row my-2">
@@ -364,7 +367,7 @@
             </div>
         </div>
 
-        {{-- Delete Modal --}}
+        
         <div class="modal fade" id="delete-modal" data-bs-keyboard="false" tabindex="-1" data-bs-backdrop="true"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -376,7 +379,7 @@
                     <div class="modal-body">
                         <form action="javascript:void(0);" class="needs-validation" id="delete-modal-form"
                             method="POST">
-                            @csrf
+                            <?php echo csrf_field(); ?>
                             <div class="modal-body">
                                 <p>Are you sure you want to delete this driver? This action cannot be undone.</p>
                             </div>
@@ -401,4 +404,6 @@
             }
         </script>
     </body>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\metroberry-apis-v1.1.0\resources\views/driver/index.blade.php ENDPATH**/ ?>
