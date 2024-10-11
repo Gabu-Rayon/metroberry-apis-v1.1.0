@@ -12,16 +12,19 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
+    // Step 1: Welcome Page
+    Route::get('/', [AuthenticatedSessionController::class, 'WelcomePage'])->name('welcome.page');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    // Step 2: Sign-up Options Page
+    Route::get('users/sign/up/options', [AuthenticatedSessionController::class, 'signUpOptions'])
+        ->name('sign.up.options.page');
 
-    Route::get('/', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
+    // Step 3 (Optional): Sign-in Page for Users with Account
+    Route::get('/users/sign/in', [AuthenticatedSessionController::class, 'usersSignInPage'])->name('users.sign.in.page');
 
+    // Step 4 Auth Check
+    Route::post('/users/sign/in/store', [AuthenticatedSessionController::class, 'loginstore'])->name('auth.users.sign.in');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('auth.user.login');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
@@ -55,6 +58,8 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    //Log Out
+    Route::post('users/logout', [AuthenticatedSessionController::class, 'usersSignOut'])
         ->name('logout');
+
 });

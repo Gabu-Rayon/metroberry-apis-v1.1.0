@@ -45,6 +45,8 @@ use App\Models\Vehicle;
 // All Routes
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/customer.php';
+require __DIR__ . '/driver.php';
 require __DIR__ . '/insurance_company_routes.php';
 
 /***

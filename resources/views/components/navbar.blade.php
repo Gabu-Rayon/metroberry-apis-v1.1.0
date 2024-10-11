@@ -48,7 +48,6 @@
                         <li class="w-100">
                             <form method="POST" action="{{ route('logout') }}" class="d-inline">
                                 @csrf
-                                @METHOD('POST')
                                 <button type="submit" id="logout-btn" class="btn_sign_out text-black w-100 btn">
                                     Sign Out
                                 </button>
