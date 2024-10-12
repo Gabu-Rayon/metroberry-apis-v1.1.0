@@ -104,7 +104,7 @@ class CustomerAppController extends Controller
             // Handle avatar upload if provided
             $avatarPath = null;
             if ($request->hasFile('avatar')) {
-                $avatarPath = $request->file('avatar')->store('avatars', 'public');
+                $avatarPath = $request->file('avatar')->store('uploads/user-avatars', 'public');
             }
 
             // Create the user
@@ -353,16 +353,16 @@ class CustomerAppController extends Controller
         if ($request->hasFile('profile_picture')) {
             $file = $request->file('profile_picture');
             $filename = time() . '_profile.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/profile_pictures'), $filename);
-            $customer->profile_picture = 'uploads/profile_pictures/' . $filename;
+            $file->move(public_path('uploads/user-avatars'), $filename);
+            $customer->profile_picture = 'uploads/user-avatars/' . $filename;
         }
 
         // Handle national ID front avatar upload
         if ($request->hasFile('national_id_front_avatar')) {
             $file = $request->file('national_id_front_avatar');
             $filename = time() . '_national_id_front.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/national_id_avatars'), $filename);
-            $customer->national_id_front_avatar = 'uploads/national_id_avatars/' . $filename;
+            $file->move(public_path('uploads/front-page-ids'), $filename);
+            $customer->national_id_front_avatar = 'uploads/front-page-ids/' . $filename;
         }
 
         // Handle national ID behind avatar upload

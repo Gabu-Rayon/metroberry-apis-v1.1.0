@@ -150,9 +150,11 @@ class DriverAppController extends Controller
                 return back()->with('error', $validator->errors()->first())->withInput();
             }
 
-            // Store files in the storage/app/public/drivers directory
-            $national_id_front_avatar = $request->file('national_id_front_avatar')->store('drivers', 'public');
-            $national_id_back_avatar = $request->file('national_id_back_avatar')->store('drivers', 'public');
+            //national_id_front_avatar  uploaded to  uploads/front-page-ids
+            $national_id_front_avatar = $request->file('national_id_front_avatar')->store('uploads/front-page-ids', 'public');
+
+            //national_id_back_avatar  uploaded to  uploads/back-page-ids
+            $national_id_back_avatar = $request->file('national_id_back_avatar')->store('uploads/back-page-ids', 'public');
 
             $driver = auth()->user()->driver;
 
@@ -187,8 +189,8 @@ class DriverAppController extends Controller
                 'driving_license_no' => 'required|string|max:255|unique:drivers_licenses',
                 'issue_date' => 'required|date',
                 'expiry_date' => 'required|date|after:issue_date',
-                'national_id_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'national_id_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'driving_license_avatar_front' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'driving_license_avatar_back' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -202,8 +204,11 @@ class DriverAppController extends Controller
 
             // Store files in the storage/app/public/drivers directory
 
-            $driving_license_avatar_front = $request->file('national_id_front_avatar')->store('drivers', 'public');
-            $driving_license_avatar_back = $request->file('national_id_back_avatar')->store('drivers', 'public');
+            //driver licenses  uploaded to  uploads/front-license-pics           
+            $driving_license_avatar_front = $request->file('driving_license_avatar_front')->store('uploads/front-license-pics ', 'public');
+
+            //driver licenses  uploaded to  uploads/back-license-pics
+            $driving_license_avatar_back = $request->file('driving_license_avatar_back')->store('uploads/back-license-pics', 'public');
 
             // Update database records with the stored file paths
 
@@ -261,12 +266,14 @@ class DriverAppController extends Controller
             $license = DriversLicenses::find($id);
 
             if ($request->hasFile('national_id_front_avatar')) {
-                $driving_license_avatar_front = $request->file('national_id_front_avatar')->store('drivers', 'public');
+                //national id uploaded to  uploads/front-page-ids
+                $driving_license_avatar_front = $request->file('national_id_front_avatar')->store('uploads/front-page-ids', 'public');
                 $license->driving_license_avatar_front = $driving_license_avatar_front;
             }
 
             if ($request->hasFile('national_id_back_avatar')) {
-                $driving_license_avatar_back = $request->file('national_id_back_avatar')->store('drivers', 'public');
+                //national id uploaded to  uploads/back-page-ids
+                $driving_license_avatar_back = $request->file('national_id_back_avatar')->store('uploads/back-page-ids', 'public');
                 $license->driving_license_avatar_back = $driving_license_avatar_back;
             }
 
@@ -319,8 +326,8 @@ class DriverAppController extends Controller
             DB::beginTransaction();
 
             // Store files in the storage/app/public/drivers directory
-
-            $psv_badge_avatar = $request->file('badge_copy')->store('drivers', 'public');
+            //Psv to be upoaded to uploads/psvbadge-avatars
+            $psv_badge_avatar = $request->file('badge_copy')->store('uploads/psvbadge-avatars', 'public');
 
             // Update database records with the stored file paths
             PSVBadge::create([
@@ -376,6 +383,7 @@ class DriverAppController extends Controller
             $psvBadge = PSVBadge::find($id);
 
             if ($request->hasFile('badge_copy')) {
+                //Psv to be upoaded to uploads/psvbadge-avatars
                 $psv_badge_avatar = $request->file('badge_copy')->store('drivers', 'public');
                 $psvBadge->psv_badge_avatar = $psv_badge_avatar;
             }
@@ -600,9 +608,9 @@ class DriverAppController extends Controller
 
         if ($request->hasFile('profile_picture')) {
             $file = $request->file('profile_picture');
-            $filePath = 'drivers/profile_pictures/' . $user->id . '/' . $file->getClientOriginalName();
+            $filePath = 'uploads/user-avatars' . $user->id . '/' . $file->getClientOriginalName();
 
-            // Store the file in the public disk
+            // Store the file in the public disk in this folder of uploads/user-avatars
             Storage::disk('public')->put($filePath, file_get_contents($file));
 
             // Update the user's profile picture path
