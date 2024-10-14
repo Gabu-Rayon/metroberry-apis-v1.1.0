@@ -148,10 +148,12 @@ class DriverAppController extends Controller
         try {
             $data = $request->all();
 
-            // Validate the incoming request data
+
             $validator = Validator::make($data, [
+                // national id no should be unique to drivers apart from the current driver
+                'national_id_no' => 'required|string|max:255|unique:drivers,national_id_no,' . auth()->user()->driver->id,
                 'national_id_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'national_id_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'national_id_behind_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -161,20 +163,19 @@ class DriverAppController extends Controller
                 return back()->with('error', $validator->errors()->first())->withInput();
             }
 
-            // Store files in the storage/app/public/uploads directory
 
-            // National ID front image uploaded to uploads/front-page-ids
             $national_id_front_avatar = $request->file('national_id_front_avatar')->store('uploads/front-page-ids', 'public');
 
-            // National ID back image uploaded to uploads/back-page-ids
-            $national_id_back_avatar = $request->file('national_id_back_avatar')->store('uploads/back-page-ids', 'public');
+            $national_id_back_avatar = $request->file('national_id_behind_avatar')->store('uploads/back-page-ids', 'public');
 
             $driver = auth()->user()->driver;
 
+            $driver->national_id_no = $data['national_id_no'];
             $driver->national_id_front_avatar = $national_id_front_avatar;
             $driver->national_id_behind_avatar = $national_id_back_avatar;
 
             $driver->save();
+
 
             return redirect()->route('driver.dashboard')->with('success', 'Driver personal documents uploaded successfully.');
         } catch (Exception $e) {
@@ -258,11 +259,10 @@ class DriverAppController extends Controller
         try {
             $data = $request->all();
 
-            // Validate the incoming request data
             $validator = Validator::make($data, [
-                'driving_license_no' => 'required|string|max:255',
-                'issue_date' => 'required|date',
-                'expiry_date' => 'required|date|after:issue_date',
+                'driving_license_no' => 'nullable|string|max:255',
+                'driving_license_date_of_issue' => 'nullable|date',
+                'driving_license_date_of_expiry' => 'nullable|date|after:driving_license_date_of_issue',
                 'license_front_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
                 'license_back_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
@@ -276,23 +276,23 @@ class DriverAppController extends Controller
 
             DB::beginTransaction();
 
-            $license = DriversLicenses::find($id);
+            $license = Auth::user()->driver->license;
 
+            // Handle file uploads
             if ($request->hasFile('license_front_avatar')) {
-                // License front image uploaded to uploads/front-license-pics
                 $driving_license_avatar_front = $request->file('license_front_avatar')->store('uploads/front-license-pics', 'public');
-                $license->driving_license_avatar_front = $driving_license_avatar_front;
+                $license->driving_license_avatar_front = $driving_license_avatar_front; // Set the new value
             }
 
             if ($request->hasFile('license_back_avatar')) {
-                // License back image uploaded to uploads/back-license-pics
                 $driving_license_avatar_back = $request->file('license_back_avatar')->store('uploads/back-license-pics', 'public');
-                $license->driving_license_avatar_back = $driving_license_avatar_back;
+                $license->driving_license_avatar_back = $driving_license_avatar_back; // Set the new value
             }
 
-            $license->driving_license_no = $data['driving_license_no'];
-            $license->driving_license_date_of_issue = $data['issue_date'];
-            $license->driving_license_date_of_expiry = $data['expiry_date'];
+            // Update only non-null fields
+            $license->driving_license_no = $data['driving_license_no'] ?? $license->driving_license_no;
+            $license->driving_license_date_of_issue = $data['driving_license_date_of_issue'] ?? $license->driving_license_date_of_issue;
+            $license->driving_license_date_of_expiry = $data['driving_license_date_of_expiry'] ?? $license->driving_license_date_of_expiry;
 
             $license->save();
 
@@ -307,6 +307,7 @@ class DriverAppController extends Controller
             return back()->with('error', 'Something went wrong.')->withInput();
         }
     }
+
 
 
     /**
@@ -507,10 +508,10 @@ class DriverAppController extends Controller
 
             $validator = Validator::make($data, [
                 'full_name' => 'nullable|string|max:255',
-                'email' => 'required|string|email|max:255',
-                'phone' => 'required|string|max:255',
-                'national_id_no' => 'required|string|max:255',
-                'organisation_id' => 'required|integer',
+                'email' => 'nullable|string|email|max:255',
+                'phone' => 'nullable|string|max:255',
+                'national_id_no' => 'nullable|string|max:255',
+                'organisation_id' => 'nullable|integer',
             ]);
 
             if ($validator->fails()) {
@@ -522,15 +523,20 @@ class DriverAppController extends Controller
             $driver = Driver::findOrFail($id);
             $user = User::find($driver->user_id);
 
-            $user->name = $data['full_name'];
-            $user->email = $data['email'];
-            $user->phone = $data['phone'];
-            $user->address = $data['address'];
-            
-            $driver->national_id_no = $data['national_id_no'];
-            $driver->organisation_id = $data['organisation_id'];
+            $user->update([
+                'name' => $data['full_name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'],
+            ]);
 
+            $driver->update([
+                'national_id_no' => $data['national_id_no'],
+                'organisation_id' => $data['organisation_id'],
+            ]);
+
+            $user->save();
             $driver->save();
+
 
             return redirect()->route('driver.profile')->with('success', 'Driver profile updated successfully.');
         } catch (Exception $e) {
@@ -639,7 +645,4 @@ class DriverAppController extends Controller
 
         return response()->json(['error' => 'Failed to upload profile picture'], 400);
     }
-
-
-
 }
