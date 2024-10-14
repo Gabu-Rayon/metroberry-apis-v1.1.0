@@ -78,7 +78,7 @@
                     </div>
                 @else
                     <div
-                        class="request-notification-container map-notification offline-notification map-notification-warning">
+                        id="verified-message"  class="request-notification-container map-notification offline-notification map-notification-warning">
                         National ID is valid
                     </div>
                 @endif
@@ -92,7 +92,7 @@
                         </div>
                     @else
                         <div
-                            class="request-notification-container map-notification offline-notification map-notification-warning">
+                             id="verified-message" class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your license has been verified.
                         </div>
                     @endif
@@ -138,7 +138,7 @@
                         </div>
                     @else
                         <div
-                            class="request-notification-container map-notification offline-notification map-notification-warning">
+                            id="verified-message"  class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your PSV Badge has been verified.
                         </div>
                     @endif

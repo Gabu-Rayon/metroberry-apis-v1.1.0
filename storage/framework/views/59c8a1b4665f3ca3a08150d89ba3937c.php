@@ -69,6 +69,23 @@
           }
       });
   </script>
+
+
+  <script>
+    // Function to hide messages after a delay
+    function hideMessageAfterDelay(elementId, delay) {
+        const messageElement = document.getElementById(elementId);
+        if (messageElement) {
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+            }, delay);
+        }
+    }
+
+    // Call the function for each message with a delay of 60 seconds (60000 milliseconds)
+    hideMessageAfterDelay('verified-message', 60000); // 1 minute
+    hideMessageAfterDelay('verified-message', 60000); // 1 minute
+</script>
   </body>
 
   </html>
