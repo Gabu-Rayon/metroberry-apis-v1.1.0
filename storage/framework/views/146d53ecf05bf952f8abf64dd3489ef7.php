@@ -27,17 +27,22 @@
                 </div>
 
                 <!--Sign Up Container Start-->
+                <?php if(session('success')): ?>
+                    <div id="success-message" class="alert alert-success" style="display: none;">
+                        <?php echo e(session('success')); ?>
+
+                    </div>
+                <?php endif; ?>
+
+                <?php if(session('error')): ?>
+                    <div id="error-message" class="alert alert-danger" style="display: none;">
+                        <?php echo e(session('error')); ?>
+
+                    </div>
+                <?php endif; ?>
                 <div class="sign-up-form-container text-center">
                     <!--Page Title & Icons End-->
-                    <?php if($errors->any()): ?>
-                        <div class="alert alert-danger">
-                            <ul>
-                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <div><?php echo e($error); ?></div>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </ul>
-                        </div>
-                    <?php endif; ?>
+
                     <form class="width-100"method="POST" action="<?php echo e(route('auth.customer.register')); ?>">
                         <?php echo csrf_field(); ?>
 
@@ -69,7 +74,7 @@
                         </div>
                         <!--Sign Up Input Field End-->
 
-                         
+                        
                         <div class="form-group">
                             <div class="input-group">
                                 <input class="form-control" id="phone-input" type="text" name="phone" autocomplete="on"
@@ -82,7 +87,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span><img src="<?php echo e(asset('mobile-app-assets/icons/lock.svg')); ?>" alt="Lock Icon"></span>
+                                    <span><img src="<?php echo e(asset('mobile-app-assets/icons/lock.svg')); ?>"
+                                            alt="Lock Icon"></span>
                                 </div>
                                 <input class="form-control" type="password" name="password" placeholder="Password"
                                     value ="<?php echo e(old('password')); ?>">
@@ -142,8 +148,9 @@
                             <button class="btn btn-primary text-uppercase" type="submit">Register </button>
                         </div>
                     </form>
-                     <div class="text-center sms-rate-text">
-                        <a href="<?php echo e(route('users.sign.in.page')); ?>" class="regular-link">Already have an account? Sign in </a>
+                    <div class="text-center sms-rate-text">
+                        <a href="<?php echo e(route('users.sign.in.page')); ?>" class="regular-link">Already have an account? Sign in
+                        </a>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,5 @@
-@extends('layouts.mobile-app')
-
-@section('title', 'Personal ID| Driver')
-@section('content')
+<?php $__env->startSection('title', 'Personal ID| Driver'); ?>
+<?php $__env->startSection('content'); ?>
     <!--Loading Container Start-->
     <div id="load" class="loading-overlay display-flex flex-column justify-content-center align-items-center">
         <div class="primary-color font-28 fas fa-spinner fa-spin"></div>
@@ -9,26 +7,26 @@
     <!--Loading Container End-->
 
     <div class="row h-100">
-        @php
+        <?php
             $user = Auth::user();
             $driver = $user->driver;
-        @endphp
+        ?>
         <div class="col-xs-12 col-sm-12">
             <!--Page Title & Icons Start-->
             <div class="header-icons-container text-center">
-                <a href="{{ route('driver.registration.page') }}">
+                <a href="<?php echo e(route('driver.registration.page')); ?>">
                     <span class="float-left">
-                        <img src=" {{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
+                        <img src=" <?php echo e(asset('mobile-app-assets/icons/back.svg')); ?>" alt="Back Icon" />
                     </span>
                 </a>
-                @if ($driver->status == 'inactive')
+                <?php if($driver->status == 'inactive'): ?>
                     <span>Deactivated</span>
-                @else
+                <?php else: ?>
                     <span>Persona ID</span>
-                @endif
+                <?php endif; ?>
                 <a href="#">
                     <span class="float-right menu-open closed">
-                        <img src=" {{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon" />
+                        <img src=" <?php echo e(asset('mobile-app-assets/icons/menu.svg')); ?>" alt="Menu Hamburger Icon" />
                     </span>
                 </a>
             </div>
@@ -39,17 +37,17 @@
 
                 <!--Driver's License Fields Container Start-->
                 <div class="all-container all-container-with-classes">
-                    <form class="width-100" action="{{ route('personal.id.card.document.update', $driver->id) }}"
+                    <form class="width-100" action="<?php echo e(route('personal.id.card.document.update', $driver->id)); ?>"
                         method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('PUT'); ?>
                         <!--Input Field Container Start-->
                         <div class="form-group form-control-margin">
                             <label class="label-title">Personal ID</label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="text" name="name"
                                     autocomplete="off" placeholder="Driver License Number"
-                                    value="{{ $driver->national_id_no }}" />
+                                    value="<?php echo e($driver->national_id_no); ?>" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
@@ -60,13 +58,13 @@
                         <!--Upload Front Start-->
                         <div class="display-flex justify-content-between">
                             <span class="position-relative upload-btn">
-                                <img src=" {{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                <img src=" <?php echo e(asset('mobile-app-assets/icons/upload.svg')); ?>" alt="Upload Icon" />
                                 <input class="scan-prompt" type="file" accept="image/*"
                                     name="national_id_front_avatar" />
                             </span>
                             <span class="text-uppercase">FRONT</span>
                             <span class="delete-btn">
-                                <img src=" {{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                <img src=" <?php echo e(asset('mobile-app-assets/icons/delete.svg')); ?>" alt="Delete Icon" />
                             </span>
                         </div>
                         <div class="scan-your-card-prompt margin-top-5">
@@ -74,11 +72,11 @@
                                 <div class="upload-picture-container">
                                     <div class="upload-camera-container text-center">
                                         <span class="#">
-                                            {{-- <img src="mobile-app-assets/icons/photocamera.svg" alt="Camera Icon" /> --}}
+                                            
                                             <img id="national-id-front-preview"
-                                                src="{{ $driver->national_id_front_avatar
+                                                src="<?php echo e($driver->national_id_front_avatar
                                                     ? asset('storage/' . $driver->national_id_front_avatar)
-                                                    : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                    : asset('mobile-app-assets/icons/photocamera.svg')); ?>"
                                                 alt="National ID Behind" class="img-fluid" />
                                         </span>
                                     </div>
@@ -91,13 +89,13 @@
                         <!--Upload Back Start-->
                         <div class="display-flex justify-content-between">
                             <span class="position-relative upload-btn">
-                                <img src=" {{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                <img src=" <?php echo e(asset('mobile-app-assets/icons/upload.svg')); ?>" alt="Upload Icon" />
                                 <input class="scan-prompt" type="file" accept="image/*"
                                     name="national_id_behind_avatar" />
                             </span>
                             <span class="text-uppercase">BACK</span>
                             <span class="delete-btn">
-                                <img src=" {{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                <img src=" <?php echo e(asset('mobile-app-assets/icons/delete.svg')); ?>" alt="Delete Icon" />
                             </span>
                         </div>
                         <div class="scan-your-card-prompt margin-top-5">
@@ -105,11 +103,11 @@
                                 <div class="upload-picture-container">
                                     <div class="upload-camera-container text-center">
                                         <span class="#">
-                                            {{-- <img src="mobile-app-assets/icons/photocamera.svg" alt="Camera Icon" /> --}}
+                                            
                                             <img id="national-id-front-preview"
-                                                src="{{ $driver->national_id_behind_avatar
+                                                src="<?php echo e($driver->national_id_behind_avatar
                                                     ? asset('storage/' . $driver->national_id_behind_avatar)
-                                                    : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                    : asset('mobile-app-assets/icons/photocamera.svg')); ?>"
                                                 alt="National ID Behind" class="img-fluid" />
                                         </span>
                                     </div>
@@ -145,9 +143,11 @@
         <!--Terms And Conditions Agreement Container End-->
 
         <!--Main Menu Start-->
-        @include('components.driver-mobile-app.main-menu')
+        <?php echo $__env->make('components.driver-mobile-app.main-menu', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
         <!--Main Menu End-->
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.mobile-app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\metroberry-apis-v1.1.0\resources\views/driver-app/personal-id-card.blade.php ENDPATH**/ ?>

@@ -35,11 +35,15 @@
                 <div class="sign-up-form-container text-center">
 
                     @if (session('success'))
-                        <div class="text-success">{{ session('success') }}</div>
+                        <div id="success-message" class="alert alert-success" style="display: none;">
+                            {{ session('success') }}
+                        </div>
                     @endif
 
                     @if (session('error'))
-                        <div class="text-danger">{{ session('error') }} !</div>
+                        <div id="error-message" class="alert alert-danger" style="display: none;">
+                            {{ session('error') }}
+                        </div>
                     @endif
                 </div>
                 <div class="sign-up-form-container text-center">

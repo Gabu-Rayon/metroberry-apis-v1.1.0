@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\Trip;
 use App\Models\User;
+use App\Rules\Phone;
 use App\Models\Driver;
 use App\Models\PSVBadge;
 use App\Models\Organisation;
@@ -44,10 +45,13 @@ class DriverAppController extends Controller
     {
         try {
             $data = $request->all();
+            Log::info('Driver Sign up : ');
+            Log::info($data);
 
             $validator = Validator::make($data, [
                 'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
+                'email' => 'requonired|string|email|max:255|unique:users',
+                'phone' => ['required', 'string', 'unique:users,phone', 'max:15', new Phone()],
                 'password' => [
                     'required',
                     'string',
@@ -73,6 +77,7 @@ class DriverAppController extends Controller
 
             $user = DB::table('users')->insertGetId([
                 'name' => $data['name'],
+                'phone' => $data['phone'],
                 'email' => $data['email'],
                 'password' => bcrypt($data['password']),
                 'role' => 'driver',
@@ -87,7 +92,7 @@ class DriverAppController extends Controller
 
             DB::commit();
 
-            return redirect()->route('driver.login')->with('success', 'Driver signed up successfully.')->withInput();
+            return redirect()->route('users.sign.in.page')->with('success', 'Driver signed up successfully.')->withInput();
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('SIGN UP DRIVER ERROR');

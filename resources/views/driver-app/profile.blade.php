@@ -34,7 +34,7 @@
                         <div class="profile-picture-container">
                             <img id="profile-picture"
                                 src="{{ $driver->user->avatar ? asset('storage/' . $driver->user->avatar) : asset('mobile-app-assets/images/avatar.svg') }}"
-                                alt="Profile Picture"   class="rounded-profile-picture"/>
+                                alt="Profile Picture" class="rounded-profile-picture" />
                             <span class="fas fa-camera">
                                 <input class="file-prompt" type="file" accept="image/*" id="profile-picture-input"
                                     name="profile_picture" />
@@ -49,6 +49,19 @@
                 <!--Profile Information Container End-->
 
                 <!--Profile Information Fields Container Start-->
+                @if (session('success'))
+                    <div id="success-message"
+                        class="alert alert-success"style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: none;">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div id="error-message" class="alert alert-danger"
+                        style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: none;">
+                        {{ session('error') }}
+                    </div>
+                @endif
                 <div class="sign-up-form-container text-center">
                     <form class="width-100" action="{{ route('driver.profile.update', $driver->id) }}" method="POST"
                         enctype="multipart/form-data">

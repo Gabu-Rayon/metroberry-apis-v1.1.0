@@ -34,7 +34,7 @@ Route::get('driver/license-document', [DriverAppController::class, 'driverLicens
 Route::put('driver/license-document/{id}', [DriverAppController::class, 'driverLicenseDocumentUpdate'])->name('driver.license.document.update')->middleware('auth');
 
 Route::get('driver/personal-id-card-documents', [DriverAppController::class, 'personalIdCardDocument'])->name('personal.id.card.document')->middleware('auth');
-Route::put('driver/personal-id-card-document/{id}', [DriverAppController::class, 'personalIdCardDocumentUpdate'])->name('personal.id.card.document.update')->middleware('auth');
+Route::put('driver/personal-id-card-document/{id}', [DriverAppController::class, 'iddocs'])->name('personal.id.card.document.update')->middleware('auth');
 
 Route::get('driver/psvbadge-document', [DriverAppController::class, 'psvbadgeDocument'])->name('psvbadge.document')->middleware('auth');
 Route::put('driver/psvbadge-document/{id}', [DriverAppController::class, 'psvbadgeDocumentUpdate'])->name('psvbadge.document.update')->middleware('auth');

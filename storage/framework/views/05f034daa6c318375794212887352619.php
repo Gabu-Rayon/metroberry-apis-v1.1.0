@@ -33,11 +33,17 @@
                 <div class="sign-up-form-container text-center">
 
                     <?php if(session('success')): ?>
-                        <div class="text-success"><?php echo e(session('success')); ?></div>
+                        <div id="success-message" class="alert alert-success" style="display: none;">
+                            <?php echo e(session('success')); ?>
+
+                        </div>
                     <?php endif; ?>
 
                     <?php if(session('error')): ?>
-                        <div class="text-danger"><?php echo e(session('error')); ?> !</div>
+                        <div id="error-message" class="alert alert-danger" style="display: none;">
+                            <?php echo e(session('error')); ?>
+
+                        </div>
                     <?php endif; ?>
                 </div>
                 <div class="sign-up-form-container text-center">

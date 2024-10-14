@@ -21,7 +21,17 @@
                 </a>
             </div>
             <!--Page Title & Icons End-->
+            @if (session('success'))
+                <div id="success-message" class="alert alert-success" style="display: none;">
+                    {{ session('success') }}
+                </div>
+            @endif
 
+            @if (session('error'))
+                <div id="error-message" class="alert alert-danger" style="display: none;">
+                    {{ session('error') }}
+                </div>
+            @endif
             <div class="rest-container">
                 <div class="all-history-items remaining-height">
                     <!-- Check if there are trips booked -->
@@ -59,10 +69,10 @@
                                                 @endif
                                             </div>
                                             <div class="status-none float-right text-uppercase">
-                                                Charges :  Kes {{ number_format($trip->total_price, 2) }}
+                                                Charges : Kes {{ number_format($trip->total_price, 2) }}
                                                 <!-- Format charges -->
                                             </div>
-                                             <div class="status-none float-right text-uppercase">
+                                            <div class="status-none float-right text-uppercase">
                                                 @php
                                                     $statusColors = [
                                                         'scheduled' => 'text-success',
@@ -71,7 +81,7 @@
                                                         'paid' => 'text-info',
                                                         'partially paid' => 'text-muted',
                                                         'assigned' => 'text-secondary',
-                                                        'cancelled' => 'text-danger'
+                                                        'cancelled' => 'text-danger',
                                                     ];
                                                     $statusClass = $statusColors[$trip->status] ?? 'text-dark';
                                                 @endphp
@@ -93,18 +103,17 @@
                                                         placeholder="Enter an origin location"
                                                         value="{{ $trip->route->start_location->name ?? 'N/A' }}" disabled>
 
-   
+
                                                 </div>
                                             </div>
-                                            <a href="#"
-                                                class="href-decoration-none">
+                                            <a href="#" class="href-decoration-none">
                                                 <div class="w-100 map-input-container map-input-container-bottom">
                                                     <span class="map-input-icon"><img
                                                             src="{{ asset('mobile-app-assets/icons/circle.svg') }}"
                                                             alt="Current Location Icon"></span>
                                                     <div class="map-input display-flex controls flex-1 align-items-center">
 
-                                                         {{ $trip->route->end_location->name ?? 'N/A' }}
+                                                        {{ $trip->route->end_location->name ?? 'N/A' }}
                                                     </div>
                                                     <span class="dotted-line"></span>
                                                 </div>

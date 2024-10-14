@@ -9,6 +9,8 @@
       </div>
       <!--Loading Container End-->
 
+      <!-- Success Message Popup -->
+
       <div class="row h-100">
           <div class="col-xs-12 col-sm-12">
 
@@ -52,6 +54,20 @@
                   <!--Profile Information Container End-->
 
                   <!--Profile Information Fields Container Start-->
+
+                  <?php if(session('success')): ?>
+                    <div id="success-message" class="alert alert-success" style="display: none;">
+                        <?php echo e(session('success')); ?>
+
+                    </div>
+                <?php endif; ?>
+
+                <?php if(session('error')): ?>
+                    <div id="error-message" class="alert alert-danger" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: none;">
+                        <?php echo e(session('error')); ?>
+
+                    </div>
+                <?php endif; ?>
                   <div class="sign-up-form-container text-center">
                       <form class="width-100" method="POST" action="<?php echo e(route('customer.profile.update', $customer->id)); ?>"
                           enctype="multipart/form-data">

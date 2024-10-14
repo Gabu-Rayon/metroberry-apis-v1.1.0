@@ -137,7 +137,7 @@ class CustomerAppController extends Controller
             Log::info('Customer created: ', $customer->toArray());
 
             // Redirect to phone input page with success message
-            return redirect()->route('customer.sign.in.page')->with('success', 'Account created successfully. Please provide your phone number.');
+            return redirect()->route('users.sign.in.page')->with('success', 'Account created successfully. Please provide your phone number.');
         } catch (\Exception $e) {
             // Handle exceptions and show an error message
             return redirect()->back()->with('error', 'Failed to register customer. Please try again later.');

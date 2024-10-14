@@ -126,7 +126,7 @@
                         <span class="font-weight-dark m-3 my-3">
                             Kindly upload your PSV Badge
                         </span>
-                        <form action="{{ route('driver.psvbadge') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('driver.psvbadge',$driver->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="mb-3">
                                 <label for="psv_badge_no" class="form-label">Badge No.</label>

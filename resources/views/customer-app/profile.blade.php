@@ -9,6 +9,8 @@
       </div>
       <!--Loading Container End-->
 
+      <!-- Success Message Popup -->
+
       <div class="row h-100">
           <div class="col-xs-12 col-sm-12">
 
@@ -52,6 +54,18 @@
                   <!--Profile Information Container End-->
 
                   <!--Profile Information Fields Container Start-->
+
+                  @if (session('success'))
+                      <div id="success-message" class="alert alert-success" style="display: none;">
+                          {{ session('success') }}
+                      </div>
+                  @endif
+
+                  @if (session('error'))
+                      <div id="error-message" class="alert alert-danger" style="display: none;">
+                          {{ session('error') }}
+                      </div>
+                  @endif
                   <div class="sign-up-form-container text-center">
                       <form class="width-100" method="POST" action="{{ route('customer.profile.update', $customer->id) }}"
                           enctype="multipart/form-data">
@@ -143,7 +157,8 @@
                               <label class="width-100">
                                   <div class="display-flex justify-content-between">
                                       <span class="position-relative upload-btn">
-                                          <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                          <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
+                                              alt="Upload Icon" />
                                           <input class="scan-prompt" type="file" accept="image/*"
                                               name="national_id_front_avatar" id="national-id-front-input" />
                                       </span>
