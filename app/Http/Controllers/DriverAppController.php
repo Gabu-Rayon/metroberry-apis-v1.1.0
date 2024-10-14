@@ -377,10 +377,13 @@ class DriverAppController extends Controller
         try {
             $data = $request->all();
 
+            Log::info('DATA');
+            Log::info($data);
+
             $validator = Validator::make($data, [
-                'psv_badge_no' => 'required|string|max:255',
-                'issue_date' => 'required|date',
-                'expiry_date' => 'required|date|after:issue_date',
+                'psv_badge_no' => 'nullable|string|max:255',
+                'psv_badge_date_of_issue' => 'nullable|date',
+                'psv_badge_date_of_expiry' => 'nullable|date|after:psv_badge_date_of_issue',
                 'badge_copy' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
@@ -398,12 +401,14 @@ class DriverAppController extends Controller
             if ($request->hasFile('badge_copy')) {
                 //Psv to be upoaded to uploads/psvbadge-avatars
                 $psv_badge_avatar = $request->file('badge_copy')->store('uploads/psvbadge-avatars', 'public');
-                $psvBadge->psv_badge_avatar = $psv_badge_avatar;
+                $psvBadge->update(['psv_badge_avatar' => $psv_badge_avatar]);
             }
 
-            $psvBadge->psv_badge_no = $data['psv_badge_no'];
-            $psvBadge->psv_badge_date_of_issue = $data['issue_date'];
-            $psvBadge->psv_badge_date_of_expiry = $data['expiry_date'];
+            $psvBadge->update([
+                'psv_badge_no' => $data['psv_badge_no'] ?? $psvBadge->psv_badge_no,
+                'psv_badge_date_of_issue' => $data['psv_badge_date_of_issue'] ?? $psvBadge->psv_badge_date_of_issue,
+                'psv_badge_date_of_expiry' => $data['psv_badge_date_of_expiry'] ?? $psvBadge->psv_badge_date_of_expiry,
+            ]);
 
             $psvBadge->save();
 
