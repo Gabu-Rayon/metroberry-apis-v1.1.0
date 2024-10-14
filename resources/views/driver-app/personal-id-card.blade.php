@@ -1,12 +1,15 @@
 @extends('layouts.mobile-app')
 
-@section('title', 'Personal ID| Driver')
+@section('title', 'Personal ID | Driver')
 @section('content')
-    <!--Loading Container Start-->
     <div id="load" class="loading-overlay display-flex flex-column justify-content-center align-items-center">
         <div class="primary-color font-28 fas fa-spinner fa-spin"></div>
     </div>
-    <!--Loading Container End-->
+
+    @php
+        $driver = Auth::user()->driver;
+        Log::info('Driver: ' . url($driver->national_id_front_avatar));
+    @endphp
 
     <div class="row h-100">
         @php
@@ -15,20 +18,20 @@
         @endphp
         <div class="col-xs-12 col-sm-12">
             <!--Page Title & Icons Start-->
-            <div class="header-icons-container text-center">
+            <div class="text-center header-icons-container">
                 <a href="{{ route('driver.registration.page') }}">
                     <span class="float-left">
-                        <img src=" {{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
+                        <img src="{{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
                     </span>
                 </a>
                 @if ($driver->status == 'inactive')
                     <span>Deactivated</span>
                 @else
-                    <span>Persona ID</span>
+                    <span>Personal ID</span>
                 @endif
                 <a href="#">
                     <span class="float-right menu-open closed">
-                        <img src=" {{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon" />
+                        <img src="{{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon" />
                     </span>
                 </a>
             </div>
@@ -58,7 +61,7 @@
                         <div class="form-group form-control-margin">
                             <label class="label-title">Personal ID</label>
                             <div class="input-group">
-                                <input class="form-control form-control-with-padding" type="text" name="name"
+                                <input class="form-control form-control-with-padding" type="text" name="national_id_no"
                                     autocomplete="off" placeholder="Driver License Number"
                                     value="{{ $driver->national_id_no }}" />
                                 <div class="input-group-append">
@@ -141,10 +144,9 @@
         </div>
 
         <!--Terms And Conditions Agreement Container Start-->
-        <div class="col-xs-12 col-sm-12 text-center sms-rate-text font-roboto flex-end margin-bottom-30">
+        <div class="text-center col-xs-12 col-sm-12 sms-rate-text font-roboto flex-end margin-bottom-30">
             <div class="container-sms-rate-text width-100 font-11">
-                <span class="light-gray font-weight-light">
-                </span>
+                <span class="light-gray font-weight-light"></span>
                 <br />
                 <a href="#" class="dark-link">
                     <span class="font-weight-light">Metroberry Tours & Travel</span>
@@ -157,6 +159,20 @@
         @include('components.driver-mobile-app.main-menu')
         <!--Main Menu End-->
     </div>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    <!-- JavaScript for Image Preview -->
+    <script>
+        function previewImage(event, previewId) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                document.getElementById(previewId).src = e.target.result;
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 @endsection
