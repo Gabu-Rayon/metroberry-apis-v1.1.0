@@ -1,0 +1,59 @@
+name: Metroberry Portal
+
+on:
+  push:
+    branches: ["remoteServer"]
+  workflow_dispatch:
+
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, mysqli, bcmath, imagick
+
+      - name: Update Composer Packages
+        run: composer update
+
+      - name: Generate Application Key
+        run: php artisan key:generate --force
+
+      - name: Clear Composer cache
+        run: composer clear-cache
+
+      - name: Install Dependencies
+        run: composer update --ignore-platform-reqs -vvv
+
+      - name: Directory Permissions
+        run: chmod -R 777 storage bootstrap/cache
+
+      - name: Link Storage
+        run: php artisan storage:link
+
+      - name: Install Node.js and NPM (Optional)
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+
+      - name: Install NPM Dependencies (Optional)
+        run: npm install
+
+      - name: Build Frontend Assets (Optional)
+        run: npm run build
+
+      # - name: Sync files
+      #   uses: SamKirkland/FTP-Deploy-action@4.0.0
+      #   with:
+      #     server: ${{ secrets.FTP_SERVER }}
+      #     username: ${{ secrets.FTP_USERNAME }}
+      #     password: ${{ secrets.FTP_PASSWORD }}
+      #     dry-run: false
+      #     strategy: incremental
