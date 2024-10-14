@@ -63,7 +63,7 @@
                                             alt="Avatar Icon" />
                                     </span>
                                 </div>
-                                <input class="form-control" type="text" autocomplete="off" name="full-name"
+                                <input class="form-control" type="text" autocomplete="off" name="full_name"
                                     placeholder="Full Name" value="{{ $driver->user->name }}" />
                             </div>
                         </div>

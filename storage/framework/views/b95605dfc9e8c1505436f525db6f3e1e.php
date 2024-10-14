@@ -30,26 +30,26 @@
 
               <div class="rest-container">
 
-                <!--Profile Information Container Start-->
-                <div class="text-center header-icon-logo-margin">
-                    <form id="customer-profile-picture-form" enctype="multipart/form-data">
-                        <?php echo csrf_field(); ?>
-                        <div class="profile-picture-container">
-                            <img id="profile-picture"
-                                src="<?php echo e($customer->user->avatar ? asset('storage/' . $customer->user->avatar) : asset('mobile-app-assets/images/avatar.svg')); ?>"
-                                alt="Profile Picture"   class="rounded-profile-picture"/>
-                            <span class="fas fa-camera">
-                                <input class="file-prompt" type="file" accept="image/*" id="customer-profile-picture-input"
-                                    name="profile_picture" />
-                            </span>
-                        </div>
-                        <div class="display-flex flex-column">
-                            <span class="profile-name"><?php echo e($customer->user->name); ?></span>
-                            <span class="profile-email font-weight-light"><?php echo e($customer->user->email); ?></span>
-                        </div>
-                    </form>
-                </div>
-                <!--Profile Information Container End-->
+                  <!--Profile Information Container Start-->
+                  <div class="text-center header-icon-logo-margin">
+                      <form id="customer-profile-picture-form" enctype="multipart/form-data">
+                          <?php echo csrf_field(); ?>
+                          <div class="profile-picture-container">
+                              <img id="profile-picture"
+                                  src="<?php echo e($customer->user->avatar ? asset('storage/' . $customer->user->avatar) : asset('mobile-app-assets/images/avatar.svg')); ?>"
+                                  alt="Profile Picture" class="rounded-profile-picture" />
+                              <span class="fas fa-camera">
+                                  <input class="file-prompt" type="file" accept="image/*"
+                                      id="customer-profile-picture-input" name="profile_picture" />
+                              </span>
+                          </div>
+                          <div class="display-flex flex-column">
+                              <span class="profile-name"><?php echo e($customer->user->name); ?></span>
+                              <span class="profile-email font-weight-light"><?php echo e($customer->user->email); ?></span>
+                          </div>
+                      </form>
+                  </div>
+                  <!--Profile Information Container End-->
 
                   <!--Profile Information Fields Container Start-->
                   <div class="sign-up-form-container text-center">
@@ -157,10 +157,10 @@
                                       <div class="position-relative">
                                           <div class="upload-picture-container">
                                               <div class="upload-camera-container text-center">
-                                                  <span class="camera">
+                                                  <span class="#">
                                                       <img id="national-id-front-preview"
                                                           src="<?php echo e($customer->national_id_front_avatar
-                                                              ? asset($customer->national_id_front_avatar)
+                                                              ? asset('storage/' . $customer->national_id_front_avatar)
                                                               : asset('mobile-app-assets/icons/photocamera.svg')); ?>"
                                                           alt="National ID Front" />
                                                   </span>
@@ -191,10 +191,10 @@
                                       <div class="position-relative">
                                           <div class="upload-picture-container">
                                               <div class="upload-camera-container text-center">
-                                                  <span class="camera">
+                                                  <span class="#">
                                                       <img id="national-id-back-preview"
                                                           src="<?php echo e($customer->national_id_behind_avatar
-                                                              ? asset($customer->national_id_behind_avatar)
+                                                              ? asset('storage/' . $customer->national_id_behind_avatar)
                                                               : asset('mobile-app-assets/icons/photocamera.svg')); ?>"
                                                           alt="National ID Back" />
                                                   </span>
@@ -219,33 +219,33 @@
           <?php echo $__env->make('components.customer-mobile-app.main-menu', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
           <!--Main Menu End-->
 
-    </div>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-       <?php $__env->startPush('scripts'); ?>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                $('#customer-profile-picture-input').change(function() {
-                    var formData = new FormData($('#customer-profile-picture-form')[0]);
-                    $.ajax({
-                        url: "<?php echo e(route('customer.updateProfilePicture')); ?>",
-                        type: 'POST',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function(response) {
-                            $('#profile-picture').attr('src', response.newProfilePictureUrl);
-                            alert('Profile picture updated successfully');
-                        },
-                        error: function(xhr) {
-                            alert('Failed to update profile picture');
-                        }
-                    });
-                });
-            });
-        </script>
-    <?php $__env->stopPush(); ?>
-<?php $__env->stopSection(); ?>
+      </div>
+      <!-- Optional JavaScript -->
+      <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+      <?php $__env->startPush('scripts'); ?>
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+          <script>
+              $(document).ready(function() {
+                  $('#customer-profile-picture-input').change(function() {
+                      var formData = new FormData($('#customer-profile-picture-form')[0]);
+                      $.ajax({
+                          url: "<?php echo e(route('customer.updateProfilePicture')); ?>",
+                          type: 'POST',
+                          data: formData,
+                          contentType: false,
+                          processData: false,
+                          success: function(response) {
+                              $('#profile-picture').attr('src', response.newProfilePictureUrl);
+                              alert('Profile picture updated successfully');
+                          },
+                          error: function(xhr) {
+                              alert('Failed to update profile picture');
+                          }
+                      });
+                  });
+              });
+          </script>
+      <?php $__env->stopPush(); ?>
+  <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.mobile-app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\metroberry-apis-v1.1.0\resources\views/customer-app/profile.blade.php ENDPATH**/ ?>

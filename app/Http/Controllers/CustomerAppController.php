@@ -340,12 +340,12 @@ class CustomerAppController extends Controller
 
         // Find the customer by ID
         $customer = Customer::findOrFail($id);
-        $user = $customer->user;
+        $user = User::find($customer->user_id);
 
-        // Update customer details
-        $customer->phone = $request->input('phone');
-        $customer->name = $request->input('full-name');
-        $customer->address = $request->input('address');
+        // Update customer details        $user->name = $request->input('full-name');
+        $user->email = $request->input('email');
+        $user->phone = $request->input('phone');
+        $user->address = $request->input('address');
         $customer->organisation_id = $request->input('organisation');
         $customer->national_id_no = $request->input('national_id_no');
 

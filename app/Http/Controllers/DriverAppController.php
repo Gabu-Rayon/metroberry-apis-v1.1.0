@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Trip;
+use App\Models\User;
 use App\Models\Driver;
 use App\Models\PSVBadge;
 use App\Models\Organisation;
@@ -104,11 +105,10 @@ class DriverAppController extends Controller
 
     public function dashboard()
     {
-
         // Get the authenticated user
         $user = Auth::user();
 
-        // Check if the user is a driver
+        // Ensure the user is a driver
         if ($user->role !== 'driver') {
             return redirect()->back()->with('error', 'Access Denied. Only Drivers can access this page.');
         }
@@ -117,12 +117,17 @@ class DriverAppController extends Controller
         $driver = Driver::where('user_id', $user->id)->firstOrFail();
 
         // Log driver information for debugging
-        Log::info('Driver is Huyo Apa:', ['driver' => $driver]);
+        Log::info('Driver Information:', ['driver' => $driver]);
 
-        // Fetch the completed trips for the driver
-        $trips = Trip::where('driver_id', $driver->id)->where('status', 'assigned')->get();
-        Log::info('Driver Trips Ndizo hzi  Apa:', ['trips' => $trips]);
+        // Fetch completed trips for the driver
+        $trips = Trip::where('driver_id', $driver->id)
+            ->where('status', 'assigned')
+            ->get();
 
+        // Log the driver's trips for debugging
+        Log::info('Driver Trips:', ['trips' => $trips]);
+
+        // Return the dashboard view with the trips data
         return view('driver-app.dashboard', compact('trips'));
     }
 
@@ -496,7 +501,7 @@ class DriverAppController extends Controller
             Log::info($data);
 
             $validator = Validator::make($data, [
-                'full-name' => 'nullable|string|max:255',
+                'full_name' => 'nullable|string|max:255',
                 'email' => 'required|string|email|max:255',
                 'phone' => 'required|string|max:255',
                 'national_id_no' => 'required|string|max:255',
@@ -509,12 +514,14 @@ class DriverAppController extends Controller
 
                 return back()->with('error', $validator->errors()->first())->withInput();
             }
+            $driver = Driver::findOrFail($id);
+            $user = User::find($driver->user_id);
 
-            $driver = Driver::find($id);
-
-            $driver->name = $data['name'];
-            $driver->email = $data['email'];
-            $driver->phone = $data['phone'];
+            $user->name = $data['full_name'];
+            $user->email = $data['email'];
+            $user->phone = $data['phone'];
+            $user->address = $data['address'];
+            
             $driver->national_id_no = $data['national_id_no'];
             $driver->organisation_id = $data['organisation_id'];
 
