@@ -138,6 +138,7 @@ class DriverAppController extends Controller
         try {
             $data = $request->all();
 
+            // Validate the incoming request data
             $validator = Validator::make($data, [
                 'national_id_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
                 'national_id_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
@@ -150,10 +151,12 @@ class DriverAppController extends Controller
                 return back()->with('error', $validator->errors()->first())->withInput();
             }
 
-            //national_id_front_avatar  uploaded to  uploads/front-page-ids
+            // Store files in the storage/app/public/uploads directory
+
+            // National ID front image uploaded to uploads/front-page-ids
             $national_id_front_avatar = $request->file('national_id_front_avatar')->store('uploads/front-page-ids', 'public');
 
-            //national_id_back_avatar  uploaded to  uploads/back-page-ids
+            // National ID back image uploaded to uploads/back-page-ids
             $national_id_back_avatar = $request->file('national_id_back_avatar')->store('uploads/back-page-ids', 'public');
 
             $driver = auth()->user()->driver;
@@ -165,7 +168,6 @@ class DriverAppController extends Controller
 
             return redirect()->route('driver.dashboard')->with('success', 'Driver personal documents uploaded successfully.');
         } catch (Exception $e) {
-
             Log::error('UPLOAD DRIVER PERSONAL DOCUMENTS ERROR');
             Log::error($e);
 
@@ -185,6 +187,7 @@ class DriverAppController extends Controller
         try {
             $data = $request->all();
 
+            // Validate the incoming request data
             $validator = Validator::make($data, [
                 'driving_license_no' => 'required|string|max:255|unique:drivers_licenses',
                 'issue_date' => 'required|date',
@@ -202,16 +205,15 @@ class DriverAppController extends Controller
 
             DB::beginTransaction();
 
-            // Store files in the storage/app/public/drivers directory
+            // Store files in the storage/app/public/uploads directory
 
-            //driver licenses  uploaded to  uploads/front-license-pics           
-            $driving_license_avatar_front = $request->file('driving_license_avatar_front')->store('uploads/front-license-pics ', 'public');
+            // Front license image uploaded to uploads/front-license-pics
+            $driving_license_avatar_front = $request->file('driving_license_avatar_front')->store('uploads/front-license-pics', 'public');
 
-            //driver licenses  uploaded to  uploads/back-license-pics
+            // Back license image uploaded to uploads/back-license-pics
             $driving_license_avatar_back = $request->file('driving_license_avatar_back')->store('uploads/back-license-pics', 'public');
 
-            // Update database records with the stored file paths
-
+            // Create a new driver license record with the stored file paths
             DriversLicenses::create([
                 'driver_id' => auth()->user()->driver->id,
                 'driving_license_no' => $data['driving_license_no'],
@@ -246,12 +248,13 @@ class DriverAppController extends Controller
         try {
             $data = $request->all();
 
+            // Validate the incoming request data
             $validator = Validator::make($data, [
                 'driving_license_no' => 'required|string|max:255',
                 'issue_date' => 'required|date',
                 'expiry_date' => 'required|date|after:issue_date',
-                'national_id_front_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'national_id_back_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'license_front_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'license_back_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -265,15 +268,15 @@ class DriverAppController extends Controller
 
             $license = DriversLicenses::find($id);
 
-            if ($request->hasFile('national_id_front_avatar')) {
-                //national id uploaded to  uploads/front-page-ids
-                $driving_license_avatar_front = $request->file('national_id_front_avatar')->store('uploads/front-page-ids', 'public');
+            if ($request->hasFile('license_front_avatar')) {
+                // License front image uploaded to uploads/front-license-pics
+                $driving_license_avatar_front = $request->file('license_front_avatar')->store('uploads/front-license-pics', 'public');
                 $license->driving_license_avatar_front = $driving_license_avatar_front;
             }
 
-            if ($request->hasFile('national_id_back_avatar')) {
-                //national id uploaded to  uploads/back-page-ids
-                $driving_license_avatar_back = $request->file('national_id_back_avatar')->store('uploads/back-page-ids', 'public');
+            if ($request->hasFile('license_back_avatar')) {
+                // License back image uploaded to uploads/back-license-pics
+                $driving_license_avatar_back = $request->file('license_back_avatar')->store('uploads/back-license-pics', 'public');
                 $license->driving_license_avatar_back = $driving_license_avatar_back;
             }
 
@@ -306,9 +309,9 @@ class DriverAppController extends Controller
     public function psvbadge(Request $request)
     {
         try {
-
             $data = $request->all();
 
+            // Validate the incoming request data
             $validator = Validator::make($data, [
                 'psv_badge_no' => 'required|string|max:255|unique:psv_badges',
                 'issue_date' => 'required|date',
@@ -325,11 +328,10 @@ class DriverAppController extends Controller
 
             DB::beginTransaction();
 
-            // Store files in the storage/app/public/drivers directory
-            //Psv to be upoaded to uploads/psvbadge-avatars
+            // Store the uploaded file in the public disk under uploads/psvbadge-avatars
             $psv_badge_avatar = $request->file('badge_copy')->store('uploads/psvbadge-avatars', 'public');
 
-            // Update database records with the stored file paths
+            // Create a new PSV badge record
             PSVBadge::create([
                 'driver_id' => auth()->user()->driver->id,
                 'psv_badge_no' => $data['psv_badge_no'],
@@ -384,7 +386,7 @@ class DriverAppController extends Controller
 
             if ($request->hasFile('badge_copy')) {
                 //Psv to be upoaded to uploads/psvbadge-avatars
-                $psv_badge_avatar = $request->file('badge_copy')->store('drivers', 'public');
+                $psv_badge_avatar = $request->file('badge_copy')->store('uploads/psvbadge-avatars', 'public');
                 $psvBadge->psv_badge_avatar = $psv_badge_avatar;
             }
 
@@ -597,6 +599,7 @@ class DriverAppController extends Controller
         return view('driver-app.trip-completed-show', compact('trip'));
     }
 
+
     public function updateProfilePicture(Request $request)
     {
         $request->validate([
@@ -608,7 +611,9 @@ class DriverAppController extends Controller
 
         if ($request->hasFile('profile_picture')) {
             $file = $request->file('profile_picture');
-            $filePath = 'uploads/user-avatars' . $user->id . '/' . $file->getClientOriginalName();
+            $fileName = $file->getClientOriginalName();
+            $directory = 'uploads/user-avatars/' . $user->id . '/';
+            $filePath = $directory . $fileName;
 
             // Store the file in the public disk in this folder of uploads/user-avatars
             Storage::disk('public')->put($filePath, file_get_contents($file));
@@ -617,7 +622,7 @@ class DriverAppController extends Controller
             $driver->user->avatar = $filePath;
             $driver->user->save();
 
-            return response()->json(['newProfilePictureUrl' => Storage::disk('public')->url($filePath)]);
+            return response()->json(['newProfilePictureUrl' => Storage::url($filePath)]);
         }
 
         return response()->json(['error' => 'Failed to upload profile picture'], 400);

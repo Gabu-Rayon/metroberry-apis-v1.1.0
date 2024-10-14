@@ -353,24 +353,27 @@ class CustomerAppController extends Controller
         if ($request->hasFile('profile_picture')) {
             $file = $request->file('profile_picture');
             $filename = time() . '_profile.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/user-avatars'), $filename);
-            $customer->profile_picture = 'uploads/user-avatars/' . $filename;
+            $filePath = 'uploads/user-avatars/' . $customer->id . '/' . $filename;
+            Storage::disk('public')->put($filePath, file_get_contents($file));
+            $customer->profile_picture = $filePath;
         }
 
         // Handle national ID front avatar upload
         if ($request->hasFile('national_id_front_avatar')) {
             $file = $request->file('national_id_front_avatar');
             $filename = time() . '_national_id_front.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/front-page-ids'), $filename);
-            $customer->national_id_front_avatar = 'uploads/front-page-ids/' . $filename;
+            $filePath = 'uploads/front-page-ids/' . $customer->id . '/' . $filename;
+            Storage::disk('public')->put($filePath, file_get_contents($file));
+            $customer->national_id_front_avatar = $filePath;
         }
 
         // Handle national ID behind avatar upload
         if ($request->hasFile('national_id_behind_avatar')) {
             $file = $request->file('national_id_behind_avatar');
             $filename = time() . '_national_id_behind.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/national_id_avatars'), $filename);
-            $customer->national_id_behind_avatar = 'uploads/national_id_avatars/' . $filename;
+            $filePath = 'uploads/national_id_avatars/' . $customer->id . '/' . $filename;
+            Storage::disk('public')->put($filePath, file_get_contents($file));
+            $customer->national_id_behind_avatar = $filePath;
         }
 
         // Save the customer
@@ -507,4 +510,33 @@ class CustomerAppController extends Controller
 
         return view('customer-app.trip-cancelled-show', compact('trip'));
     }
+
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = Auth::user();
+        $customer = $user->customer;
+
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $fileName = $file->getClientOriginalName();
+            $directory = 'uploads/user-avatars/' . $user->id . '/';
+            $filePath = $directory . $fileName;
+
+            // Store the file in the public disk under uploads/user-avatars
+            Storage::disk('public')->put($filePath, file_get_contents($file));
+
+            // Update the user's profile picture path
+            $customer->user->avatar = $filePath;
+            $customer->user->save();
+
+            return response()->json(['newProfilePictureUrl' => Storage::url($filePath)]);
+        }
+
+        return response()->json(['error' => 'Failed to upload profile picture'], 400);
+    }
+
 }
