@@ -1,8 +1,6 @@
-@extends('layouts.mobile-app')
+<?php $__env->startSection('title', 'Vehicle Status | Driver'); ?>
 
-@section('title', 'Vehicle Status | Driver')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <!--Loading Container Start-->
     <div id="load" class="loading-overlay display-flex flex-column justify-content-center align-items-center">
         <div class="primary-color font-28 fas fa-spinner fa-spin"></div>
@@ -13,15 +11,15 @@
         <div class="col-xs-12 col-sm-12">
             <!--Page Title & Icons Start-->
             <div class="header-icons-container text-center">
-                <a href="{{ route('driver.dashboard') }}">
+                <a href="<?php echo e(route('driver.dashboard')); ?>">
                     <span class="float-left">
-                        <img src="{{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
+                        <img src="<?php echo e(asset('mobile-app-assets/icons/back.svg')); ?>" alt="Back Icon" />
                     </span>
-                    <span>Vehicle | {{ $driver->status == 'inactive' ? 'Inactive' : 'Active' }}</span>
+                    <span>Vehicle | <?php echo e($driver->status == 'inactive' ? 'Inactive' : 'Active'); ?></span>
 
                     <a href="#">
                         <span class="float-right menu-open closed">
-                            <img src="{{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon" />
+                            <img src="<?php echo e(asset('mobile-app-assets/icons/menu.svg')); ?>" alt="Menu Hamburger Icon" />
                         </span>
                     </a>
                 </a>
@@ -32,14 +30,14 @@
                 <div class="scan-your-card-container-none">
                     <div class="clearfix"></div>
 
-                    @if ($driver->vehicle)
+                    <?php if($driver->vehicle): ?>
                         <!--Upload Car Pictures Container Start-->
                         <div class="scan-your-card-prompt">
                             <div class="position-relative">
                                 <div class="upload-picture-container mb-0">
                                     <div class="upload-camera-container text-center">
                                         <span class="camera">
-                                            <img src="{{ asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                            <img src="<?php echo e(asset('mobile-app-assets/icons/photocamera.svg')); ?>"
                                                 alt="Camera Icon" />
                                         </span>
                                     </div>
@@ -48,11 +46,11 @@
                             </div>
                             <div class="upload-picture-buttons-append">
                                 <span class="float-left position-relative upload-btn">
-                                    <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                    <img src="<?php echo e(asset('mobile-app-assets/icons/upload.svg')); ?>" alt="Upload Icon" />
                                     <input class="scan-prompt" type="file" accept="image/*" />
                                 </span>
                                 <span class="float-right delete-btn">
-                                    <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                    <img src="<?php echo e(asset('mobile-app-assets/icons/delete.svg')); ?>" alt="Delete Icon" />
                                 </span>
                                 <span class="clearfix"></span>
                             </div>
@@ -72,12 +70,13 @@
                                             <span class="label-title">Current Organisation</span>
                                             <span class="car-info-wrap display-block">
                                                 <select class="custom-select font-weight-light car-info" name="organisation_id">
-                                                    @foreach ($organisations as $organisation)
-                                                        <option value="{{ $organisation->id }}"
-                                                            {{ $driver->vehicle->organisation_id == $organisation->id ? 'selected' : '' }}>
-                                                            {{ $organisation->user->name }}
+                                                    <?php $__currentLoopData = $organisations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $organisation): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo e($organisation->id); ?>"
+                                                            <?php echo e($driver->vehicle->organisation_id == $organisation->id ? 'selected' : ''); ?>>
+                                                            <?php echo e($organisation->user->name); ?>
+
                                                         </option>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select>
                                             </span>
                                         </label>
@@ -91,12 +90,13 @@
                                             <span class="car-info-wrap display-block">
                                                 <select class="custom-select font-weight-light car-info"
                                                     name="vehicle_class_id">
-                                                    @foreach ($vehicleClasses as $vehicleClass)
-                                                        <option value="{{ $vehicleClass->id }}"
-                                                            {{ $driver->vehicle->class_id == $vehicleClass->id ? 'selected' : '' }}>
-                                                            {{ $vehicleClass->name }}
+                                                    <?php $__currentLoopData = $vehicleClasses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $vehicleClass): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo e($vehicleClass->id); ?>"
+                                                            <?php echo e($driver->vehicle->class_id == $vehicleClass->id ? 'selected' : ''); ?>>
+                                                            <?php echo e($vehicleClass->name); ?>
+
                                                         </option>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select>
                                             </span>
                                         </label>
@@ -111,7 +111,7 @@
                                             <span class="label-title">Car Registration Number</span>
                                             <input class="form-control text-input font-weight-light" type="text"
                                                 autocomplete="off" name="car-registration-num"
-                                                value="{{ $driver->vehicle->plate_number }}" />
+                                                value="<?php echo e($driver->vehicle->plate_number); ?>" />
                                         </label>
                                     </div>
                                     <div class="form-group">
@@ -119,7 +119,7 @@
                                             <span class="label-title"> Fuel Type</span>
                                             <input class="form-control text-input font-weight-light" type="text"
                                                 autocomplete="off" name="fuel_type"
-                                                value="{{ $driver->vehicle->fuel_type }}" />
+                                                value="<?php echo e($driver->vehicle->fuel_type); ?>" />
                                         </label>
                                     </div>
                                 </div>
@@ -136,7 +136,7 @@
                                                 <span class="far fa-calendar-alt"></span>
                                             </div>
                                             <input class="form-control" type="text" name="year"
-                                                value="{{ $driver->vehicle->year }}" />
+                                                value="<?php echo e($driver->vehicle->year); ?>" />
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -146,7 +146,7 @@
                                         <div class="input-group light-field">
                                             <div class="input-group-prepend"></div>
                                             <input class="form-control" type="number" name="engine_size"
-                                                value="{{ $driver->vehicle->engine_size }}" />
+                                                value="<?php echo e($driver->vehicle->engine_size); ?>" />
                                         </div>
                                     </div>
                                 </div>
@@ -159,7 +159,7 @@
                                         <div class="input-group light-field">
                                             <div class="input-group-prepend"></div>
                                             <input class="form-control" type="text" name="make"
-                                                value="{{ $driver->vehicle->make }}" />
+                                                value="<?php echo e($driver->vehicle->make); ?>" />
                                         </div>
                                     </div>
                                     <!--Car Registration Field Start-->
@@ -168,7 +168,7 @@
                                             <span class="label-title"> Fuel Type</span>
                                             <input class="form-control text-input font-weight-light" type="text"
                                                 autocomplete="off" name="fuel_type"
-                                                value="{{ $driver->vehicle->fuel_type }}" />
+                                                value="<?php echo e($driver->vehicle->fuel_type); ?>" />
                                         </label>
                                     </div>
                                     <!--Car Registration Field End-->
@@ -186,12 +186,12 @@
                                 <div class="scan-your-card-prompt">
                                     <div class="upload-picture-buttons-prepend text-center">
                                         <span class="float-left position-relative upload-btn">
-                                            <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                            <img src="<?php echo e(asset('mobile-app-assets/icons/upload.svg')); ?>" alt="Upload Icon" />
                                             <input class="scan-prompt" type="file" accept="image/*" />
                                         </span>
                                         <span>FRONT</span>
                                         <span class="float-right delete-btn">
-                                            <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                            <img src="<?php echo e(asset('mobile-app-assets/icons/delete.svg')); ?>" alt="Delete Icon" />
                                         </span>
                                         <span class="clearfix"></span>
                                     </div>
@@ -199,7 +199,7 @@
                                         <div class="upload-picture-container mb-0">
                                             <div class="upload-camera-container text-center">
                                                 <span class="camera">
-                                                    <img src="{{ asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                    <img src="<?php echo e(asset('mobile-app-assets/icons/photocamera.svg')); ?>"
                                                         alt="Camera Icon" />
                                                 </span>
                                             </div>
@@ -213,12 +213,12 @@
                                 <div class="scan-your-card-prompt">
                                     <div class="upload-picture-buttons-prepend text-center">
                                         <span class="float-left position-relative upload-btn">
-                                            <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                            <img src="<?php echo e(asset('mobile-app-assets/icons/upload.svg')); ?>" alt="Upload Icon" />
                                             <input class="scan-prompt" type="file" accept="image/*" />
                                         </span>
                                         <span>BACK</span>
                                         <span class="float-right delete-btn">
-                                            <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                            <img src="<?php echo e(asset('mobile-app-assets/icons/delete.svg')); ?>" alt="Delete Icon" />
                                         </span>
                                         <span class="clearfix"></span>
                                     </div>
@@ -226,7 +226,7 @@
                                         <div class="upload-picture-container mb-0">
                                             <div class="upload-camera-container text-center">
                                                 <span class="camera">
-                                                    <img src="{{ asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                    <img src="<?php echo e(asset('mobile-app-assets/icons/photocamera.svg')); ?>"
                                                         alt="Camera Icon" />
                                                 </span>
                                             </div>
@@ -245,13 +245,15 @@
                             </div>
                         </div>
                         <!--Car Registration Info Container End-->
-                    @else
+                    <?php else: ?>
                         <div class="text-center">
                             <p>No vehicle information available for this driver.</p>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.mobile-app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\metroberry-apis-v1.1.0\resources\views/driver-app/vehicle.blade.php ENDPATH**/ ?>

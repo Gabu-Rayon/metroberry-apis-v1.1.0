@@ -32,9 +32,24 @@
             <!--Page Title & Icons End-->
 
             <!--All Notifications & Status Container Start-->
+
+            <?php if(session('success')): ?>
+                <div id="success-message" class="alert alert-success" style="display: none;">
+                    <?php echo e(session('success')); ?>
+
+                </div>
+            <?php endif; ?>
+
+            <?php if(session('error')): ?>
+                <div id="error-message" class="alert alert-danger" style="display: none;">
+                    <?php echo e(session('error')); ?>
+
+                </div>
+            <?php endif; ?>
             <div class="change-request-status">
                 <?php if($driver->status == 'inactive'): ?>
-                    <div class="request-notification-container map-notification offline-notification map-notification-warning">
+                    <div
+                        class="request-notification-container map-notification offline-notification map-notification-warning">
                         Your account is inactive
                         <div class="font-weight-light">Contact your administrator</div>
                     </div>
@@ -46,11 +61,13 @@
                         <span class="font-weight-dark m-3 my-3">
                             Kindly upload your national ID pictures
                         </span>
-                        <form action="<?php echo e(route('driver.personal-documents')); ?>" method="POST" enctype="multipart/form-data">
+                        <form action="<?php echo e(route('driver.personal-documents', $driver->id)); ?>" method="POST"
+                            enctype="multipart/form-data">
                             <?php echo csrf_field(); ?>
                             <div class="mb-3">
                                 <label for="national_id_front_avatar" class="form-label">National ID Front Picture</label>
-                                <input type="file" id="national_id_front_avatar" name="national_id_front_avatar" required>
+                                <input type="file" id="national_id_front_avatar" name="national_id_front_avatar"
+                                    required>
                             </div>
                             <div class="mb-3">
                                 <label for="national_id_back_avatar" class="form-label">National ID Back Picture</label>
@@ -60,19 +77,22 @@
                         </form>
                     </div>
                 <?php else: ?>
-                    <div class="request-notification-container map-notification offline-notification map-notification-warning">
+                    <div
+                        class="request-notification-container map-notification offline-notification map-notification-warning">
                         National ID is valid
                     </div>
                 <?php endif; ?>
 
                 <?php if($driver->driverLicense): ?>
                     <?php if(!$driver->driverLicense->verified): ?>
-                        <div class="request-notification-container map-notification offline-notification map-notification-warning">
+                        <div
+                            class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your license has not been verified.
                             <div class="font-weight-light">Contact your administrator</div>
                         </div>
                     <?php else: ?>
-                        <div class="request-notification-container map-notification offline-notification map-notification-warning">
+                        <div
+                            class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your license has been verified.
                         </div>
                     <?php endif; ?>
@@ -85,7 +105,8 @@
                             <?php echo csrf_field(); ?>
                             <div class="mb-3">
                                 <label for="driving_license_no" class="form-label">License No.</label>
-                                <input type="text" id="driving_license_no" name="driving_license_no" class="form-control" required>
+                                <input type="text" id="driving_license_no" name="driving_license_no" class="form-control"
+                                    required>
                             </div>
                             <div class="mb-3">
                                 <label for="issue_date" class="form-label">Issue Date</label>
@@ -110,12 +131,14 @@
 
                 <?php if($driver->psvBadge): ?>
                     <?php if(!$driver->psvBadge->verified): ?>
-                        <div class="request-notification-container map-notification offline-notification map-notification-warning">
+                        <div
+                            class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your PSV Badge has not been verified.
                             <div class="font-weight-light">Contact your administrator</div>
                         </div>
                     <?php else: ?>
-                        <div class="request-notification-container map-notification offline-notification map-notification-warning">
+                        <div
+                            class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your PSV Badge has been verified.
                         </div>
                     <?php endif; ?>
@@ -124,7 +147,7 @@
                         <span class="font-weight-dark m-3 my-3">
                             Kindly upload your PSV Badge
                         </span>
-                        <form action="<?php echo e(route('driver.psvbadge',$driver->id)); ?>" method="POST" enctype="multipart/form-data">
+                        <form action="<?php echo e(route('driver.psvbadge.create')); ?>" method="POST" enctype="multipart/form-data">
                             <?php echo csrf_field(); ?>
                             <div class="mb-3">
                                 <label for="psv_badge_no" class="form-label">Badge No.</label>
@@ -132,23 +155,27 @@
                             </div>
                             <div class="mb-3">
                                 <label for="psv_issue_date" class="form-label">Issue Date</label>
-                                <input type="date" id="psv_issue_date" name="psv_issue_date" class="form-control" required>
+                                <input type="date" id="psv_issue_date" name="psv_issue_date" class="form-control"
+                                    required>
                             </div>
                             <div class="mb-3">
                                 <label for="psv_expiry_date" class="form-label">Expiry Date</label>
-                                <input type="date" id="psv_expiry_date" name="psv_expiry_date" class="form-control" required>
+                                <input type="date" id="psv_expiry_date" name="psv_expiry_date" class="form-control"
+                                    required>
                             </div>
                             <div class="mb-3">
                                 <label for="badge_copy" class="form-label">Copy</label>
                                 <input type="file" id="badge_copy" name="badge_copy" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
+                            <button type="submit"
+                                class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
                         </form>
                     </div>
                 <?php endif; ?>
 
                 <?php if(!$driver->vehicle): ?>
-                    <div class="request-notification-container map-notification offline-notification map-notification-warning">
+                    <div
+                        class="request-notification-container map-notification offline-notification map-notification-warning">
                         You have not been assigned a vehicle
                         <div class="font-weight-light">Contact your administrator</div>
                     </div>
