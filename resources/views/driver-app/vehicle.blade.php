@@ -1,7 +1,6 @@
 @extends('layouts.mobile-app')
 
-@section('title', 'Vehicle Status | Driver')
-
+@section('title', 'Vehicle Assigned Status | Driver')
 @section('content')
     <!--Loading Container Start-->
     <div id="load" class="loading-overlay display-flex flex-column justify-content-center align-items-center">
@@ -10,248 +9,286 @@
     <!--Loading Container End-->
 
     <div class="row h-100">
+        @php
+            $user = Auth::user();
+            $driver = $user->driver;
+        @endphp
         <div class="col-xs-12 col-sm-12">
             <!--Page Title & Icons Start-->
-            <div class="header-icons-container text-center">
-                <a href="{{ route('driver.dashboard') }}">
+            <div class="text-center header-icons-container">
+                <a href="{{ route('driver.registration.page') }}">
                     <span class="float-left">
                         <img src="{{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
                     </span>
-                    <span>Vehicle | {{ $driver->status == 'inactive' ? 'Inactive' : 'Active' }}</span>
-
-                    <a href="#">
-                        <span class="float-right menu-open closed">
-                            <img src="{{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon" />
-                        </span>
-                    </a>
+                </a>
+                @if ($driver->status == 'inactive')
+                    <span>Deactivated</span>
+                @else
+                    <span>Vehicle Assigned Status</span>
+                @endif
+                <a href="#">
+                    <span class="float-right menu-open closed">
+                        <img src="{{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon" />
+                    </span>
                 </a>
             </div>
             <!--Page Title & Icons End-->
 
             <div class="rest-container">
-                <div class="scan-your-card-container-none">
-                    <div class="clearfix"></div>
+                <div class="address-title"></div>
 
-                    @if ($driver->vehicle)
-                        <!--Upload Car Pictures Container Start-->
-                        <div class="scan-your-card-prompt">
-                            <div class="position-relative">
-                                <div class="upload-picture-container mb-0">
-                                    <div class="upload-camera-container text-center">
-                                        <span class="camera">
-                                            <img src="{{ asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                alt="Camera Icon" />
-                                        </span>
-                                    </div>
+                <!--Driver's License Fields Container Start-->
+                <div class="all-container all-container-with-classes">
+                    <form class="width-100" action="{{ route('driver.license.document.update', $driver->id) }}"
+                        method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+
+                        <div class="form-group">
+                            <label class="width-100">
+                                <div class="display-flex justify-content-between">
+                                    <span class="position-relative upload-btn">
+                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                        <input class="scan-prompt" type="file" accept="image/*"
+                                            name="license_back_avatar" id="national-id-back-input" />
+                                    </span>
+                                    <span class="text-uppercase">Vehicle</span>
+                                    <span class="delete-btn" id="national-id-back-delete">
+                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                    </span>
                                 </div>
-                                <input class="scan-prompt" type="file" accept="image/*" />
-                            </div>
-                            <div class="upload-picture-buttons-append">
-                                <span class="float-left position-relative upload-btn">
-                                    <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
-                                    <input class="scan-prompt" type="file" accept="image/*" />
-                                </span>
-                                <span class="float-right delete-btn">
-                                    <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
-                                </span>
-                                <span class="clearfix"></span>
-                            </div>
-                        </div>
-                        <!--Upload Car Pictures Container End-->
-
-                        <div class="font-awesome-container"></div>
-
-                        <!--Car Registration Info Container Start-->
-                        <div class="car-info-container car-info-container-top font-weight-light">
-                            <div class="card-number">
-                                <!--Car Registration Two Fields Container Start-->
-                                <div class="multi-form-container display-flex justify-content-between">
-                                    <!--Car Registration Field Start-->
-                                    <div class="form-group">
-                                        <label class="width-100">
-                                            <span class="label-title">Current Organisation</span>
-                                            <span class="car-info-wrap display-block">
-                                                <select class="custom-select font-weight-light car-info" name="organisation_id">
-                                                    @foreach ($organisations as $organisation)
-                                                        <option value="{{ $organisation->id }}"
-                                                            {{ $driver->vehicle->organisation_id == $organisation->id ? 'selected' : '' }}>
-                                                            {{ $organisation->user->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </span>
-                                        </label>
-                                    </div>
-                                    <!--Car Registration Field End-->
-
-                                    <!--Car Registration Field Start-->
-                                    <div class="form-group">
-                                        <label class="width-100">
-                                            <span class="label-title">Current Vehicle Class</span>
-                                            <span class="car-info-wrap display-block">
-                                                <select class="custom-select font-weight-light car-info"
-                                                    name="vehicle_class_id">
-                                                    @foreach ($vehicleClasses as $vehicleClass)
-                                                        <option value="{{ $vehicleClass->id }}"
-                                                            {{ $driver->vehicle->class_id == $vehicleClass->id ? 'selected' : '' }}>
-                                                            {{ $vehicleClass->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <!--Car Registration Field End-->
-
-                                <!--Car Registration Two Fields Container Start-->
-                                <div class="multi-form-container display-flex justify-content-between">
-                                    <div class="form-group">
-                                        <label class="width-100">
-                                            <span class="label-title">Car Registration Number</span>
-                                            <input class="form-control text-input font-weight-light" type="text"
-                                                autocomplete="off" name="car-registration-num"
-                                                value="{{ $driver->vehicle->plate_number }}" />
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="width-100">
-                                            <span class="label-title"> Fuel Type</span>
-                                            <input class="form-control text-input font-weight-light" type="text"
-                                                autocomplete="off" name="fuel_type"
-                                                value="{{ $driver->vehicle->fuel_type }}" />
-                                        </label>
-                                    </div>
-                                </div>
-                                <!--Car Registration Two Fields Container End-->
-
-                                <!--Car Registration Two Fields Container Start-->
-                                <div class="multi-form-container display-flex justify-content-between">
-                                    <div class="form-group">
-                                        <label class="width-100 mb-0">
-                                            <span class="label-title">Date of Manufacture</span>
-                                        </label>
-                                        <div class="input-group light-field">
-                                            <div class="input-group-prepend">
-                                                <span class="far fa-calendar-alt"></span>
-                                            </div>
-                                            <input class="form-control" type="text" name="year"
-                                                value="{{ $driver->vehicle->year }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="width-100 mb-0">
-                                            <span class="label-title">Engine Size</span>
-                                        </label>
-                                        <div class="input-group light-field">
-                                            <div class="input-group-prepend"></div>
-                                            <input class="form-control" type="number" name="engine_size"
-                                                value="{{ $driver->vehicle->engine_size }}" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <!--Car Registration Two Fields Container Start-->
-                                <div class="multi-form-container display-flex justify-content-between">
-                                    <div class="form-group">
-                                        <label class="width-100 mb-0">
-                                            <span class="label-title">Manufacture</span>
-                                        </label>
-                                        <div class="input-group light-field">
-                                            <div class="input-group-prepend"></div>
-                                            <input class="form-control" type="text" name="make"
-                                                value="{{ $driver->vehicle->make }}" />
-                                        </div>
-                                    </div>
-                                    <!--Car Registration Field Start-->
-                                    <div class="form-group">
-                                        <label class="width-100">
-                                            <span class="label-title"> Fuel Type</span>
-                                            <input class="form-control text-input font-weight-light" type="text"
-                                                autocomplete="off" name="fuel_type"
-                                                value="{{ $driver->vehicle->fuel_type }}" />
-                                        </label>
-                                    </div>
-                                    <!--Car Registration Field End-->
-                                </div>
-                                <!--Car Registration Two Fields Container End-->
-
-                                <div class="text-center car-registration-container">
-                                    <h4>
-                                        Please Upload Car<br />
-                                        Registration Log Book.
-                                    </h4>
-                                </div>
-
-                                <!--Car Registration ID Upload Container Start-->
-                                <div class="scan-your-card-prompt">
-                                    <div class="upload-picture-buttons-prepend text-center">
-                                        <span class="float-left position-relative upload-btn">
-                                            <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
-                                            <input class="scan-prompt" type="file" accept="image/*" />
-                                        </span>
-                                        <span>FRONT</span>
-                                        <span class="float-right delete-btn">
-                                            <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
-                                        </span>
-                                        <span class="clearfix"></span>
-                                    </div>
+                                <div class="scan-your-card-prompt margin-top-5">
                                     <div class="position-relative">
-                                        <div class="upload-picture-container mb-0">
+                                        <div class="upload-picture-container">
                                             <div class="upload-camera-container text-center">
-                                                <span class="camera">
-                                                    <img src="{{ asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                        alt="Camera Icon" />
+                                                <span class="#">
+                                                    <img id="national-id-back-preview"
+                                                        src="{{ $driver->vehicle->avatar
+                                                            ? asset('storage/' . $driver->vehicle->avatar)
+                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        alt="Back" />
                                                 </span>
                                             </div>
                                         </div>
-                                        <input class="scan-prompt" type="file" accept="image/*" />
                                     </div>
                                 </div>
-                                <!--Car Registration ID Upload Container End-->
+                            </label>
+                        </div>
+                        <!--Input Field Container Start-->
+                        <!--Car Registration Field Start-->
+                        <div class="form-group">
+                            <label class="width-100">
+                                <span class="label-title">Current Organisation</span>
+                                <span class="car-info-wrap display-block">
+                                    <select class="custom-select font-weight-light car-info" name="organisation_id">
+                                        @foreach ($organisations as $organisation)
+                                            <option value="{{ $organisation->id }}"
+                                                {{ $driver->vehicle->organisation_id == $organisation->id ? 'selected' : '' }}>
+                                                {{ $organisation->user->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+                        <!--Car Registration Field End-->
+                        <!--Input Field Container End-->
 
-                                <!--Car Registration ID Upload Container Start-->
-                                <div class="scan-your-card-prompt">
-                                    <div class="upload-picture-buttons-prepend text-center">
-                                        <span class="float-left position-relative upload-btn">
-                                            <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
-                                            <input class="scan-prompt" type="file" accept="image/*" />
-                                        </span>
-                                        <span>BACK</span>
-                                        <span class="float-right delete-btn">
-                                            <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
-                                        </span>
-                                        <span class="clearfix"></span>
-                                    </div>
+                        <!--Input Field Container Start-->
+                        <!--Car Registration Field Start-->
+                        <div class="form-group">
+                            <label class="width-100">
+                                <span class="label-title">Current Vehicle Class</span>
+                                <span class="car-info-wrap display-block">
+                                    <select class="custom-select font-weight-light car-info" name="vehicle_class_id">
+                                        @foreach ($vehicleClasses as $vehicleClass)
+                                            <option value="{{ $vehicleClass->id }}"
+                                                {{ $driver->vehicle->class_id == $vehicleClass->id ? 'selected' : '' }}>
+                                                {{ $vehicleClass->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="width-100">
+                                <span class="label-title">Car Registration Number</span>
+                                <input class="form-control text-input font-weight-light" type="text" autocomplete="off"
+                                    name="car-registration-num" value="{{ $driver->vehicle->plate_number }}" />
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="width-100">
+                                <span class="label-title">Fuel Type</span>
+                                <input class="form-control text-input font-weight-light" type="text" autocomplete="off"
+                                    name="car-registration-num" value="{{ $driver->vehicle->fuel_type }}" />
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="width-100">
+                                <span class="label-title">Fuel Type</span>
+                                <input class="form-control text-input font-weight-light" type="text" autocomplete="off"
+                                    name="car-registration-num" value="{{ $driver->vehicle->fuel_type }}" />
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="width-100 mb-0">
+                                <span class="label-title">Date of Manufacture</span>
+                            </label>
+                            <div class="input-group light-field">
+                                <div class="input-group-prepend">
+                                    <span class="far fa-calendar-alt"></span>
+                                </div>
+                                <input class="form-control" type="text" name="date"
+                                    value="{{ $driver->vehicle->year }}" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="width-100 mb-0">
+                                <span class="label-title">Manufacture</span>
+                            </label>
+                            <div class="input-group light-field">
+                                <div class="input-group-prepend">
+                                    <span class="far fa-calendar-alt"></span>
+                                </div>
+                                <input class="form-control" type="text" name="date"
+                                    value="{{ $driver->vehicle->make }}" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="width-100 mb-0">
+                                <span class="label-title">Engine Size</span>
+                            </label>
+                            <div class="input-group light-field">
+                                <div class="input-group-prepend">
+                                    <span class="far fa-calendar-alt"></span>
+                                </div>
+                                <input class="form-control" type="text" name="date"
+                                    value="{{ $driver->vehicle->engine_size }}" />
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="text-center car-registration-container">
+                            <h4>
+                                Please Upload Car Registration<br />
+                                Certificate Below
+                            </h4>
+                        </div>
+                        <!-- Upload Front License -->
+                        <div class="form-group">
+                            <label class="width-100">
+                                <div class="display-flex justify-content-between">
+                                    <span class="position-relative upload-btn">
+                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                        <input class="scan-prompt" type="file" accept="image/*"
+                                            name="license_front_avatar" id="national-id-front-input" />
+                                    </span>
+                                    <span class="text-uppercase">FRONT</span>
+                                    <span class="delete-btn" id="national-id-front-delete">
+                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                    </span>
+                                </div>
+                                <div class="scan-your-card-prompt margin-top-5">
                                     <div class="position-relative">
-                                        <div class="upload-picture-container mb-0">
+                                        <div class="upload-picture-container">
                                             <div class="upload-camera-container text-center">
-                                                <span class="camera">
-                                                    <img src="{{ asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                        alt="Camera Icon" />
+                                                <span class="#">
+                                                    <img src="{{ asset('mobile-app-assets/icons/photocamera.svg') }}" />
+                                                    {{-- <img id="national-id-front-preview"
+                                                          src="{{ $driver->driverLicense->driving_license_avatar_front
+                                                              ? asset('storage/' . $driver->driverLicense->driving_license_avatar_front)
+                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                          alt="Front" /> --}}
                                                 </span>
                                             </div>
                                         </div>
-                                        <input class="scan-prompt" type="file" accept="image/*" />
                                     </div>
                                 </div>
-                                <!--Car Registration ID Upload Container End-->
+                            </label>
+                        </div>
 
-                                <div class="text-center car-registration-container">
-                                    <h4>FRONT</h4>
+
+                        <!-- Upload behind License -->
+                        <div class="form-group">
+                            <label class="width-100">
+                                <div class="display-flex justify-content-between">
+                                    <span class="position-relative upload-btn">
+                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                        <input class="scan-prompt" type="file" accept="image/*"
+                                            name="license_back_avatar" id="national-id-back-input" />
+                                    </span>
+                                    <span class="text-uppercase">BACK</span>
+                                    <span class="delete-btn" id="national-id-back-delete">
+                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                    </span>
                                 </div>
-                                <div class="text-center car-registration-container">
-                                    <h4>BACK</h4>
+                                <div class="scan-your-card-prompt margin-top-5">
+                                    <div class="position-relative">
+                                        <div class="upload-picture-container">
+                                            <div class="upload-camera-container text-center">
+                                                <span class="#">
+                                                    <img src="{{ asset('mobile-app-assets/icons/photocamera.svg') }}" />
+                                                    {{-- <img id="national-id-back-preview"
+                                                          src="{{ $driver->driverLicense->driving_license_avatar_back
+                                                              ? asset('storage/' . $driver->driverLicense->driving_license_avatar_back)
+                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                          alt="Back" /> --}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </label>
                         </div>
-                        <!--Car Registration Info Container End-->
-                    @else
-                        <div class="text-center">
-                            <p>No vehicle information available for this driver.</p>
+
+                        <div class="text-center form-submit-button">
+                            <button type="submit" class="btn btn-dark text-uppercase">
+                                Update
+                            </button>
                         </div>
-                    @endif
+                    </form>
                 </div>
+                <!--Driver's License Fields Container End-->
             </div>
         </div>
+
+        <!--Terms And Conditions Agreement Container Start-->
+        <div class="text-center col-xs-12 col-sm-12 sms-rate-text font-roboto flex-end margin-bottom-30">
+            <div class="container-sms-rate-text width-100 font-11">
+                <span class="light-gray font-weight-light">
+                </span>
+                <br />
+                <a href="#" class="dark-link">
+                    <span class="font-weight-light">Metroberry Tours & Travel</span>
+                </a>
+            </div>
+        </div>
+        <!--Terms And Conditions Agreement Container End-->
+
+        <!--Main Menu Start-->
+        @include('components.driver-mobile-app.main-menu')
+        <!--Main Menu End-->
     </div>
+    <hr>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script>
+        function previewImage(event, previewElementId) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const imgElement = document.getElementById(previewElementId);
+                imgElement.src = e.target.result;
+                imgElement.style.display = 'block'; // Show the image
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 @endsection
