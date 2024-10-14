@@ -49,7 +49,6 @@
                         <li class="w-100">
                             <form method="POST" action="<?php echo e(route('logout')); ?>" class="d-inline">
                                 <?php echo csrf_field(); ?>
-                                <?php echo method_field('POST'); ?>
                                 <button type="submit" id="logout-btn" class="btn_sign_out text-black w-100 btn">
                                     Sign Out
                                 </button>
