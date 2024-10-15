@@ -25,18 +25,18 @@
                 </a>
             </div>
             <!--Page Title & Icons End-->
-            @if (session('success'))
-                <div id="success-message" class="alert alert-success" style="display: none;">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div id="error-message" class="alert alert-danger" style="display: none;">
-                    {{ session('error') }}
-                </div>
-            @endif
             <div class="rest-container">
+                @if (session('success'))
+                    <div id="success-message" class="alert alert-success" style="display: none;">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div id="error-message" class="alert alert-danger" style="display: none;">
+                        {{ session('error') }}
+                    </div>
+                @endif
                 <form action="{{ route('customer.book.trip.store') }}" method="POST" class="needs-validation modal-content"
                     enctype="multipart/form-data">
                     @csrf
