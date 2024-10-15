@@ -111,11 +111,7 @@ class VehicleInsuranceController extends Controller
             // Log the request data
             Log::info('Vehicle Insurance store request data:', $request->all());
 
-            // Handle the file upload
-            if ($request->hasFile('policy_document')) {
-                $policyDocument = time() . '.' . $request->policy_document->extension();
-                $request->policy_document->move(public_path('images'), $policyDocument);
-            }
+            $policyDocument = $request->file('avatar')->store('uploads/vehicle_insurance_policy_document', 'public');
 
             // Create a new vehicle insurance record
             $vehicleInsurance = new VehicleInsurance();

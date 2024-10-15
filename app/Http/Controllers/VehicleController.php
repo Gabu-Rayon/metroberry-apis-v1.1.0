@@ -97,10 +97,10 @@ class VehicleController extends Controller
             Log::info('Vehicle store request data:', $request->all());
 
             // Handle the file upload
-            if ($request->hasFile('vehicle_avatar')) {
-                $avatarName = time() . '.' . $request->vehicle_avatar->extension();
-                $request->vehicle_avatar->move(public_path('images'), $avatarName);
-            }
+
+            // Store the uploaded file in the public disk under uploads/psvbadge-avatars
+            $avatarName = $request->file('vehicle_avatar')->store('uploads/vehicle-avatars', 'public');
+
 
             // Extract the year from the date input
             $year = Carbon::parse($request->year)->year;
@@ -337,12 +337,7 @@ class VehicleController extends Controller
             // Find the existing vehicle record
             $vehicle = Vehicle::findOrFail($id);
 
-            // Handle the file upload if a new file is provided
-            if ($request->hasFile('vehicle_avatar')) {
-                $avatarName = time() . '.' . $request->vehicle_avatar->extension();
-                $request->vehicle_avatar->move(public_path('images'), $avatarName);
-                $vehicle->avatar = $avatarName;
-            }
+            $avatarName = $request->file('vehicle_avatar')->store('uploads/vehicle-avatars', 'public');
 
             // Update the vehicle record
             $vehicle->model = $request->model;
@@ -353,6 +348,7 @@ class VehicleController extends Controller
             $vehicle->plate_number = $request->plate_number;
             $vehicle->fuel_type = $request->fuel_type;
             $vehicle->engine_size = $request->engine_size;
+            $vehicle->avatar = $avatarName;
             $vehicle->organisation_id = $request->organisation_id;
             $vehicle->class = $request->vehicle_class;
             $vehicle->status = 'inactive';

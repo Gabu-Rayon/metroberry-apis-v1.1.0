@@ -12,18 +12,19 @@
                 <div class="dropdown-menu language_dropdown">
 
                     <?php $__currentLoopData = $languages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $code => $language): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <a href="<?php echo e(route('change.language', $code)); ?>"
-                               class="dropdown-item <?php echo e($lang == $code ? 'text-primary' : ''); ?>">
-                                <span><?php echo e(ucFirst($language)); ?></span>
-                            </a>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <a href="<?php echo e(route('change.language', $code)); ?>"
+                        class="dropdown-item <?php echo e($lang == $code ? 'text-primary' : ''); ?>">
+                        <span><?php echo e(ucFirst($language)); ?></span>
+                    </a>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </li>
 
             <li class="nav-item dropdown user_profile me-2">
                 <a class="dropdown-toggle user_profile_item border rounded-circle d-flex justify-content-center align-items-center overflow-hidden"
                     href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img class="img-fluid" src="<?php echo e(asset('storage/' . \Auth::user()->avatar)); ?>" alt="User Avatar">
+                    <img class="img-fluid" src="<?php echo e(asset('storage/' . \Auth::user()->avatar)); ?>"
+                        alt="User Avatar">
                 </a>
                 <div class="dropdown-menu w-75">
                     <div class="d-flex align-items-center gap-3 border-bottom pb-3">
@@ -49,7 +50,6 @@
                         <li class="w-100">
                             <form method="POST" action="<?php echo e(route('logout')); ?>" class="d-inline">
                                 <?php echo csrf_field(); ?>
-                                <?php echo method_field('POST'); ?>
                                 <button type="submit" id="logout-btn" class="btn_sign_out text-black w-100 btn">
                                     Sign Out
                                 </button>
