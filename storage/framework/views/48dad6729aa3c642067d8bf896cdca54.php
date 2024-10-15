@@ -1,7 +1,5 @@
-@extends('layouts.mobile-app')
-
-@section('title', 'Homepage | Customer')
-@section('content')
+<?php $__env->startSection('title', 'Homepage | Customer'); ?>
+<?php $__env->startSection('content'); ?>
     <!--Loading Container Start-->
     <div id="load" class="loading-overlay display-flex flex-column justify-content-center align-items-center">
         <div class="primary-color font-28 fas fa-spinner fa-spin"></div>
@@ -16,42 +14,44 @@
                 <span class="title">Homepage : Booked Trips</span>
                 <a href="#">
                     <span class="float-right menu-open closed">
-                        <img src="{{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon">
+                        <img src="<?php echo e(asset('mobile-app-assets/icons/menu.svg')); ?>" alt="Menu Hamburger Icon">
                     </span>
                 </a>
             </div>
             <!--Page Title & Icons End-->
-            @if (session('success'))
+            <?php if(session('success')): ?>
                 <div id="success-message" class="alert alert-success" style="display: none;">
-                    {{ session('success') }}
-                </div>
-            @endif
+                    <?php echo e(session('success')); ?>
 
-            @if (session('error'))
-                <div id="error-message" class="alert alert-danger" style="display: none;">
-                    {{ session('error') }}
                 </div>
-            @endif
+            <?php endif; ?>
+
+            <?php if(session('error')): ?>
+                <div id="error-message" class="alert alert-danger" style="display: none;">
+                    <?php echo e(session('error')); ?>
+
+                </div>
+            <?php endif; ?>
             <div class="rest-container">
                 <div class="all-history-items remaining-height">
                     <!-- Check if there are trips booked -->
-                    @if ($trips->isEmpty())
+                    <?php if($trips->isEmpty()): ?>
                         <div class="text-center">
                             <p>No booked trips found.</p>
-                            <a href="{{ route('customer.book.trip.page') }}" class="btn btn-primary text-uppercase">Book A
+                            <a href="<?php echo e(route('customer.book.trip.page')); ?>" class="btn btn-primary text-uppercase">Book A
                                 Trip</a>
                         </div>
-                    @else
+                    <?php else: ?>
                         <!-- Loop through booked trips -->
 
                         <div class="history-items-container history-items-padding">
                             <!--Support Button Start-->
                             <div class="p-1">
-                                <a href="{{ route('customer.book.trip.page') }}" class="btn btn-primary text-uppercase">Book
+                                <a href="<?php echo e(route('customer.book.trip.page')); ?>" class="btn btn-primary text-uppercase">Book
                                     A Trip</a>
                             </div>
                         </div>
-                        @foreach ($trips as $trip)
+                        <?php $__currentLoopData = $trips; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trip): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <!--Support Button End-->
                             <div class="history-items-container history-items-padding">
                                 <div class="history-item">
@@ -59,21 +59,24 @@
                                     <div class="border-bottom-primary thin">
                                         <div class="status-container">
                                             <div class="float-left date">
-                                                Date : {{ \Carbon\Carbon::parse($trip->trip_date)->format('d M Y') }},
-                                                @if ($customer->time_format === '12-hour')
-                                                    Time : {{ \Carbon\Carbon::parse($trip->pick_up_time)->format('h:i A') }}
+                                                Date : <?php echo e(\Carbon\Carbon::parse($trip->trip_date)->format('d M Y')); ?>,
+                                                <?php if($customer->time_format === '12-hour'): ?>
+                                                    Time : <?php echo e(\Carbon\Carbon::parse($trip->pick_up_time)->format('h:i A')); ?>
+
                                                     <!-- 12-hour format -->
-                                                @else
-                                                    Time : {{ \Carbon\Carbon::parse($trip->pick_up_time)->format('H:i') }}
+                                                <?php else: ?>
+                                                    Time : <?php echo e(\Carbon\Carbon::parse($trip->pick_up_time)->format('H:i')); ?>
+
                                                     <!-- 24-hour format -->
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
                                             <div class="float-right status-none text-uppercase">
-                                                Charges : Kes {{ number_format($trip->total_price, 2) }}
+                                                Charges : Kes <?php echo e(number_format($trip->total_price, 2)); ?>
+
                                                 <!-- Format charges -->
                                             </div>
                                             <div class="float-right status-none text-uppercase">
-                                                @php
+                                                <?php
                                                     $statusColors = [
                                                         'scheduled' => 'text-success',
                                                         'completed' => 'text-primary',
@@ -84,8 +87,8 @@
                                                         'cancelled' => 'text-danger',
                                                     ];
                                                     $statusClass = $statusColors[$trip->status] ?? 'text-dark';
-                                                @endphp
-                                                Status : <span class="{{ $statusClass }}">{{ $trip->status }}</span>
+                                                ?>
+                                                Status : <span class="<?php echo e($statusClass); ?>"><?php echo e($trip->status); ?></span>
                                             </div>
                                             <div class="clearfix"></div>
                                         </div>
@@ -101,7 +104,7 @@
                                                 <div class="map-input display-flex">
                                                     <input class="flex-1 controls font-weight-light" type="text"
                                                         placeholder="Enter an origin location"
-                                                        @php
+                                                        <?php
 $location =
                                                                         $trip->pick_up_location === 'Home'
                                                                             ? $trip->customer->user->address
@@ -113,17 +116,17 @@ $location =
                                                                                         'id',
                                                                                         $trip->pick_up_location,
                                                                                     )
-                                                                                    ->first()->name); @endphp
-                                                        value="{{ $location }}" disabled>
+                                                                                    ->first()->name); ?>
+                                                        value="<?php echo e($location); ?>" disabled>
                                                 </div>
                                             </div>
                                             <a href="#" class="href-decoration-none">
                                                 <div class="w-100 map-input-container map-input-container-bottom">
                                                     <span class="map-input-icon"><img
-                                                            src="{{ asset('mobile-app-assets/icons/circle.svg') }}"
+                                                            src="<?php echo e(asset('mobile-app-assets/icons/circle.svg')); ?>"
                                                             alt="Current Location Icon"></span>
                                                     <div class="flex-1 map-input display-flex controls align-items-center">
-                                                        @php
+                                                        <?php
                                                             $location =
                                                                 $trip->drop_off_location === 'Home'
                                                                     ? $trip->customer->user->address
@@ -132,8 +135,9 @@ $location =
                                                                         : $trip->route->route_locations
                                                                             ->where('id', $trip->drop_off_location)
                                                                             ->first()->name);
-                                                        @endphp
-                                                        {{ $location }}
+                                                        ?>
+                                                        <?php echo e($location); ?>
+
                                                     </div>
                                                     <span class="dotted-line"></span>
                                                 </div>
@@ -143,24 +147,23 @@ $location =
                                     <!--Trip Details Address Container End-->
 
                                     <!--trip History Button Start-->
-                                    {{-- <div>
-                                        <a href="#"
-                                            class="btn btn-dark text-uppercase">More Details</a>
-                                    </div> --}}
+                                    
                                     <!--trip History Button End-->
                                 </div>
                             </div>
-                        @endforeach
-                    @endif
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
 
         <!--Main Menu Start-->
-        @include('components.customer-mobile-app.main-menu')
+        <?php echo $__env->make('components.customer-mobile-app.main-menu', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
         <!--Main Menu End-->
 
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.mobile-app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/chris-droid/Desktop/metro/metroberry-apis-v1.1.0/resources/views/customer-app/index.blade.php ENDPATH**/ ?>
