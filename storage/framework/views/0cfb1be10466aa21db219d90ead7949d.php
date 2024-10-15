@@ -105,9 +105,19 @@
                                                 <span
                                                     class="fas fa-location-arrow location-icon-rotate map-input-icon"></span>
                                                 <div class="map-input display-flex">
+                                                    <?php
+                                                        $location =
+                                                            $trip->pick_up_location === 'Home'
+                                                                ? $trip->customer->user->address
+                                                                : ($trip->pick_up_location === 'Office'
+                                                                    ? $trip->customer->organisation->user->address
+                                                                    : $trip->route->route_locations
+                                                                        ->where('id', $trip->pick_up_location)
+                                                                        ->first()->name);
+                                                    ?>
                                                     <input class="controls flex-1 font-weight-light" type="text"
                                                         placeholder="Enter an origin location"
-                                                        value="<?php echo e($trip->route->start_location->name ?? 'N/A'); ?>" disabled>
+                                                        value="<?php echo e($location ?? 'N/A'); ?>" disabled>
 
 
                                                 </div>
@@ -118,8 +128,17 @@
                                                             src="<?php echo e(asset('mobile-app-assets/icons/circle.svg')); ?>"
                                                             alt="Current Location Icon"></span>
                                                     <div class="map-input display-flex controls flex-1 align-items-center">
-
-                                                        <?php echo e($trip->route->end_location->name ?? 'N/A'); ?>
+                                                        <?php
+                                                            $location =
+                                                                $trip->drop_off_location === 'Home'
+                                                                    ? $trip->customer->user->address
+                                                                    : ($trip->drop_off_location === 'Office'
+                                                                        ? $trip->customer->organisation->user->address
+                                                                        : $trip->route->route_locations
+                                                                            ->where('id', $trip->drop_off_location)
+                                                                            ->first()->name);
+                                                        ?>
+                                                        <?php echo e($location ?? 'N/A'); ?>
 
                                                     </div>
                                                     <span class="dotted-line"></span>
