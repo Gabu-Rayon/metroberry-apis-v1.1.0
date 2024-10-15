@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('title', 'Register Account | Driver'); ?>
 <?php $__env->startSection('content'); ?>
 

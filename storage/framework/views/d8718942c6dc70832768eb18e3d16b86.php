@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('title', 'Book A Trip | Customer'); ?>
 <?php $__env->startSection('content'); ?>
     <!--Loading Container Start-->
@@ -22,8 +24,21 @@
                     </span>
                 </a>
             </div>
-            <!--Page Title & Icons End-->
+            <!--Page Title & Icons End-->           
             <div class="rest-container">
+             <?php if(session('success')): ?>
+                <div id="success-message" class="alert alert-success" style="display: none;">
+                    <?php echo e(session('success')); ?>
+
+                </div>
+            <?php endif; ?>
+
+            <?php if(session('error')): ?>
+                <div id="error-message" class="alert alert-danger" style="display: none;">
+                    <?php echo e(session('error')); ?>
+
+                </div>
+            <?php endif; ?>
                 <form action="<?php echo e(route('customer.book.trip.store')); ?>" method="POST" class="needs-validation modal-content"
                     enctype="multipart/form-data">
                     <?php echo csrf_field(); ?>

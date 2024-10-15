@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('title', 'Register Account | Customer'); ?>
 <?php $__env->startSection('content'); ?>
 

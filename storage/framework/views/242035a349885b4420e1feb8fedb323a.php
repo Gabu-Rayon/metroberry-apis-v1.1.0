@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('title', 'Trips History | Customer'); ?>
 <?php $__env->startSection('content'); ?>
     <!--Loading Container Start-->

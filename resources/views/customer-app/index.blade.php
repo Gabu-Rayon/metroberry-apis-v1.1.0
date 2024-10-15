@@ -21,17 +21,7 @@
                 </a>
             </div>
             <!--Page Title & Icons End-->
-            @if (session('success'))
-                <div id="success-message" class="alert alert-success" style="display: none;">
-                    {{ session('success') }}
-                </div>
-            @endif
 
-            @if (session('error'))
-                <div id="error-message" class="alert alert-danger" style="display: none;">
-                    {{ session('error') }}
-                </div>
-            @endif
             <div class="rest-container">
                 <div class="all-history-items remaining-height">
                     <!-- Check if there are trips booked -->
@@ -51,6 +41,17 @@
                                     A Trip</a>
                             </div>
                         </div>
+                        @if (session('success'))
+                            <div id="success-message" class="alert alert-success" style="display: none;">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div id="error-message" class="alert alert-danger" style="display: none;">
+                                {{ session('error') }}
+                            </div>
+                        @endif
                         @foreach ($trips as $trip)
                             <!--Support Button End-->
                             <div class="history-items-container history-items-padding">
@@ -99,22 +100,21 @@
                                                 <span
                                                     class="fas fa-location-arrow location-icon-rotate map-input-icon"></span>
                                                 <div class="map-input display-flex">
-                                                    <input class="flex-1 controls font-weight-light" type="text"
+                                                    @php
+                                                        $location =
+                                                            $trip->pick_up_location === 'Home'
+                                                                ? $trip->customer->user->address
+                                                                : ($trip->pick_up_location === 'Office'
+                                                                    ? $trip->customer->organisation->user->address
+                                                                    : $trip->route->route_locations
+                                                                        ->where('id', $trip->pick_up_location)
+                                                                        ->first()->name);
+                                                    @endphp
+                                                    <input class="controls flex-1 font-weight-light" type="text"
                                                         placeholder="Enter an origin location"
-                                                        @php
-$location =
-                                                                        $trip->pick_up_location === 'Home'
-                                                                            ? $trip->customer->user->address
-                                                                            : ($trip->pick_up_location === 'Office'
-                                                                                ? $trip->customer->organisation->user
-                                                                                    ->address
-                                                                                : $trip->route->route_locations
-                                                                                    ->where(
-                                                                                        'id',
-                                                                                        $trip->pick_up_location,
-                                                                                    )
-                                                                                    ->first()->name); @endphp
-                                                        value="{{ $location }}" disabled>
+                                                        value="{{ $location ?? 'N/A' }}" disabled>
+
+
                                                 </div>
                                             </div>
                                             <a href="#" class="href-decoration-none">
@@ -122,7 +122,7 @@ $location =
                                                     <span class="map-input-icon"><img
                                                             src="{{ asset('mobile-app-assets/icons/circle.svg') }}"
                                                             alt="Current Location Icon"></span>
-                                                    <div class="flex-1 map-input display-flex controls align-items-center">
+                                                    <div class="map-input display-flex controls flex-1 align-items-center">
                                                         @php
                                                             $location =
                                                                 $trip->drop_off_location === 'Home'
@@ -133,7 +133,7 @@ $location =
                                                                             ->where('id', $trip->drop_off_location)
                                                                             ->first()->name);
                                                         @endphp
-                                                        {{ $location }}
+                                                        {{ $location ?? 'N/A' }}
                                                     </div>
                                                     <span class="dotted-line"></span>
                                                 </div>
