@@ -97,8 +97,12 @@ class CustomerAppController extends Controller
 
         // Redirect with errors if validation fails
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            Log::error('VALIDATION ERROR');
+            Log::error($validator->errors()->all());
+
+            return back()->with('error', $validator->errors()->first())->withInput();
         }
+
 
         try {
             // Handle avatar upload if provided

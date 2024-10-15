@@ -21,17 +21,7 @@
                 </a>
             </div>
             <!--Page Title & Icons End-->
-            @if (session('success'))
-                <div id="success-message" class="alert alert-success" style="display: none;">
-                    {{ session('success') }}
-                </div>
-            @endif
 
-            @if (session('error'))
-                <div id="error-message" class="alert alert-danger" style="display: none;">
-                    {{ session('error') }}
-                </div>
-            @endif
             <div class="rest-container">
                 <div class="all-history-items remaining-height">
                     <!-- Check if there are trips booked -->
@@ -51,6 +41,17 @@
                                     A Trip</a>
                             </div>
                         </div>
+                        @if (session('success'))
+                            <div id="success-message" class="alert alert-success" style="display: none;">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div id="error-message" class="alert alert-danger" style="display: none;">
+                                {{ session('error') }}
+                            </div>
+                        @endif
                         @foreach ($trips as $trip)
                             <!--Support Button End-->
                             <div class="history-items-container history-items-padding">

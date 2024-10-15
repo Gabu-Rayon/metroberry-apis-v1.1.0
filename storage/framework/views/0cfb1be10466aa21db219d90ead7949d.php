@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('title', 'Homepage | Customer'); ?>
 <?php $__env->startSection('content'); ?>
     <!--Loading Container Start-->
@@ -39,6 +41,19 @@
                                     A Trip</a>
                             </div>
                         </div>
+                        <?php if(session('success')): ?>
+                            <div id="success-message" class="alert alert-success" style="display: none;">
+                                <?php echo e(session('success')); ?>
+
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if(session('error')): ?>
+                            <div id="error-message" class="alert alert-danger" style="display: none;">
+                                <?php echo e(session('error')); ?>
+
+                            </div>
+                        <?php endif; ?>
                         <?php $__currentLoopData = $trips; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trip): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <!--Support Button End-->
                             <div class="history-items-container history-items-padding">
@@ -59,11 +74,11 @@
                                                 <?php endif; ?>
                                             </div>
                                             <div class="status-none float-right text-uppercase">
-                                                Charges :  Kes <?php echo e(number_format($trip->total_price, 2)); ?>
+                                                Charges : Kes <?php echo e(number_format($trip->total_price, 2)); ?>
 
                                                 <!-- Format charges -->
                                             </div>
-                                             <div class="status-none float-right text-uppercase">
+                                            <div class="status-none float-right text-uppercase">
                                                 <?php
                                                     $statusColors = [
                                                         'scheduled' => 'text-success',
@@ -72,7 +87,7 @@
                                                         'paid' => 'text-info',
                                                         'partially paid' => 'text-muted',
                                                         'assigned' => 'text-secondary',
-                                                        'cancelled' => 'text-danger'
+                                                        'cancelled' => 'text-danger',
                                                     ];
                                                     $statusClass = $statusColors[$trip->status] ?? 'text-dark';
                                                 ?>
@@ -94,18 +109,17 @@
                                                         placeholder="Enter an origin location"
                                                         value="<?php echo e($trip->route->start_location->name ?? 'N/A'); ?>" disabled>
 
-   
+
                                                 </div>
                                             </div>
-                                            <a href="#"
-                                                class="href-decoration-none">
+                                            <a href="#" class="href-decoration-none">
                                                 <div class="w-100 map-input-container map-input-container-bottom">
                                                     <span class="map-input-icon"><img
                                                             src="<?php echo e(asset('mobile-app-assets/icons/circle.svg')); ?>"
                                                             alt="Current Location Icon"></span>
                                                     <div class="map-input display-flex controls flex-1 align-items-center">
 
-                                                         <?php echo e($trip->route->end_location->name ?? 'N/A'); ?>
+                                                        <?php echo e($trip->route->end_location->name ?? 'N/A'); ?>
 
                                                     </div>
                                                     <span class="dotted-line"></span>

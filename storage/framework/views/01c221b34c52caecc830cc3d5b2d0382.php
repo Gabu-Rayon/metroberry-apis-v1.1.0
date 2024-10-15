@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('title', 'Trips Completed | Customer'); ?>
 
 <?php $__env->startSection('content'); ?>
