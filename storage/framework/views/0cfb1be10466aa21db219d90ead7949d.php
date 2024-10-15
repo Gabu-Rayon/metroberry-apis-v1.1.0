@@ -12,7 +12,7 @@
         <div class="col-xs-12 col-sm-12 remaining-height">
 
             <!--Page Title & Icons Start-->
-            <div class="header-icons-container text-center">
+            <div class="text-center header-icons-container">
                 <span class="title">Homepage : Booked Trips</span>
                 <a href="#">
                     <span class="float-right menu-open closed">
@@ -61,7 +61,7 @@
                                     <!--Date and Price Container Start-->
                                     <div class="border-bottom-primary thin">
                                         <div class="status-container">
-                                            <div class="date float-left">
+                                            <div class="float-left date">
                                                 Date : <?php echo e(\Carbon\Carbon::parse($trip->trip_date)->format('d M Y')); ?>,
                                                 <?php if($customer->time_format === '12-hour'): ?>
                                                     Time : <?php echo e(\Carbon\Carbon::parse($trip->pick_up_time)->format('h:i A')); ?>
@@ -73,12 +73,12 @@
                                                     <!-- 24-hour format -->
                                                 <?php endif; ?>
                                             </div>
-                                            <div class="status-none float-right text-uppercase">
+                                            <div class="float-right status-none text-uppercase">
                                                 Charges : Kes <?php echo e(number_format($trip->total_price, 2)); ?>
 
                                                 <!-- Format charges -->
                                             </div>
-                                            <div class="status-none float-right text-uppercase">
+                                            <div class="float-right status-none text-uppercase">
                                                 <?php
                                                     $statusColors = [
                                                         'scheduled' => 'text-success',
