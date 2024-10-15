@@ -63,75 +63,82 @@
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="text" name="national_id_no"
                                     autocomplete="off" placeholder="Driver License Number"
-                                    value="{{ $driver->national_id_no }}" />
+                                    value="{{ $driver->national_id_no  ?? null }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
                             </div>
                         </div>
                         <!--Input Field Container End-->
-                        <!-- Upload Front national ID -->
-                        <div class="form-group">
-                            <label class="width-100">
-                                <div class="display-flex justify-content-between">
-                                    <span class="position-relative upload-btn">
-                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
-                                        <input class="scan-prompt" type="file" accept="image/*"
-                                            name="national_id_front_avatar" id="national-id-back-input" />
-                                    </span>
-                                    <span class="text-uppercase">National ID BACK</span>
-                                    <span class="delete-btn" id="national-id-back-delete">
-                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
-                                    </span>
-                                </div>
-                                <div class="scan-your-card-prompt margin-top-5">
-                                    <div class="position-relative">
-                                        <div class="upload-picture-container">
-                                            <div class="upload-camera-container text-center">
-                                                <span class="#">
-                                                    <img id="national-id-back-preview"
-                                                        src="{{ $driver->national_id_behind_avatar
-                                                            ? asset('storage/' . $driver->national_id_behind_avatar)
-                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                        alt="National ID Back" />
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                        <!-- Upload Front national ID -->
-                        <div class="form-group">
-                            <label class="width-100">
-                                <div class="display-flex justify-content-between">
-                                    <span class="position-relative upload-btn">
-                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
-                                        <input class="scan-prompt" type="file" accept="image/*"
-                                            name="national_id_back_avatar" id="national-id-front-input" />
-                                    </span>
-                                    <span class="text-uppercase">National ID Behind</span>
-                                    <span class="delete-btn" id="national-id-front-delete">
-                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
-                                    </span>
-                                </div>
-                                <div class="scan-your-card-prompt margin-top-5">
-                                    <div class="position-relative">
-                                        <div class="upload-picture-container">
-                                            <div class="upload-camera-container text-center">
-                                                <span class="#">
-                                                    <img id="national-id-front-preview"
-                                                        src="{{ $driver->national_id_behind_avatar
-                                                            ? asset('storage/' . $driver->national_id_behind_avatar)
-                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                        alt="National ID Front" />
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
+
+                          <!-- Upload Front national ID -->
+                          <div class="form-group">
+                              <label class="width-100">
+                                  <div class="display-flex justify-content-between">
+                                      <span class="position-relative upload-btn">
+                                          <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
+                                              alt="Upload Icon" />
+                                          <input class="scan-prompt" type="file" accept="image/*"
+                                              name="national_id_front_avatar" id="national-id-front-input" />
+                                      </span>
+                                      <span class="text-uppercase">National ID FRONT</span>
+                                      <span class="delete-btn" id="national-id-front-delete">
+                                          <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}"
+                                              alt="Delete Icon" />
+                                      </span>
+                                  </div>
+                                  <div class="scan-your-card-prompt margin-top-5">
+                                      <div class="position-relative">
+                                          <div class="upload-picture-container">
+                                              <div class="upload-camera-container text-center">
+                                                  <span class="#">
+                                                      <img id="national-id-front-preview"
+                                                          src="{{ $driver->national_id_front_avatar
+                                                              ? asset('storage/' . $driver->national_id_front_avatar)
+                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                          alt="National ID Front" />
+                                                  </span>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </label>
+                          </div>
+
+                          <!-- Upload behind national ID -->
+                          <div class="form-group">
+                              <label class="width-100">
+                                  <div class="display-flex justify-content-between">
+                                      <span class="position-relative upload-btn">
+                                          <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
+                                              alt="Upload Icon" />
+                                          <input class="scan-prompt" type="file" accept="image/*"
+                                              name="national_id_behind_avatar" id="national-id-back-input" />
+                                      </span>
+                                      <span class="text-uppercase">National ID BACK</span>
+                                      <span class="delete-btn" id="national-id-back-delete">
+                                          <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}"
+                                              alt="Delete Icon" />
+                                      </span>
+                                  </div>
+                                  <div class="scan-your-card-prompt margin-top-5">
+                                      <div class="position-relative">
+                                          <div class="upload-picture-container">
+                                              <div class="upload-camera-container text-center">
+                                                  <span class="#">
+                                                      <img id="national-id-back-preview"
+                                                          src="{{ $driver->national_id_behind_avatar
+                                                              ? asset('storage/' . $driver->national_id_behind_avatar)
+                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                          alt="National ID Back" />
+                                                  </span>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </label>
+                          </div>
+
                         <div class="form-submit-button text-center">
                             <button type="submit" class="btn btn-dark text-uppercase">
                                 Update

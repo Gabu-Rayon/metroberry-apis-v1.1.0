@@ -50,7 +50,7 @@ class DriverAppController extends Controller
 
             $validator = Validator::make($data, [
                 'name' => 'required|string|max:255',
-                'email' => 'requonired|string|email|max:255|unique:users',
+                'email' => 'required|string|email|max:255|unique:users',
                 'phone' => ['required', 'string', 'unique:users,phone', 'max:15', new Phone()],
                 'password' => [
                     'required',
@@ -92,7 +92,7 @@ class DriverAppController extends Controller
 
             DB::commit();
 
-            return redirect()->route('users.sign.in.page')->with('success', 'Driver signed up successfully.')->withInput();
+            return redirect()->route('users.sign.in.page')->with('success', 'Your Account Created successfully.')->withInput();
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('SIGN UP DRIVER ERROR');
@@ -143,44 +143,40 @@ class DriverAppController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
 
-    public function iddocs(Request $request)
+    public function iddocs(Request $request, $id)
     {
         try {
             $data = $request->all();
 
-
+            // Validate the request data
             $validator = Validator::make($data, [
-                // national id no should be unique to drivers apart from the current driver
-                'national_id_no' => 'required|string|max:255|unique:drivers,national_id_no,' . auth()->user()->driver->id,
                 'national_id_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'national_id_behind_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'national_id_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             if ($validator->fails()) {
-                Log::error('VALIDATION ERROR');
+                Log::error(message: 'VALIDATION ERROR');
                 Log::error($validator->errors()->all());
 
                 return back()->with('error', $validator->errors()->first())->withInput();
             }
 
-
+            // Upload front and back images
             $national_id_front_avatar = $request->file('national_id_front_avatar')->store('uploads/front-page-ids', 'public');
+            $national_id_back_avatar = $request->file('national_id_back_avatar')->store('uploads/back-page-ids', 'public');
 
-            $national_id_back_avatar = $request->file('national_id_behind_avatar')->store('uploads/back-page-ids', 'public');
+            // Find the driver by ID
+            $driver = Driver::findOrFail($id);
 
-            $driver = auth()->user()->driver;
-
-            $driver->national_id_no = $data['national_id_no'];
+            // Update driver details
             $driver->national_id_front_avatar = $national_id_front_avatar;
             $driver->national_id_behind_avatar = $national_id_back_avatar;
-
             $driver->save();
-
 
             return redirect()->route('driver.dashboard')->with('success', 'Driver personal documents uploaded successfully.');
         } catch (Exception $e) {
             Log::error('UPLOAD DRIVER PERSONAL DOCUMENTS ERROR');
-            Log::error($e);
+            Log::error($e->getMessage());
 
             return back()->with('error', 'Something went wrong.')->withInput();
         }
@@ -203,8 +199,8 @@ class DriverAppController extends Controller
                 'driving_license_no' => 'required|string|max:255|unique:drivers_licenses',
                 'issue_date' => 'required|date',
                 'expiry_date' => 'required|date|after:issue_date',
-                'driving_license_avatar_front' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'driving_license_avatar_back' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'license_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'license_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -219,10 +215,10 @@ class DriverAppController extends Controller
             // Store files in the storage/app/public/uploads directory
 
             // Front license image uploaded to uploads/front-license-pics
-            $driving_license_avatar_front = $request->file('driving_license_avatar_front')->store('uploads/front-license-pics', 'public');
+            $driving_license_avatar_front = $request->file('license_front_avatar')->store('uploads/front-license-pics', 'public');
 
             // Back license image uploaded to uploads/back-license-pics
-            $driving_license_avatar_back = $request->file('driving_license_avatar_back')->store('uploads/back-license-pics', 'public');
+            $driving_license_avatar_back = $request->file('license_back_avatar')->store('uploads/back-license-pics', 'public');
 
             // Create a new driver license record with the stored file paths
             DriversLicenses::create([
@@ -317,16 +313,18 @@ class DriverAppController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
 
-    public function psvbadge(Request $request)
+    public function psvBadgeCreate(Request $request)
     {
         try {
             $data = $request->all();
+            Log::info('Data for creating Driver PSV Badge : ');
+            Log::info($data);
 
             // Validate the incoming request data
             $validator = Validator::make($data, [
                 'psv_badge_no' => 'required|string|max:255|unique:psv_badges',
-                'issue_date' => 'required|date',
-                'expiry_date' => 'required|date|after:issue_date',
+                'psv_issue_date' => 'required|date',
+                'psv_expiry_date' => 'required|date|after:issue_date',
                 'badge_copy' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
@@ -346,8 +344,8 @@ class DriverAppController extends Controller
             PSVBadge::create([
                 'driver_id' => auth()->user()->driver->id,
                 'psv_badge_no' => $data['psv_badge_no'],
-                'psv_badge_date_of_issue' => $data['issue_date'],
-                'psv_badge_date_of_expiry' => $data['expiry_date'],
+                'psv_badge_date_of_issue' => $data['psv_issue_date'],
+                'psv_badge_date_of_expiry' => $data['psv_expiry_date'],
                 'psv_badge_avatar' => $psv_badge_avatar,
             ]);
 
@@ -381,9 +379,9 @@ class DriverAppController extends Controller
             Log::info($data);
 
             $validator = Validator::make($data, [
-                'psv_badge_no' => 'nullable|string|max:255',
-                'psv_badge_date_of_issue' => 'nullable|date',
-                'psv_badge_date_of_expiry' => 'nullable|date|after:psv_badge_date_of_issue',
+                'psv_badge_no' => 'required|string|max:255',
+                'psv_badge_date_of_issue' => 'required|date',
+                'psv_badge_date_of_expiry' => 'required|date|after:issue_date',
                 'badge_copy' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 

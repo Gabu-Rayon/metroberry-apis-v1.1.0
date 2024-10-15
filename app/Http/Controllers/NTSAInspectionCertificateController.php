@@ -60,12 +60,7 @@ class NTSAInspectionCertificateController extends Controller
             $avatarPath = null;
             $certNo = $data['ntsa_inspection_certificate_no'];
 
-            if ($request->hasFile('avatar')) {
-                $avatarFile = $request->file('avatar');
-                $avatarExtension = $avatarFile->getClientOriginalExtension();
-                $avatarFileName = "{$certNo}-avatar.{$avatarExtension}";
-                $avatarPath = $avatarFile->storeAs('uploads/ntsa-insp-cert-copies', $avatarFileName, 'public');
-            }
+            $avatarPath = $request->file('avatar')->store('uploads/ntsa-insp-cert-copies', 'public');
 
             $cert = NTSAInspectionCertificate::create([
                 'vehicle_id' => $data['vehicle'],
