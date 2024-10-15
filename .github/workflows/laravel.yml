@@ -19,35 +19,9 @@ jobs:
         with:
           php-version: "8.2"
           extensions: mbstring, mysqli, bcmath, imagick
-
-      - name: Update Composer Packages
-        run: composer update
-
-      - name: Generate Application Key
-        run: php artisan key:generate --force
-
-      - name: Clear Composer cache
-        run: composer clear-cache
-
-      - name: Install Dependencies
-        run: composer update --ignore-platform-reqs -vvv
-
+       
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
-
-      - name: Link Storage
-        run: php artisan storage:link
-
-      - name: Install Node.js and NPM
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16' 
-
-      - name: Install NPM Dependencies
-        run: npm install
-
-      - name: Build Frontend Assets
-        run: npm run build
 
       - name: Sync files
         uses: SamKirkland/FTP-Deploy-action@4.0.0
