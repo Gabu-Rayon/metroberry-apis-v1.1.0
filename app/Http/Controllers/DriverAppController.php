@@ -886,12 +886,12 @@ class DriverAppController extends Controller
         $organisations = Organisation::all();
         $vehicleClasses = VehicleClass::all();
 
-        // Check if the user is a customer
+        // Check if the user is a driver
         if ($user->role !== 'driver') {
             return redirect()->back()->with('error', 'Access Denied. Only Drivers can access this page.');
         }
 
-        // Fetch the customer data based on the user_id in the customers table
+        // Fetch the driver data based on the user_id in the drivers table
         $driver = Driver::where('user_id', $user->id)->firstOrFail();
         return view('driver-app.vehicle', compact('driver', 'organisations', 'vehicleClasses'));
     }
@@ -930,12 +930,12 @@ class DriverAppController extends Controller
         // Get the authenticated user
         $user = Auth::user();
 
-        // Check if the user is a customer
+        // Check if the user is a driver
         if ($user->role !== 'driver') {
             return redirect()->back()->with('error', 'Access Denied. Only Drivers can access this page.');
         }
 
-        // Fetch the customer data based on the user_id in the customers table
+        // Fetch the driver data based on the user_id in the drivers table
         $driver = Driver::where('user_id', $user->id)->firstOrFail();
         return view('driver-app.profile', compact('driver'));
     }
@@ -1060,36 +1060,45 @@ class DriverAppController extends Controller
     }
 
 
-  public function updateProfilePicture(Request $request)
-{
-    $request->validate([
-        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-    $user = Auth::user();
-    $driver = $user->driver;
+        $user = Auth::user();
+        $driver = $user->driver;
 
-    if ($request->hasFile('profile_picture')) {
-        $file = $request->file('profile_picture');
-        $fileName = time() . '-' . $file->getClientOriginalName(); // Adding a timestamp to the filename
-        $directory = '/home/kknuicdz/portal_public_html/uploads/user-avatars/' . $user->id . '/';
+        if ($request->hasFile('profile_picture')) {
+            // Check if the old profile picture exists and delete it if necessary
+            if ($driver->user->avatar) {
+                $oldProfilePath = '/home/kknuicdz/portal_public_html/' . $driver->user->avatar;
+                if (file_exists($oldProfilePath)) {
+                    unlink($oldProfilePath); // Delete the old profile picture
+                }
+            }
 
-        // Ensure the directory exists
-        if (!is_dir($directory)) {
-            mkdir($directory, 0755, true); // Create directory if it doesn't exist
+            $file = $request->file('profile_picture');
+            $fileName = time() . '_' . $file->getClientOriginalName(); // Use a unique name for the file
+            $directory = 'uploads/user-avatars/' . $user->id . '/';
+
+            // Ensure the directory exists
+            $fullDirectoryPath = '/home/kknuicdz/portal_public_html/' . $directory;
+            if (!is_dir($fullDirectoryPath)) {
+                mkdir($fullDirectoryPath, 0755, true); // Create directory if it doesn't exist
+            }
+
+            // Move the file to the specified directory
+            $file->move($fullDirectoryPath, $fileName);
+
+            // Update the user's profile picture path
+            $driver->user->avatar = $directory . $fileName; // Save the relative path
+            $driver->user->save();
+
+            return response()->json(['newProfilePictureUrl' => asset($driver->user->avatar)]); // Use asset() to get the URL
         }
 
-        // Move the uploaded file to the specified directory
-        $file->move($directory, $fileName);
-
-        // Update the user's profile picture path
-        $driver->user->avatar = 'uploads/user-avatars/' . $user->id . '/' . $fileName;
-        $driver->user->save();
-
-        return response()->json(['newProfilePictureUrl' => asset($driver->user->avatar)]); // Use asset() for public URL
+        return response()->json(['error' => 'Failed to upload profile picture'], 400);
     }
-
-    return response()->json(['error' => 'Failed to upload profile picture'], 400);
-}
 
 }

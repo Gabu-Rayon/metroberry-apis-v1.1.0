@@ -40,10 +40,10 @@
                 <div class="request-notification-container map-notification meters-left-450 map-notification-warning">
                     <div>
                         <h5 for="national_id_front_avatar" class="form-label">National ID Pictures</h5>
-                        <img src="{{ asset('storage/' . $driver->national_id_front_avatar) }}" alt="National ID Front"
+                        <img src="{{ asset( $driver->national_id_front_avatar) }}" alt="National ID Front"
                             class="img-fluid">
 
-                        <img src="{{ asset('storage/' . $driver->national_id_behind_avatar) }}" alt="National ID Back"
+                        <img src="{{ asset( $driver->national_id_behind_avatar) }}" alt="National ID Back"
                             class="img-fluid">
 
                     </div>
@@ -76,10 +76,10 @@
                 <div class="request-notification-container map-notification meters-left-450 map-notification-warning">
                     <div>
                         <h5 for="national_id_front_avatar" class="form-label">License Pictures</h5>
-                        <img src="{{ asset('storage/' . $driver->driverLicense->driving_license_avatar_front) }}"
+                        <img src="{{ asset( $driver->driverLicense->driving_license_avatar_front) }}"
                             alt="National ID Front" class="img-fluid">
 
-                        <img src="{{ asset('storage/' . $driver->driverLicense->driving_license_avatar_back) }}"
+                        <img src="{{ asset( $driver->driverLicense->driving_license_avatar_back) }}"
                             alt="National ID Back" class="img-fluid">
 
                     </div>
@@ -125,7 +125,7 @@
                 <div class="request-notification-container map-notification meters-left-450 map-notification-warning">
                     <div>
                         <h5 for="national_id_front_avatar" class="form-label">PSV Badge Copy</h5>
-                        <img src="{{ asset('storage/' . $driver->psvBadge->psv_badge_avatar) }}" alt="National ID Front"
+                        <img src="{{ asset( $driver->psvBadge->psv_badge_avatar) }}" alt="National ID Front"
                             class="img-fluid">
                     </div>
                     <h5 class="font-weight-dark m-3 my-3">

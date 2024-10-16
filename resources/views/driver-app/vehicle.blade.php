@@ -65,7 +65,7 @@
                                                 <span class="#">
                                                     <img id="national-id-back-preview"
                                                         src="{{ $driver->vehicle->avatar
-                                                            ? asset('storage/' . $driver->vehicle->avatar)
+                                                            ? asset($driver->vehicle->avatar)
                                                             : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                         alt="Back" />
                                                 </span>
@@ -199,7 +199,7 @@
                                                     <img src="{{ asset('mobile-app-assets/icons/photocamera.svg') }}" />
                                                     {{-- <img id="national-id-front-preview"
                                                           src="{{ $driver->driverLicense->driving_license_avatar_front
-                                                              ? asset('storage/' . $driver->driverLicense->driving_license_avatar_front)
+                                                              ? asset( $driver->driverLicense->driving_license_avatar_front)
                                                               : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                           alt="Front" /> --}}
                                                 </span>
@@ -233,7 +233,7 @@
                                                     <img src="{{ asset('mobile-app-assets/icons/photocamera.svg') }}" />
                                                     {{-- <img id="national-id-back-preview"
                                                           src="{{ $driver->driverLicense->driving_license_avatar_back
-                                                              ? asset('storage/' . $driver->driverLicense->driving_license_avatar_back)
+                                                              ? asset( $driver->driverLicense->driving_license_avatar_back)
                                                               : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                           alt="Back" /> --}}
                                                 </span>
