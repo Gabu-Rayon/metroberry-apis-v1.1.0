@@ -64,10 +64,9 @@
                                             <div class="upload-camera-container text-center">
                                                 <span class="#">
                                                     <img id="national-id-back-preview"
-                                                        src="{{ $driver->vehicle->avatar
-                                                            ? asset($driver->vehicle->avatar)
-                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                        alt="Back" />
+                                                        src="{{ $driver->vehicle && $driver->vehicle->avatar ? asset($driver->vehicle->avatar) : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        alt="Back"
+                                                        onerror="this.onerror=null; this.src='{{ asset('mobile-app-assets/icons/photocamera.svg') }}';" />
                                                 </span>
                                             </div>
                                         </div>
@@ -84,11 +83,12 @@
                                     <select class="custom-select font-weight-light car-info" name="organisation_id">
                                         @foreach ($organisations as $organisation)
                                             <option value="{{ $organisation->id }}"
-                                                {{ $driver->vehicle->organisation_id == $organisation->id ? 'selected' : '' }}>
+                                                {{ $driver->vehicle && $driver->vehicle->organisation_id == $organisation->id ? 'selected' : '' }}>
                                                 {{ $organisation->user->name }}
                                             </option>
                                         @endforeach
                                     </select>
+
                                 </span>
                             </label>
                         </div>
@@ -104,11 +104,12 @@
                                     <select class="custom-select font-weight-light car-info" name="vehicle_class_id">
                                         @foreach ($vehicleClasses as $vehicleClass)
                                             <option value="{{ $vehicleClass->id }}"
-                                                {{ $driver->vehicle->class_id == $vehicleClass->id ? 'selected' : '' }}>
+                                                {{ $driver->vehicle && $driver->vehicle->class_id == $vehicleClass->id ? 'selected' : '' }}>
                                                 {{ $vehicleClass->name }}
                                             </option>
                                         @endforeach
                                     </select>
+
                                 </span>
                             </label>
                         </div>
@@ -116,21 +117,21 @@
                             <label class="width-100">
                                 <span class="label-title">Car Registration Number</span>
                                 <input class="form-control text-input font-weight-light" type="text" autocomplete="off"
-                                    name="car-registration-num" value="{{ $driver->vehicle->plate_number }}" />
+                                    name="car-registration-num" value="{{ $driver->vehicle->plate_number ?? null }}" />
                             </label>
                         </div>
                         <div class="form-group">
                             <label class="width-100">
                                 <span class="label-title">Fuel Type</span>
                                 <input class="form-control text-input font-weight-light" type="text" autocomplete="off"
-                                    name="car-registration-num" value="{{ $driver->vehicle->fuel_type }}" />
+                                    name="car-registration-num" value="{{ $driver->vehicle->fuel_type ?? null }}" />
                             </label>
                         </div>
                         <div class="form-group">
                             <label class="width-100">
                                 <span class="label-title">Fuel Type</span>
                                 <input class="form-control text-input font-weight-light" type="text" autocomplete="off"
-                                    name="car-registration-num" value="{{ $driver->vehicle->fuel_type }}" />
+                                    name="car-registration-num" value="{{ $driver->vehicle->fuel_type ?? null }}" />
                             </label>
                         </div>
                         <div class="form-group">
@@ -142,7 +143,7 @@
                                     <span class="far fa-calendar-alt"></span>
                                 </div>
                                 <input class="form-control" type="text" name="date"
-                                    value="{{ $driver->vehicle->year }}" />
+                                    value="{{ $driver->vehicle->year ?? null }}" />
                             </div>
                         </div>
                         <div class="form-group">
@@ -151,10 +152,9 @@
                             </label>
                             <div class="input-group light-field">
                                 <div class="input-group-prepend">
-                                    <span class="far fa-calendar-alt"></span>
                                 </div>
                                 <input class="form-control" type="text" name="date"
-                                    value="{{ $driver->vehicle->make }}" />
+                                    value="{{ $driver->vehicle->make ?? null }}" />
                             </div>
                         </div>
                         <div class="form-group">
@@ -163,10 +163,9 @@
                             </label>
                             <div class="input-group light-field">
                                 <div class="input-group-prepend">
-                                    <span class="far fa-calendar-alt"></span>
                                 </div>
                                 <input class="form-control" type="text" name="date"
-                                    value="{{ $driver->vehicle->engine_size }}" />
+                                    value="{{ $driver->vehicle->engine_size ?? null }}" />
                             </div>
                         </div>
 

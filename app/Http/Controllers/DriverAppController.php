@@ -1101,4 +1101,63 @@ class DriverAppController extends Controller
         return response()->json(['error' => 'Failed to upload profile picture'], 400);
     }
 
+    public function psvbadgeDocumentUpdate(Request $request, $driverId)
+    {
+        try {
+            // Fetch the driver and their associated PSV badge
+            $user = Auth::user();
+            $driver = $user->driver;
+
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'psv_badge_no' => 'required|string',
+                'psv_badge_date_of_issue' => 'required|date',
+                'psv_badge_date_of_expiry' => 'required|date|after_or_equal:psv_badge_date_of_issue',
+                'badge_copy' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+            }
+
+            // Find the existing PSV badge
+            $psvBadge = $driver->psvBadge;
+
+            if (!$psvBadge) {
+                return redirect()->back()->with('error', 'PSV badge not found')->withInput();
+            }
+
+            // Begin transaction
+            DB::beginTransaction();
+
+            // Update the PSV badge fields
+            $psvBadge->update([
+                'psv_badge_no' => $request->input('psv_badge_no'),
+                'psv_badge_date_of_issue' => $request->input('psv_badge_date_of_issue'),
+                'psv_badge_date_of_expiry' => $request->input('psv_badge_date_of_expiry'),
+            ]);
+
+            // Handle file upload for the badge copy
+            if ($request->hasFile('badge_copy')) {
+                // Store the new badge copy in the specified directory
+                $badgeCopyFile = $request->file('badge_copy');
+                $badgeCopyFileName = "psv_badge_{$driverId}." . $badgeCopyFile->getClientOriginalExtension();
+                $badgeCopyPath = $badgeCopyFile->move('/home/kknuicdz/portal_public_html/psvbadge-avatars', $badgeCopyFileName);
+
+                // Update the avatar path in the database
+                $psvBadge->update(['psv_badge_avatar' => $badgeCopyPath]);
+            }
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()->route('driver.dashboard')->with('success', 'PSV badge updated successfully');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('PSV Badge Update Error', ['error' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'An error occurred while updating the PSV badge')->withInput();
+        }
+    }
+
 }

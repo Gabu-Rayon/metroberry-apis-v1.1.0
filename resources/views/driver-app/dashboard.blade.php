@@ -35,17 +35,6 @@
 
             <!--All Notifications & Status Container Start-->
 
-            @if (session('success'))
-                <div id="success-message" class="alert alert-success" style="display: none;">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div id="error-message" class="alert alert-danger" style="display: none;">
-                    {{ session('error') }}
-                </div>
-            @endif
             <div class="change-request-status">
                 @if ($driver->status == 'inactive')
                     <div
@@ -58,12 +47,26 @@
                 <!-- Always show document upload forms below -->
                 @if (!$driver->national_id_front_avatar || !$driver->national_id_behind_avatar)
                     <div class="request-notification-container map-notification meters-left-450 map-notification-warning">
+                        @if (session('success'))
+                            <div id="success-message" class="alert alert-success" style="display: none;">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div id="error-message" class="alert alert-danger" style="display: none;">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
                         <span class="font-weight-dark m-3 my-3">
                             Kindly upload your national ID pictures
                         </span>
+
                         <form action="{{ route('driver.personal-documents', $driver->id) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
+                            
                             <div class="mb-3">
                                 <label for="national_id_front_avatar" class="form-label">National ID Front Picture</label>
                                 <input type="file" id="national_id_front_avatar" name="national_id_front_avatar"
@@ -77,8 +80,8 @@
                         </form>
                     </div>
                 @else
-                    <div
-                        id="verified-message"  class="request-notification-container map-notification offline-notification map-notification-warning">
+                    <div id="verified-message"
+                        class="request-notification-container map-notification offline-notification map-notification-warning">
                         National ID is valid
                     </div>
                 @endif
@@ -91,8 +94,8 @@
                             <div class="font-weight-light">Contact your administrator</div>
                         </div>
                     @else
-                        <div
-                             id="verified-message" class="request-notification-container map-notification offline-notification map-notification-warning">
+                        <div id="verified-message"
+                            class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your license has been verified.
                         </div>
                     @endif
@@ -137,8 +140,8 @@
                             <div class="font-weight-light">Contact your administrator</div>
                         </div>
                     @else
-                        <div
-                            id="verified-message"  class="request-notification-container map-notification offline-notification map-notification-warning">
+                        <div id="verified-message"
+                            class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your PSV Badge has been verified.
                         </div>
                     @endif
@@ -151,7 +154,8 @@
                             @csrf
                             <div class="mb-3">
                                 <label for="psv_badge_no" class="form-label">Badge No.</label>
-                                <input type="text" id="psv_badge_no" name="psv_badge_no" class="form-control" required>
+                                <input type="text" id="psv_badge_no" name="psv_badge_no" class="form-control"
+                                    required>
                             </div>
                             <div class="mb-3">
                                 <label for="psv_issue_date" class="form-label">Issue Date</label>
