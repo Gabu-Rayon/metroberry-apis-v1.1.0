@@ -561,7 +561,7 @@ class EmployeeController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+  public function update(Request $request, $id)
 {
     try {
         $customer = Customer::find($id);
@@ -609,10 +609,56 @@ class EmployeeController extends Controller
         $customer->national_id_no = $data['national_id_no'];
         $email = $data['email'];
 
-        // Handle file uploads
-        $this->handleFileUpload($request, 'avatar', $user, 'user-avatars', "{$email}-avatar");
-        $this->handleFileUpload($request, 'front_page_id', $customer, 'front-page-ids', "{$email}-front-id");
-        $this->handleFileUpload($request, 'back_page_id', $customer, 'back-page-ids', "{$email}-back-id");
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            // Check if the model already has a file and delete the old one
+            $oldAvatarPath = '/home/kknuicdz/portal_public_html/' . $user->avatar; // Assuming field name matches the file input
+            if ($user->avatar && file_exists($oldAvatarPath)) {
+                unlink($oldAvatarPath); // Delete the old file
+            }
+
+            $avatarFile = $request->file('avatar');
+            $avatarExtension = $avatarFile->getClientOriginalExtension();
+            $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+
+            // Move the new file to the specified directory
+            $avatarFile->move('/home/kknuicdz/portal_public_html/uploads/user-avatars', $avatarFileName);
+            $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
+        }
+
+        // Handle front page ID upload
+        if ($request->hasFile('front_page_id')) {
+            // Check if the model already has a file and delete the old one
+            $oldFrontIdPath = '/home/kknuicdz/portal_public_html/' . $customer->front_page_id; // Assuming field name matches the file input
+            if ($customer->front_page_id && file_exists($oldFrontIdPath)) {
+                unlink($oldFrontIdPath); // Delete the old file
+            }
+
+            $frontIdFile = $request->file('front_page_id');
+            $frontIdExtension = $frontIdFile->getClientOriginalExtension();
+            $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+
+            // Move the new file to the specified directory
+            $frontIdFile->move('/home/kknuicdz/portal_public_html/uploads/front-page-ids', $frontIdFileName);
+            $customer->front_page_id = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
+        }
+
+        // Handle back page ID upload
+        if ($request->hasFile('back_page_id')) {
+            // Check if the model already has a file and delete the old one
+            $oldBackIdPath = '/home/kknuicdz/portal_public_html/' . $customer->back_page_id; // Assuming field name matches the file input
+            if ($customer->back_page_id && file_exists($oldBackIdPath)) {
+                unlink($oldBackIdPath); // Delete the old file
+            }
+
+            $backIdFile = $request->file('back_page_id');
+            $backIdExtension = $backIdFile->getClientOriginalExtension();
+            $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+
+            // Move the new file to the specified directory
+            $backIdFile->move('/home/kknuicdz/portal_public_html/uploads/back-page-ids', $backIdFileName);
+            $customer->back_page_id = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
+        }
 
         // Update organisation details
         $customer->organisation_id = $organisation->id;
@@ -633,28 +679,6 @@ class EmployeeController extends Controller
         return redirect()->back()->with('error', 'An error occurred while updating customer');
     }
 }
-
-private function handleFileUpload(Request $request, string $fileInputName, $model, string $directory, string $fileName)
-{
-    if ($request->hasFile($fileInputName)) {
-        // Check if the model already has a file and delete the old one
-        $oldFilePath = '/home/kknuicdz/portal_public_html/' . $model->{$fileInputName}; // Assuming field name matches the file input
-        if ($model->{$fileInputName} && file_exists($oldFilePath)) {
-            unlink($oldFilePath); // Delete the old file
-        }
-
-        $file = $request->file($fileInputName);
-        $extension = $file->getClientOriginalExtension();
-        $fileNameWithExtension = "{$fileName}.{$extension}";
-
-        // Move the new file to the specified directory
-        $file->move('/home/kknuicdz/portal_public_html/uploads/' . $directory, $fileNameWithExtension);
-        $model->{$fileInputName} = 'uploads/' . $directory . '/' . $fileNameWithExtension; // Save the relative path
-    }
-}
-
-
-
 
     public function activateForm($id)
     {
