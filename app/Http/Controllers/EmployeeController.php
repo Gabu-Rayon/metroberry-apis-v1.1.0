@@ -546,6 +546,21 @@ class EmployeeController extends Controller
     //     }
     // }
 
+
+
+    public function edit($id)
+    {
+        // Fetch the customer details
+        $customer = Customer::with('user')->findOrFail($id);
+
+        // Fetch organisations (if necessary)
+        $organisations = Organisation::where('status', 'active')->get();         
+
+        // Return the view with data
+        return view('employee.edit', compact('customer', 'organisations'));
+    }
+
+
     public function update(Request $request, $id)
 {
     try {
