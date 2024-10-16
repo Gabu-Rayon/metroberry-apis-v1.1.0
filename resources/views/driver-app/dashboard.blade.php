@@ -34,7 +34,11 @@
             <!--Page Title & Icons End-->
 
             <!--All Notifications & Status Container Start-->
+
+
             <div class="change-request-status">
+
+
                 @if (session('success'))
                     <div id="success-message" class="alert alert-success" style="display: none;">
                         {{ session('success') }}
@@ -44,12 +48,17 @@
                 @if (session('error'))
                     <div id="error-message" class="alert alert-danger" style="display: none;">
                         {{ session('error') }}
-                        </di @if ($driver->status == 'inactive')
-                        <div
-                            class="request-notification-container map-notification offline-notification map-notification-warning">
-                            Your account is inactive
-                            <div class="font-weight-light">Contact your administrator</div>
-                        </div>
+                    </div>
+                @endif
+
+
+
+                @if ($driver->status == 'inactive')
+                    <div
+                        class="request-notification-container map-notification offline-notification map-notification-warning">
+                        Your account is inactive
+                        <div class="font-weight-light">Contact your administrator</div>
+                    </div>
                 @endif
 
                 <!-- Always show document upload forms below -->
