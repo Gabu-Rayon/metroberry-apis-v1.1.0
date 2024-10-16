@@ -113,7 +113,7 @@
                                           <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
                                               alt="Upload Icon" />
                                           <input class="scan-prompt" type="file" accept="image/*"
-                                              name="national_id_behind_avatar" id="national-id-back-input" />
+                                              name="national_id_back_avatar" id="national-id-back-input" />
                                       </span>
                                       <span class="text-uppercase">National ID BACK</span>
                                       <span class="delete-btn" id="national-id-back-delete">
