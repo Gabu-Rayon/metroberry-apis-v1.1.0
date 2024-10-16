@@ -553,6 +553,8 @@ class CustomerAppController extends Controller
     $customer->organisation_id = $request->input('organisation');
     $customer->national_id_no = $request->input('national_id_no');
 
+    
+
     // Base path for uploads
     $baseUploadPath = '/home/kknuicdz/portal_public_html';
 
