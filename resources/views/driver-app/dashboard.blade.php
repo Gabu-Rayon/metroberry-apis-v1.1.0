@@ -34,9 +34,6 @@
             <!--Page Title & Icons End-->
 
             <!--All Notifications & Status Container Start-->
-
-            v>
-            @endif
             <div class="change-request-status">
                 @if (session('success'))
                     <div id="success-message" class="alert alert-success" style="display: none;">
