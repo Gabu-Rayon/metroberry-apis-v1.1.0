@@ -69,6 +69,84 @@ class VehicleController extends Controller
     public function create()
     {
     }
+    // public function store(Request $request)
+    // {
+    //     try {
+    //         // Validate the request data
+    //         $data = $request->all();
+
+    //         $validator = Validator::make($data, [
+    //             'model' => 'required|string|max:255',
+    //             'make' => 'required|string|max:255',
+    //             'year' => 'required|date',
+    //             'color' => 'required|string|max:255',
+    //             'seats' => 'required|string|max:255',
+    //             'plate_number' => 'required|string|max:255|unique:vehicles,plate_number',
+    //             'fuel_type' => 'required|string|max:255',
+    //             'engine_size' => 'required|numeric',
+    //             'vehicle_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp,jfif|max:2048',
+    //             'organisation_id' => 'required|numeric',
+    //             'vehicle_class' => 'required|string',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::info('VALIDATION ERROR Here');
+    //             Log::info($validator->errors());
+    //             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         // Log the request data
+    //         Log::info('Vehicle store request data:', $request->all());
+
+    //         // Handle the file upload
+    //         if ($request->hasFile('vehicle_avatar')) {
+    //             // Define the path where you want to save the avatar
+    //             $avatarPath = public_path('uploads/vehicle-avatars/');
+
+    //             // Create the directory if it doesn't exist
+    //             if (!File::exists($avatarPath)) {
+    //                 File::makeDirectory($avatarPath, 0755, true);
+    //             }
+
+    //             // Generate a unique name for the avatar image
+    //             $avatarName = $request->plate_number . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
+
+    //             // Move the uploaded file to the public directory
+    //             $request->file('vehicle_avatar')->move($avatarPath, $avatarName);
+
+    //             // Update the vehicle avatar field
+    //             $avatarPath = 'uploads/vehicle-avatars/' . $avatarName;
+    //         }
+
+    //         // Extract the year from the date input
+    //         $year = Carbon::parse($request->year)->year;
+
+    //         // Create a new vehicle record
+    //         $vehicle = new Vehicle();
+    //         $vehicle->created_by = Auth::user()->id;
+    //         $vehicle->organisation_id = $request->organisation_id;
+    //         $vehicle->model = $request->model;
+    //         $vehicle->make = $request->make;
+    //         $vehicle->year = $year;
+    //         $vehicle->color = $request->color;
+    //         $vehicle->seats = $request->seats;
+    //         $vehicle->class = $request->vehicle_class;
+    //         $vehicle->plate_number = $request->plate_number;
+    //         $vehicle->fuel_type = $request->fuel_type;
+    //         $vehicle->engine_size = $request->engine_size;
+    //         $vehicle->avatar = $avatarPath; // Save the path to the avatar
+    //         $vehicle->save();
+
+    //         return redirect()->route('vehicle')->with('success', 'Vehicle added successfully.');
+    //     } catch (Exception $e) {
+    //         // Log the error message
+    //         Log::error('Error adding vehicle: ' . $e->getMessage());
+
+    //         return back()->with('error', 'An error occurred while adding the vehicle. Please try again.')->withInput();
+    //     }
+    // }
+
+
     public function store(Request $request)
     {
         try {
@@ -98,23 +176,26 @@ class VehicleController extends Controller
             // Log the request data
             Log::info('Vehicle store request data:', $request->all());
 
+            // Initialize avatarPath variable
+            $avatarPath = '';
+
             // Handle the file upload
             if ($request->hasFile('vehicle_avatar')) {
-                // Define the path where you want to save the avatar
-                $avatarPath = public_path('uploads/vehicle-avatars/');
+                // Define the absolute path where you want to save the avatar
+                $avatarDirectory = '/home/kknuicdz/portal_public_html/uploads/vehicle-avatars/';
 
                 // Create the directory if it doesn't exist
-                if (!File::exists($avatarPath)) {
-                    File::makeDirectory($avatarPath, 0755, true);
+                if (!File::exists($avatarDirectory)) {
+                    File::makeDirectory($avatarDirectory, 0755, true);
                 }
 
                 // Generate a unique name for the avatar image
                 $avatarName = $request->plate_number . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
 
-                // Move the uploaded file to the public directory
-                $request->file('vehicle_avatar')->move($avatarPath, $avatarName);
+                // Move the uploaded file to the absolute directory
+                $request->file('vehicle_avatar')->move($avatarDirectory, $avatarName);
 
-                // Update the vehicle avatar field
+                // Update the avatar field with the relative path
                 $avatarPath = 'uploads/vehicle-avatars/' . $avatarName;
             }
 
@@ -318,6 +399,102 @@ class VehicleController extends Controller
      * Update the specified resource in storage.
      */
 
+    // public function update(Request $request, $id)
+    // {
+    //     try {
+    //         $data = $request->all();
+    //         // Log the request data
+    //         Log::info('Vehicle update request data from the form:', $data);
+
+    //         $validator = Validator::make($data, [
+    //             'model' => 'required|string|max:255',
+    //             'make' => 'required|string|max:255',
+    //             'year' => 'required|date_format:Y',
+    //             'color' => 'required|string|max:255',
+    //             'seats' => 'required|integer|min:1',
+    //             'plate_number' => 'required|string|max:255|unique:vehicles,plate_number,' . $id,
+    //             'fuel_type' => 'required|string|max:255',
+    //             'engine_size' => 'required|numeric',
+    //             'vehicle_avatar' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    //             'driver_id' => 'nullable|exists:drivers,id',
+    //             'organisation_id' => 'nullable|exists:organisations,id',
+    //             'vehicle_class' => 'required|string'
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::info('VALIDATION ERROR Here');
+    //             Log::info($validator->errors());
+    //             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         // Log the request data
+    //         Log::info('Vehicle update request data:', $request->all());
+
+    //         // Find the existing vehicle record
+    //         $vehicle = Vehicle::findOrFail($id);
+
+    //         // Check if the vehicle_avatar file exists in the request
+    //         if ($request->hasFile('vehicle_avatar')) {
+    //             // Define the path where you want to save the avatar
+    //             $avatarPath = public_path('uploads/vehicle-avatars/');
+
+    //             // Create the directory if it doesn't exist
+    //             if (!File::exists($avatarPath)) {
+    //                 File::makeDirectory($avatarPath, 0755, true);
+    //             }
+
+    //             // Generate a unique name for the avatar image
+    //             $avatarName = $vehicle->plate_number . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
+
+    //             // Move the uploaded file to the public directory
+    //             $request->file('vehicle_avatar')->move($avatarPath, $avatarName);
+
+    //             // Update the avatar field with the path to the avatar
+    //             $vehicle->avatar = 'uploads/vehicle-avatars/' . $avatarName;
+    //         }
+
+    //         // Update other vehicle fields
+    //         $vehicle->model = $request->model;
+    //         $vehicle->make = $request->make;
+    //         $vehicle->year = $request->year;
+    //         $vehicle->color = $request->color;
+    //         $vehicle->seats = $request->seats;
+    //         $vehicle->plate_number = $request->plate_number;
+    //         $vehicle->fuel_type = $request->fuel_type;
+    //         $vehicle->engine_size = $request->engine_size;
+    //         $vehicle->organisation_id = $request->organisation_id;
+    //         $vehicle->class = $request->vehicle_class;
+    //         $vehicle->status = 'inactive';
+
+    //         // Update driver_id in vehicles table if provided
+    //         if ($request->has('driver_id')) {
+    //             $driverId = $request->input('driver_id');
+    //             $vehicle->driver_id = $driverId;
+
+    //             // Update vehicle_id in drivers table
+    //             if ($driverId) {
+    //                 $driver = Driver::findOrFail($driverId);
+    //                 $driver->vehicle_id = $vehicle->id;
+    //                 $driver->save();
+    //             }
+    //         } else {
+    //             // Clear driver_id if no driver is selected
+    //             $vehicle->driver_id = null;
+    //         }
+
+    //         $vehicle->save();
+
+    //         return redirect()->route('vehicle')->with('success', 'Vehicle updated successfully.');
+    //     } catch (Exception $e) {
+    //         // Log the error message
+    //         Log::error('Error updating vehicle: ' . $e->getMessage());
+
+    //         return back()->with('error', 'An error occurred while updating the vehicle. Please try again.');
+    //     }
+    // }
+
+
+
     public function update(Request $request, $id)
     {
         try {
@@ -355,7 +532,7 @@ class VehicleController extends Controller
             // Check if the vehicle_avatar file exists in the request
             if ($request->hasFile('vehicle_avatar')) {
                 // Define the path where you want to save the avatar
-                $avatarPath = public_path('uploads/vehicle-avatars/');
+                $avatarPath = '/home/kknuicdz/portal_public_html/uploads/vehicle-avatars/';
 
                 // Create the directory if it doesn't exist
                 if (!File::exists($avatarPath)) {
@@ -365,11 +542,11 @@ class VehicleController extends Controller
                 // Generate a unique name for the avatar image
                 $avatarName = $vehicle->plate_number . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
 
-                // Move the uploaded file to the public directory
+                // Move the uploaded file to the specified directory
                 $request->file('vehicle_avatar')->move($avatarPath, $avatarName);
 
                 // Update the avatar field with the path to the avatar
-                $vehicle->avatar = 'uploads/vehicle-avatars/' . $avatarName;
+                $vehicle->avatar = 'uploads/vehicle-avatars/' . $avatarName; // Keep this relative for the database
             }
 
             // Update other vehicle fields
@@ -411,6 +588,7 @@ class VehicleController extends Controller
             return back()->with('error', 'An error occurred while updating the vehicle. Please try again.');
         }
     }
+
 
 
     // public function update(Request $request, $vehicleId)
@@ -508,14 +686,39 @@ class VehicleController extends Controller
         return view('vehicle.delete', compact('vehicle'));
     }
 
+    // public function destroy($id)
+    // {
+    //     try {
+    //         // Find the vehicle record
+    //         $vehicle = Vehicle::findOrFail($id);
+
+    //         // Define the path to the vehicle avatar
+    //         $avatarPath = public_path($vehicle->avatar);
+
+    //         // Check if the avatar file exists and delete it
+    //         if (File::exists($avatarPath)) {
+    //             File::delete($avatarPath);
+    //         }
+
+    //         // Delete the vehicle record
+    //         $vehicle->delete();
+
+    //         return redirect()->route('vehicle')->with('success', 'Vehicle deleted successfully.');
+    //     } catch (Exception $e) {
+    //         Log::error('Error deleting Vehicle: ' . $e->getMessage());
+    //         return back()->with('error', 'An error occurred while deleting the Vehicle. Please try again.');
+    //     }
+    // }
+
+
     public function destroy($id)
     {
         try {
             // Find the vehicle record
             $vehicle = Vehicle::findOrFail($id);
 
-            // Define the path to the vehicle avatar
-            $avatarPath = public_path($vehicle->avatar);
+            // Define the absolute path to the vehicle avatar
+            $avatarPath = '/home/kknuicdz/portal_public_html/' . $vehicle->avatar;
 
             // Check if the avatar file exists and delete it
             if (File::exists($avatarPath)) {
@@ -531,6 +734,7 @@ class VehicleController extends Controller
             return back()->with('error', 'An error occurred while deleting the Vehicle. Please try again.');
         }
     }
+
 
     /**
      * Assign driver to vehicle
