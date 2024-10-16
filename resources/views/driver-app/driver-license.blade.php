@@ -105,9 +105,9 @@
                                                   <span class="#">
                                                       <img id="national-id-front-preview"
                                                           src="{{ $driver->driverLicense->driving_license_avatar_front
-                                                              ? asset('storage/' . $driver->driverLicense->driving_license_avatar_front)
+                                                              ? asset( $driver->driverLicense->driving_license_avatar_front)
                                                               : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                          alt="Front" />
+                                                          alt="Lincense Front Avatar" />
                                                   </span>
                                               </div>
                                           </div>
@@ -138,9 +138,9 @@
                                                   <span class="#">
                                                       <img id="national-id-back-preview"
                                                           src="{{ $driver->driverLicense->driving_license_avatar_back
-                                                              ? asset('storage/' . $driver->driverLicense->driving_license_avatar_back)
+                                                              ? asset($driver->driverLicense->driving_license_avatar_back)
                                                               : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                          alt="Back" />
+                                                          alt="License Back Avatar" />
                                                   </span>
                                               </div>
                                           </div>

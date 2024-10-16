@@ -886,12 +886,12 @@ class DriverAppController extends Controller
         $organisations = Organisation::all();
         $vehicleClasses = VehicleClass::all();
 
-        // Check if the user is a customer
+        // Check if the user is a driver
         if ($user->role !== 'driver') {
             return redirect()->back()->with('error', 'Access Denied. Only Drivers can access this page.');
         }
 
-        // Fetch the customer data based on the user_id in the customers table
+        // Fetch the driver data based on the user_id in the drivers table
         $driver = Driver::where('user_id', $user->id)->firstOrFail();
         return view('driver-app.vehicle', compact('driver', 'organisations', 'vehicleClasses'));
     }
@@ -930,12 +930,12 @@ class DriverAppController extends Controller
         // Get the authenticated user
         $user = Auth::user();
 
-        // Check if the user is a customer
+        // Check if the user is a driver
         if ($user->role !== 'driver') {
             return redirect()->back()->with('error', 'Access Denied. Only Drivers can access this page.');
         }
 
-        // Fetch the customer data based on the user_id in the customers table
+        // Fetch the driver data based on the user_id in the drivers table
         $driver = Driver::where('user_id', $user->id)->firstOrFail();
         return view('driver-app.profile', compact('driver'));
     }
@@ -1060,36 +1060,104 @@ class DriverAppController extends Controller
     }
 
 
-  public function updateProfilePicture(Request $request)
-{
-    $request->validate([
-        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-    $user = Auth::user();
-    $driver = $user->driver;
+        $user = Auth::user();
+        $driver = $user->driver;
 
-    if ($request->hasFile('profile_picture')) {
-        $file = $request->file('profile_picture');
-        $fileName = time() . '-' . $file->getClientOriginalName(); // Adding a timestamp to the filename
-        $directory = '/home/kknuicdz/portal_public_html/uploads/user-avatars/' . $user->id . '/';
+        if ($request->hasFile('profile_picture')) {
+            // Check if the old profile picture exists and delete it if necessary
+            if ($driver->user->avatar) {
+                $oldProfilePath = '/home/kknuicdz/portal_public_html/' . $driver->user->avatar;
+                if (file_exists($oldProfilePath)) {
+                    unlink($oldProfilePath); // Delete the old profile picture
+                }
+            }
 
-        // Ensure the directory exists
-        if (!is_dir($directory)) {
-            mkdir($directory, 0755, true); // Create directory if it doesn't exist
+            $file = $request->file('profile_picture');
+            $fileName = time() . '_' . $file->getClientOriginalName(); // Use a unique name for the file
+            $directory = 'uploads/user-avatars/' . $user->id . '/';
+
+            // Ensure the directory exists
+            $fullDirectoryPath = '/home/kknuicdz/portal_public_html/' . $directory;
+            if (!is_dir($fullDirectoryPath)) {
+                mkdir($fullDirectoryPath, 0755, true); // Create directory if it doesn't exist
+            }
+
+            // Move the file to the specified directory
+            $file->move($fullDirectoryPath, $fileName);
+
+            // Update the user's profile picture path
+            $driver->user->avatar = $directory . $fileName; // Save the relative path
+            $driver->user->save();
+
+            return response()->json(['newProfilePictureUrl' => asset($driver->user->avatar)]); // Use asset() to get the URL
         }
 
-        // Move the uploaded file to the specified directory
-        $file->move($directory, $fileName);
-
-        // Update the user's profile picture path
-        $driver->user->avatar = 'uploads/user-avatars/' . $user->id . '/' . $fileName;
-        $driver->user->save();
-
-        return response()->json(['newProfilePictureUrl' => asset($driver->user->avatar)]); // Use asset() for public URL
+        return response()->json(['error' => 'Failed to upload profile picture'], 400);
     }
 
-    return response()->json(['error' => 'Failed to upload profile picture'], 400);
-}
+    public function psvbadgeDocumentUpdate(Request $request, $driverId)
+    {
+        try {
+            // Fetch the driver and their associated PSV badge
+            $user = Auth::user();
+            $driver = $user->driver;
+
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'psv_badge_no' => 'required|string',
+                'psv_badge_date_of_issue' => 'required|date',
+                'psv_badge_date_of_expiry' => 'required|date|after_or_equal:psv_badge_date_of_issue',
+                'badge_copy' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+            }
+
+            // Find the existing PSV badge
+            $psvBadge = $driver->psvBadge;
+
+            if (!$psvBadge) {
+                return redirect()->back()->with('error', 'PSV badge not found')->withInput();
+            }
+
+            // Begin transaction
+            DB::beginTransaction();
+
+            // Update the PSV badge fields
+            $psvBadge->update([
+                'psv_badge_no' => $request->input('psv_badge_no'),
+                'psv_badge_date_of_issue' => $request->input('psv_badge_date_of_issue'),
+                'psv_badge_date_of_expiry' => $request->input('psv_badge_date_of_expiry'),
+            ]);
+
+            // Handle file upload for the badge copy
+            if ($request->hasFile('badge_copy')) {
+                // Store the new badge copy in the specified directory
+                $badgeCopyFile = $request->file('badge_copy');
+                $badgeCopyFileName = "psv_badge_{$driverId}." . $badgeCopyFile->getClientOriginalExtension();
+                $badgeCopyPath = $badgeCopyFile->move('/home/kknuicdz/portal_public_html/psvbadge-avatars', $badgeCopyFileName);
+
+                // Update the avatar path in the database
+                $psvBadge->update(['psv_badge_avatar' => $badgeCopyPath]);
+            }
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()->route('driver.dashboard')->with('success', 'PSV badge updated successfully');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('PSV Badge Update Error', ['error' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'An error occurred while updating the PSV badge')->withInput();
+        }
+    }
 
 }

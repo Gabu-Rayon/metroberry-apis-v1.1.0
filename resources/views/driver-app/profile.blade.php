@@ -33,7 +33,7 @@
                         @csrf
                         <div class="profile-picture-container">
                             <img id="profile-picture"
-                                src="{{ $driver->user->avatar ? asset('storage/' . $driver->user->avatar) : asset('mobile-app-assets/images/avatar.svg') }}"
+                                src="{{ $driver->user->avatar ? asset($driver->user->avatar) : asset('mobile-app-assets/images/avatar.svg') }}"
                                 alt="Profile Picture" class="rounded-profile-picture" />
                             <span class="fas fa-camera">
                                 <input class="file-prompt" type="file" accept="image/*" id="profile-picture-input"

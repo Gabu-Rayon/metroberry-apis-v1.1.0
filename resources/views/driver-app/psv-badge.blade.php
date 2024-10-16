@@ -110,9 +110,9 @@
                                             @endphp
                                             <img id="national-id-back-preview"
                                                 src="{{ $psvBadgeAvatar !== 'default-placeholder.png'
-                                                    ? asset('storage/' . $psvBadgeAvatar)
+                                                    ? asset($psvBadgeAvatar)
                                                     : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                alt="License Back" class="img-fluid" />
+                                                alt="PSV badge Copy" class="img-fluid" />
                                         </span>
 
 

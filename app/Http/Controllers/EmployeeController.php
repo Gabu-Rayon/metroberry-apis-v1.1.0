@@ -62,116 +62,241 @@ class EmployeeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // public function store(Request $request)
+    // {
+    //     try {
+    //         $data = $request->all();
+    //         $creator = Auth::user();
+
+    //         $validator = Validator::make($data, [
+    //             'name' => 'required|string',
+    //             'phone' => 'required|string|unique:users,phone',
+    //             'organisation' => 'required|string|exists:organisations,organisation_code',
+    //             'email' => 'required|email|unique:users,email',
+    //             'address' => 'required|string',
+    //             'national_id' => 'required|string|unique:customers,national_id_no',
+    //             'front_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
+    //             'back_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
+    //             'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+    //             'password' => 'required|string|min:6',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::info('VALIDATION ERROR');
+    //             Log::info($validator->errors());
+    //             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
+
+    //         if (!$organisation) {
+    //             return redirect()->back()->with('error', 'Organisation not found')->withInput();
+    //         }
+
+    //         $frontIdPath = null;
+    //         $backIdPath = null;
+    //         $avatarPath = null;
+    //         $email = $data['email'];
+    //         $generatedPassword = $data['password'];
+
+    //         Log::info('password Generated for this user : ');
+
+    //         Log::info($generatedPassword);
+
+    //         if ($request->hasFile('front_page_id')) {
+    //             $frontIdFile = $request->file('front_page_id');
+    //             $frontIdExtension = $frontIdFile->getClientOriginalExtension();
+    //             $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+    //             $frontIdPath = $frontIdFile->storeAs('uploads/front-page-ids', $frontIdFileName, 'public');
+    //         }
+
+    //         if ($request->hasFile('back_page_id')) {
+    //             $backIdFile = $request->file('back_page_id');
+    //             $backIdExtension = $backIdFile->getClientOriginalExtension();
+    //             $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+    //             $backIdPath = $backIdFile->storeAs('uploads/back-page-ids', $backIdFileName, 'public');
+    //         }
+
+    //         if ($request->hasFile('avatar')) {
+    //             $avatarFile = $request->file('avatar');
+    //             $avatarExtension = $avatarFile->getClientOriginalExtension();
+    //             $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+    //             $avatarPath = $avatarFile->storeAs('uploads/user-avatars', $avatarFileName, 'public');
+    //         }
+
+
+    //         $user = User::create([
+    //             'name' => $data['name'],
+    //             'email' => $data['email'],
+    //             'password' => bcrypt($data['password']),
+    //             'phone' => $data['phone'],
+    //             'address' => $data['address'],
+    //             'avatar' => $avatarPath,
+    //             'created_by' => $creator->id,
+    //             'role' => 'customer',
+    //         ]);
+
+    //         $user->assignRole('customer');
+
+    //         Customer::create([
+    //             'created_by' => $creator->id,
+    //             'user_id' => $user->id,
+    //             'organisation_id' => $organisation->id,
+    //             'customer_organisation_code' => $data['organisation'],
+    //             'national_id_no' => $data['national_id'],
+    //             'national_id_front_avatar' => $frontIdPath,
+    //             'national_id_behind_avatar' => $backIdPath,
+    //         ]);
+
+    //         DB::commit();
+
+    //         // Send email with the plain password
+    //         Mail::send('mail-view.employee-welcome-mail', [
+    //             'customer' => $user->name,
+    //             'email' => $user->email,
+    //             'password' => $generatedPassword
+    //         ], function ($message) use ($user) {
+    //             $message->to($user->email)
+    //                 ->subject('Your Account Created');
+    //         });
+
+    //         Log::info('SUCCESS');
+
+    //         return redirect()->route('employee')->with('success', 'Customer created successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('CREATE CUSTOMER ERROR');
+    //         Log::error($e);
+    //         return redirect()->back()->with('error', 'An error occurred')->withInput();
+    //     }
+    // }
+
+
     public function store(Request $request)
-    {
-        try {
-            $data = $request->all();
-            $creator = Auth::user();
+{
+    try {
+        $data = $request->all();
+        $creator = Auth::user();
 
-            $validator = Validator::make($data, [
-                'name' => 'required|string',
-                'phone' => 'required|string|unique:users,phone',
-                'organisation' => 'required|string|exists:organisations,organisation_code',
-                'email' => 'required|email|unique:users,email',
-                'address' => 'required|string',
-                'national_id' => 'required|string|unique:customers,national_id_no',
-                'front_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
-                'back_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
-                'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
-                'password' => 'required|string|min:6',
-            ]);
+        $validator = Validator::make($data, [
+            'name' => 'required|string',
+            'phone' => 'required|string|unique:users,phone',
+            'organisation' => 'required|string|exists:organisations,organisation_code',
+            'email' => 'required|email|unique:users,email',
+            'address' => 'required|string',
+            'national_id' => 'required|string|unique:customers,national_id_no',
+            'front_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
+            'back_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
+            'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+            'password' => 'required|string|min:6',
+        ]);
 
-            if ($validator->fails()) {
-                Log::info('VALIDATION ERROR');
-                Log::info($validator->errors());
-                return redirect()->back()->with('error', $validator->errors()->first())->withInput();
-            }
-
-            DB::beginTransaction();
-
-            $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
-
-            if (!$organisation) {
-                return redirect()->back()->with('error', 'Organisation not found')->withInput();
-            }
-
-            $frontIdPath = null;
-            $backIdPath = null;
-            $avatarPath = null;
-            $email = $data['email'];
-            $generatedPassword = $data['password'];
-
-            Log::info('password Generated for this user : ');
-
-            Log::info($generatedPassword);
-
-            if ($request->hasFile('front_page_id')) {
-                $frontIdFile = $request->file('front_page_id');
-                $frontIdExtension = $frontIdFile->getClientOriginalExtension();
-                $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
-                $frontIdPath = $frontIdFile->storeAs('uploads/front-page-ids', $frontIdFileName, 'public');
-            }
-
-            if ($request->hasFile('back_page_id')) {
-                $backIdFile = $request->file('back_page_id');
-                $backIdExtension = $backIdFile->getClientOriginalExtension();
-                $backIdFileName = "{$email}-back-id.{$backIdExtension}";
-                $backIdPath = $backIdFile->storeAs('uploads/back-page-ids', $backIdFileName, 'public');
-            }
-
-            if ($request->hasFile('avatar')) {
-                $avatarFile = $request->file('avatar');
-                $avatarExtension = $avatarFile->getClientOriginalExtension();
-                $avatarFileName = "{$email}-avatar.{$avatarExtension}";
-                $avatarPath = $avatarFile->storeAs('uploads/user-avatars', $avatarFileName, 'public');
-            }
-
-
-            $user = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => bcrypt($data['password']),
-                'phone' => $data['phone'],
-                'address' => $data['address'],
-                'avatar' => $avatarPath,
-                'created_by' => $creator->id,
-                'role' => 'customer',
-            ]);
-
-            $user->assignRole('customer');
-
-            Customer::create([
-                'created_by' => $creator->id,
-                'user_id' => $user->id,
-                'organisation_id' => $organisation->id,
-                'customer_organisation_code' => $data['organisation'],
-                'national_id_no' => $data['national_id'],
-                'national_id_front_avatar' => $frontIdPath,
-                'national_id_behind_avatar' => $backIdPath,
-            ]);
-
-            DB::commit();
-
-            // Send email with the plain password
-            Mail::send('mail-view.employee-welcome-mail', [
-                'customer' => $user->name,
-                'email' => $user->email,
-                'password' => $generatedPassword
-            ], function ($message) use ($user) {
-                $message->to($user->email)
-                    ->subject('Your Account Created');
-            });
-
-            Log::info('SUCCESS');
-
-            return redirect()->route('employee')->with('success', 'Customer created successfully');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('CREATE CUSTOMER ERROR');
-            Log::error($e);
-            return redirect()->back()->with('error', 'An error occurred')->withInput();
+        if ($validator->fails()) {
+            Log::info('VALIDATION ERROR');
+            Log::info($validator->errors());
+            return redirect()->back()->with('error', $validator->errors()->first())->withInput();
         }
+
+        DB::beginTransaction();
+
+        $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
+
+        if (!$organisation) {
+            return redirect()->back()->with('error', 'Organisation not found')->withInput();
+        }
+
+        $frontIdPath = null;
+        $backIdPath = null;
+        $avatarPath = null;
+        $email = $data['email'];
+        $generatedPassword = $data['password'];
+
+        Log::info('password Generated for this user : ');
+        Log::info($generatedPassword);
+
+        // Handle front page ID upload
+        if ($request->hasFile('front_page_id')) {
+            $frontIdFile = $request->file('front_page_id');
+            $frontIdExtension = $frontIdFile->getClientOriginalExtension();
+            $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+            $frontIdPath = 'uploads/front-page-ids/' . $frontIdFileName;
+
+            // Move the file to the specified directory
+            $frontIdFile->move('/home/kknuicdz/portal_public_html/' . dirname($frontIdPath), $frontIdFileName);
+        }
+
+        // Handle back page ID upload
+        if ($request->hasFile('back_page_id')) {
+            $backIdFile = $request->file('back_page_id');
+            $backIdExtension = $backIdFile->getClientOriginalExtension();
+            $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+            $backIdPath = 'uploads/back-page-ids/' . $backIdFileName;
+
+            // Move the file to the specified directory
+            $backIdFile->move('/home/kknuicdz/portal_public_html/' . dirname($backIdPath), $backIdFileName);
+        }
+
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            $avatarFile = $request->file('avatar');
+            $avatarExtension = $avatarFile->getClientOriginalExtension();
+            $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+            $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
+
+            // Move the file to the specified directory
+            $avatarFile->move('/home/kknuicdz/portal_public_html/' . dirname($avatarPath), $avatarFileName);
+        }
+
+        // Create user
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+            'phone' => $data['phone'],
+            'address' => $data['address'],
+            'avatar' => $avatarPath,
+            'created_by' => $creator->id,
+            'role' => 'customer',
+        ]);
+
+        $user->assignRole('customer');
+
+        // Create customer
+        Customer::create([
+            'created_by' => $creator->id,
+            'user_id' => $user->id,
+            'organisation_id' => $organisation->id,
+            'customer_organisation_code' => $data['organisation'],
+            'national_id_no' => $data['national_id'],
+            'national_id_front_avatar' => $frontIdPath,
+            'national_id_behind_avatar' => $backIdPath,
+        ]);
+
+        DB::commit();
+
+        // Send email with the plain password
+        Mail::send('mail-view.employee-welcome-mail', [
+            'customer' => $user->name,
+            'email' => $user->email,
+            'password' => $generatedPassword
+        ], function ($message) use ($user) {
+            $message->to($user->email)
+                ->subject('Your Account Created');
+        });
+
+        Log::info('SUCCESS');
+
+        return redirect()->route('employee')->with('success', 'Customer created successfully');
+    } catch (Exception $e) {
+        DB::rollBack();
+        Log::error('CREATE CUSTOMER ERROR');
+        Log::error($e);
+        return redirect()->back()->with('error', 'An error occurred')->withInput();
     }
+}
+
 
 
     /**
@@ -280,11 +405,11 @@ class EmployeeController extends Controller
      */
 
 
-    // public function create(Request $request)
-    // {
-    //     $organisations = Organisation::with('user')->where('status', 'active')->get();
-    //     return view('employee.create', compact('organisations'));
-    // }
+    public function create(Request $request)
+    {
+        $organisations = Organisation::with('user')->where('status', 'active')->get();
+        return view('employee.create', compact('organisations'));
+    }
 
     // public function edit(Request $request, $id)
     // {
@@ -546,7 +671,22 @@ class EmployeeController extends Controller
     //     }
     // }
 
-    public function update(Request $request, $id)
+
+
+    public function edit($id)
+    {
+        // Fetch the customer details
+        $customer = Customer::with('user')->findOrFail($id);
+
+        // Fetch organisations (if necessary)
+        $organisations = Organisation::where('status', 'active')->get();         
+
+        // Return the view with data
+        return view('employee.edit', compact('customer', 'organisations'));
+    }
+
+
+  public function update(Request $request, $id)
 {
     try {
         $customer = Customer::find($id);
@@ -594,10 +734,56 @@ class EmployeeController extends Controller
         $customer->national_id_no = $data['national_id_no'];
         $email = $data['email'];
 
-        // Handle file uploads
-        $this->handleFileUpload($request, 'avatar', $user, 'user-avatars', "{$email}-avatar");
-        $this->handleFileUpload($request, 'front_page_id', $customer, 'front-page-ids', "{$email}-front-id");
-        $this->handleFileUpload($request, 'back_page_id', $customer, 'back-page-ids', "{$email}-back-id");
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            // Check if the model already has a file and delete the old one
+            $oldAvatarPath = '/home/kknuicdz/portal_public_html/' . $user->avatar; // Assuming field name matches the file input
+            if ($user->avatar && file_exists($oldAvatarPath)) {
+                unlink($oldAvatarPath); // Delete the old file
+            }
+
+            $avatarFile = $request->file('avatar');
+            $avatarExtension = $avatarFile->getClientOriginalExtension();
+            $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+
+            // Move the new file to the specified directory
+            $avatarFile->move('/home/kknuicdz/portal_public_html/uploads/user-avatars', $avatarFileName);
+            $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
+        }
+
+        // Handle front page ID upload
+        if ($request->hasFile('front_page_id')) {
+            // Check if the model already has a file and delete the old one
+            $oldFrontIdPath = '/home/kknuicdz/portal_public_html/' . $customer->front_page_id; // Assuming field name matches the file input
+            if ($customer->front_page_id && file_exists($oldFrontIdPath)) {
+                unlink($oldFrontIdPath); // Delete the old file
+            }
+
+            $frontIdFile = $request->file('front_page_id');
+            $frontIdExtension = $frontIdFile->getClientOriginalExtension();
+            $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+
+            // Move the new file to the specified directory
+            $frontIdFile->move('/home/kknuicdz/portal_public_html/uploads/front-page-ids', $frontIdFileName);
+            $customer->front_page_id = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
+        }
+
+        // Handle back page ID upload
+        if ($request->hasFile('back_page_id')) {
+            // Check if the model already has a file and delete the old one
+            $oldBackIdPath = '/home/kknuicdz/portal_public_html/' . $customer->back_page_id; // Assuming field name matches the file input
+            if ($customer->back_page_id && file_exists($oldBackIdPath)) {
+                unlink($oldBackIdPath); // Delete the old file
+            }
+
+            $backIdFile = $request->file('back_page_id');
+            $backIdExtension = $backIdFile->getClientOriginalExtension();
+            $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+
+            // Move the new file to the specified directory
+            $backIdFile->move('/home/kknuicdz/portal_public_html/uploads/back-page-ids', $backIdFileName);
+            $customer->back_page_id = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
+        }
 
         // Update organisation details
         $customer->organisation_id = $organisation->id;
@@ -618,28 +804,6 @@ class EmployeeController extends Controller
         return redirect()->back()->with('error', 'An error occurred while updating customer');
     }
 }
-
-private function handleFileUpload(Request $request, string $fileInputName, $model, string $directory, string $fileName)
-{
-    if ($request->hasFile($fileInputName)) {
-        // Check if the model already has a file and delete the old one
-        $oldFilePath = '/home/kknuicdz/portal_public_html/' . $model->{$fileInputName}; // Assuming field name matches the file input
-        if ($model->{$fileInputName} && file_exists($oldFilePath)) {
-            unlink($oldFilePath); // Delete the old file
-        }
-
-        $file = $request->file($fileInputName);
-        $extension = $file->getClientOriginalExtension();
-        $fileNameWithExtension = "{$fileName}.{$extension}";
-
-        // Move the new file to the specified directory
-        $file->move('/home/kknuicdz/portal_public_html/uploads/' . $directory, $fileNameWithExtension);
-        $model->{$fileInputName} = 'uploads/' . $directory . '/' . $fileNameWithExtension; // Save the relative path
-    }
-}
-
-
-
 
     public function activateForm($id)
     {

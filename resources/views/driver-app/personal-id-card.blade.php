@@ -94,7 +94,7 @@
                                                   <span class="#">
                                                       <img id="national-id-front-preview"
                                                           src="{{ $driver->national_id_front_avatar
-                                                              ? asset('storage/' . $driver->national_id_front_avatar)
+                                                              ? asset($driver->national_id_front_avatar)
                                                               : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                           alt="National ID Front" />
                                                   </span>
@@ -113,7 +113,7 @@
                                           <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
                                               alt="Upload Icon" />
                                           <input class="scan-prompt" type="file" accept="image/*"
-                                              name="national_id_behind_avatar" id="national-id-back-input" />
+                                              name="national_id_back_avatar" id="national-id-back-input" />
                                       </span>
                                       <span class="text-uppercase">National ID BACK</span>
                                       <span class="delete-btn" id="national-id-back-delete">
@@ -128,7 +128,7 @@
                                                   <span class="#">
                                                       <img id="national-id-back-preview"
                                                           src="{{ $driver->national_id_behind_avatar
-                                                              ? asset('storage/' . $driver->national_id_behind_avatar)
+                                                              ? asset( $driver->national_id_behind_avatar)
                                                               : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                           alt="National ID Back" />
                                                   </span>

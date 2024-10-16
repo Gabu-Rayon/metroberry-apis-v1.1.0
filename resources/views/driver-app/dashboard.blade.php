@@ -34,25 +34,22 @@
             <!--Page Title & Icons End-->
 
             <!--All Notifications & Status Container Start-->
-
-            @if (session('success'))
-                <div id="success-message" class="alert alert-success" style="display: none;">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div id="error-message" class="alert alert-danger" style="display: none;">
-                    {{ session('error') }}
-                </div>
-            @endif
             <div class="change-request-status">
-                @if ($driver->status == 'inactive')
-                    <div
-                        class="request-notification-container map-notification offline-notification map-notification-warning">
-                        Your account is inactive
-                        <div class="font-weight-light">Contact your administrator</div>
+                @if (session('success'))
+                    <div id="success-message" class="alert alert-success" style="display: none;">
+                        {{ session('success') }}
                     </div>
+                @endif
+
+                @if (session('error'))
+                    <div id="error-message" class="alert alert-danger" style="display: none;">
+                        {{ session('error') }}
+                        </di @if ($driver->status == 'inactive')
+                        <div
+                            class="request-notification-container map-notification offline-notification map-notification-warning">
+                            Your account is inactive
+                            <div class="font-weight-light">Contact your administrator</div>
+                        </div>
                 @endif
 
                 <!-- Always show document upload forms below -->
@@ -77,8 +74,8 @@
                         </form>
                     </div>
                 @else
-                    <div
-                        id="verified-message"  class="request-notification-container map-notification offline-notification map-notification-warning">
+                    <div id="verified-message"
+                        class="request-notification-container map-notification offline-notification map-notification-warning">
                         National ID is valid
                     </div>
                 @endif
@@ -91,8 +88,8 @@
                             <div class="font-weight-light">Contact your administrator</div>
                         </div>
                     @else
-                        <div
-                             id="verified-message" class="request-notification-container map-notification offline-notification map-notification-warning">
+                        <div id="verified-message"
+                            class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your license has been verified.
                         </div>
                     @endif
@@ -137,8 +134,8 @@
                             <div class="font-weight-light">Contact your administrator</div>
                         </div>
                     @else
-                        <div
-                            id="verified-message"  class="request-notification-container map-notification offline-notification map-notification-warning">
+                        <div id="verified-message"
+                            class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your PSV Badge has been verified.
                         </div>
                     @endif
@@ -151,7 +148,8 @@
                             @csrf
                             <div class="mb-3">
                                 <label for="psv_badge_no" class="form-label">Badge No.</label>
-                                <input type="text" id="psv_badge_no" name="psv_badge_no" class="form-control" required>
+                                <input type="text" id="psv_badge_no" name="psv_badge_no" class="form-control"
+                                    required>
                             </div>
                             <div class="mb-3">
                                 <label for="psv_issue_date" class="form-label">Issue Date</label>
