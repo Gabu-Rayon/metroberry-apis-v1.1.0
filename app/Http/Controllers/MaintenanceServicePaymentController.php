@@ -51,6 +51,97 @@ class MaintenanceServicePaymentController extends Controller
 
 
 
+    // public function billedVehicleServiceMaintenanceRecievePaymentStore(Request $request, $id)
+    // {
+    //     try {
+    //         $data = $request->all();
+
+    //         Log::info('Data from the Form to receive payment of billed service');
+    //         Log::info($data);
+
+    //         $creator = Auth::user();
+
+    //         Log::info('User who is processing the payment');
+    //         Log::info($creator);
+
+    //         // Validation rules
+    //         $validator = Validator::make($data, [
+    //             'payment_date' => 'required|date',
+    //             'amount' => 'required|numeric',
+    //             'account_id' => 'required|exists:accounts,id',
+    //             'remark' => 'nullable|string',
+    //             'payment_receipt' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx|max:2048',
+    //             'reference' => 'required|string',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::info('Validation Error');
+    //             Log::info($validator->errors());
+    //             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         $invoiceNo = $this->generateInvoiceNumber();
+    //         Log::info('Generated Invoice Number');
+    //         Log::info($invoiceNo);
+
+    //         // Retrieve service details based on $id
+    //         $service = MaintenanceService::findOrFail($id);
+
+    //         $maintenanceServicePayment = new MaintenanceServicePayment();
+    //         $maintenanceServicePayment->maintenance_service_id = $service->id;
+    //         $maintenanceServicePayment->vehicle_id = $service->vehicle_id;
+    //         $maintenanceServicePayment->service_type_id = $service->service_type_id;
+    //         $maintenanceServicePayment->service_category_id = $service->service_category_id;
+    //         $maintenanceServicePayment->service_date = $service->service_date;
+    //         $maintenanceServicePayment->service_cost = $service->service_cost;
+    //         $maintenanceServicePayment->invoice_no = $invoiceNo;
+    //         $maintenanceServicePayment->account_id = $data['account_id'];
+    //         $maintenanceServicePayment->receipt_type_code = null;
+    //         $maintenanceServicePayment->payment_type_code = null;
+    //         $maintenanceServicePayment->confirm_date = null;
+    //         $maintenanceServicePayment->payment_date = $data['payment_date'];
+    //         $maintenanceServicePayment->total_taxable_amount = $service->service_cost; // Adjust as needed
+    //         $maintenanceServicePayment->total_tax_amount = null; // Adjust as needed
+    //         $maintenanceServicePayment->total_amount = $data['amount'];
+    //         $maintenanceServicePayment->remark = $data['remark'];
+    //         $maintenanceServicePayment->reference = $data['reference'];
+    //         $maintenanceServicePayment->qr_code_url = null;
+    //         $maintenanceServicePayment->created_by = $creator->id;
+
+    //         // Handle payment receipt file upload
+    //         if ($request->hasFile('payment_receipt')) {
+    //             $file = $request->file('payment_receipt');
+    //             $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
+
+    //             // Move the uploaded file to the public folder
+    //             $file->move(public_path('maintenance_service_payment_receipts'), $fileName);
+    //             // Store the relative path to the database
+    //             $maintenanceServicePayment->payment_receipt = 'maintenance_service_payment_receipts/' . $fileName;
+    //         }
+
+    //         $maintenanceServicePayment->save();
+    //         Log::info('Maintenance Service Payment Saved');
+
+    //         // Update the MaintenanceService status
+    //         $totalPaid = MaintenanceServicePayment::where('maintenance_service_id', $service->id)->sum('total_amount');
+
+    //         if ($totalPaid >= $service->service_cost) {
+    //             $service->service_status = 'paid';
+    //         } else {
+    //             $service->service_status = 'partially paid';
+    //         }
+    //         $service->save();
+
+    //         return redirect()->route('maintenance.service.payment.checkout', ['id' => $id])
+    //             ->with('success', 'Payment received and added successfully.');
+    //     } catch (\Exception $e) {
+    //         Log::error('Error receiving payment for Maintenance Service: ' . $e->getMessage());
+    //         return redirect()->back()->with('error', 'An error occurred while receiving the payment for the Maintenance Service. Please try again.')->withInput();
+    //     }
+    // }
+
+
+
     public function billedVehicleServiceMaintenanceRecievePaymentStore(Request $request, $id)
     {
         try {
@@ -68,7 +159,7 @@ class MaintenanceServicePaymentController extends Controller
             $validator = Validator::make($data, [
                 'payment_date' => 'required|date',
                 'amount' => 'required|numeric',
-                'account_id' => 'required|exists:accounts,id', // Assuming 'accounts' is the table name and 'id' is the primary key
+                'account_id' => 'required|exists:accounts,id',
                 'remark' => 'nullable|string',
                 'payment_receipt' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx|max:2048',
                 'reference' => 'required|string',
@@ -112,8 +203,11 @@ class MaintenanceServicePaymentController extends Controller
             if ($request->hasFile('payment_receipt')) {
                 $file = $request->file('payment_receipt');
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('maintenance_service_payment_receipts'), $fileName);
-                $maintenanceServicePayment->payment_receipt = $fileName;
+
+                // Move the uploaded file to the specified path
+                $file->move('/home/kknuicdz/portal_public_html/maintenance_service_payment_receipts', $fileName);
+                // Store the relative path to the database
+                $maintenanceServicePayment->payment_receipt = 'maintenance_service_payment_receipts/' . $fileName;
             }
 
             $maintenanceServicePayment->save();
@@ -136,6 +230,8 @@ class MaintenanceServicePaymentController extends Controller
             return redirect()->back()->with('error', 'An error occurred while receiving the payment for the Maintenance Service. Please try again.')->withInput();
         }
     }
+
+
 
 
     /**

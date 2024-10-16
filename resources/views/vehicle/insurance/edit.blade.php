@@ -152,7 +152,7 @@
                         <input type="file" name="policy_document" id="policy_document"
                             onchange="get_img_url(this, '#document_image');">
                         @if ($vehicleInsurance->policy_document)
-                            <a href="{{ asset('storage/' . $vehicleInsurance->policy_document) }}"
+                            <a href="{{ asset($vehicleInsurance->policy_document) }}"
                                 target="_blank">View Current Document</a>
                         @endif
                     </div>

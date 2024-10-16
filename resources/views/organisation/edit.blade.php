@@ -50,7 +50,7 @@
                     <div class="col-sm-7">
                         <input name="logo" class="form-control" type="file" placeholder="Logo" id="logo"
                             value="" />
-                        <img src="{{ url('storage/' . $organisation->user->avatar) }}" alt="Avatar"
+                        <img src="{{ asset($organisation->user->avatar) }}" alt="Avatar"
                             class="form-control" />
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                             placeholder="Certificate of Organisation" id="certificate_of_organisation" value="" />
                         @if ($organisation->certificate_of_organisation)
                             <div class="mt-2">
-                                <a href="{{ url('storage/' . $organisation->certificate_of_organisation) }}"
+                                <a href="{{ asset($organisation->certificate_of_organisation) }}"
                                     download>Download Certificate of Organisation</a>
                             </div>
                         @endif

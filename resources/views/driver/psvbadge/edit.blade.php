@@ -39,8 +39,7 @@
                             id="psv_badge_avatar" value="" />
                         @if ($psvbadge->psv_badge_avatar)
                             <div class="mt-2">
-                                <a href="{{ url('storage/' . $psvbadge->psv_badge_avatar) }}" download>Download Badge
-                                    Copy</a>
+                                <a href="{{ asset($psvbadge->psv_badge_avatar) }}" download>Download Badge Copy</a>
                             </div>
                         @endif
                     </div>
