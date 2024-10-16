@@ -207,6 +207,93 @@ class TripPaymentController extends Controller
 
 
 
+    // public function billedTripRecievePaymentStore(Request $request, $id)
+    // {
+    //     try {
+    //         $data = $request->all();
+
+    //         Log::info('Data from the Form receive payment of billed trip:');
+    //         Log::info($data);
+
+    //         $creator = Auth::user();
+    //         Log::info('User making the payment:');
+    //         Log::info($creator);
+
+    //         // Validation rules
+    //         $validator = Validator::make($data, [
+    //             'payment_date' => 'required|date',
+    //             'amount' => 'required|numeric',
+    //             'account_id' => 'required|string',
+    //             'remark' => 'nullable|string',
+    //             'payment_receipt' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx|max:2048', // Add max file size if necessary
+    //             'reference' => 'required|string',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         $invoiceNo = $this->generateInvoiceNumber();
+    //         Log::info('Invoice Generated No.:');
+    //         Log::info($invoiceNo);
+
+    //         // Retrieve trip details based on $id
+    //         $trip = Trip::findOrFail($id);
+
+    //         $tripPayment = new TripPayment();
+    //         $tripPayment->trip_id = $trip->id;
+    //         $tripPayment->customer_id = $trip->customer_id;
+    //         $tripPayment->invoice_no = $invoiceNo;
+    //         $tripPayment->account_id = $data['account_id'];
+    //         $tripPayment->customer_tin = $trip->customer->user->customer_tin;
+    //         $tripPayment->customer_name = $trip->customer->user->name;
+    //         $tripPayment->receipt_type_code = null;
+    //         $tripPayment->payment_type_code = null;
+    //         $tripPayment->confirm_date = null;
+    //         $tripPayment->payment_date = $data['payment_date'];
+    //         $tripPayment->total_taxable_amount = $trip->total_price;
+    //         $tripPayment->total_tax_amount = null;
+    //         $tripPayment->total_amount = $data['amount'];
+    //         $tripPayment->remark = $data['remark'];
+    //         $tripPayment->reference = $data['reference'];
+    //         $tripPayment->qr_code_url = null;
+    //         $tripPayment->created_by = $creator->id;
+
+    //         // Handle payment receipt file upload
+    //         if ($request->hasFile('payment_receipt')) {
+    //             $file = $request->file('payment_receipt');
+    //             $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
+    //             // Move the uploaded file to the public folder directly
+    //             $file->move(public_path('payment_receipts'), $fileName);
+    //             // Store the relative path in the trip payment record
+    //             $tripPayment->payment_receipt = 'payment_receipts/' . $fileName;
+    //         }
+
+    //         $tripPayment->save();
+    //         Log::info('Trip Payment Saved:');
+    //         Log::info($tripPayment);
+
+    //         $totalPaidAmount = TripPayment::where('trip_id', $trip->id)->sum('total_amount');
+    //         Log::info('Total Paid Amount:');
+    //         Log::info($totalPaidAmount);
+
+    //         // Update trip status based on total paid amount
+    //         if ($totalPaidAmount >= $trip->total_price) {
+    //             $trip->status = 'paid';
+    //         } else {
+    //             $trip->status = 'partially paid';
+    //         }
+    //         $trip->save();
+    //         Log::info('Trip Status Updated:');
+    //         Log::info($trip->status);
+
+    //         return redirect()->route('trip.payment.checkout', ['id' => $id])
+    //             ->with('success', 'Payment received && Added successfully.');
+    //     } catch (\Exception $e) {
+    //         Log::error('Error receiving payment for trip: ' . $e->getMessage());
+    //         return redirect()->back()->with('error', 'An error occurred while receiving the payment. Please try again.');
+    //     }
+    // }
     public function billedTripRecievePaymentStore(Request $request, $id)
     {
         try {
@@ -263,8 +350,13 @@ class TripPaymentController extends Controller
             if ($request->hasFile('payment_receipt')) {
                 $file = $request->file('payment_receipt');
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
-                // Move the uploaded file to the public folder directly
-                $file->move(public_path('payment_receipts'), $fileName);
+                // Move the uploaded file to the specified path
+                $filePath = '/home/kknuicdz/portal_public_html/payment_receipts';
+                // Create the directory if it doesn't exist
+                if (!file_exists($filePath)) {
+                    mkdir($filePath, 0755, true);
+                }
+                $file->move($filePath, $fileName);
                 // Store the relative path in the trip payment record
                 $tripPayment->payment_receipt = 'payment_receipts/' . $fileName;
             }
@@ -288,7 +380,7 @@ class TripPaymentController extends Controller
             Log::info($trip->status);
 
             return redirect()->route('trip.payment.checkout', ['id' => $id])
-                ->with('success', 'Payment received && Added successfully.');
+                ->with('success', 'Payment received & Added successfully.');
         } catch (\Exception $e) {
             Log::error('Error receiving payment for trip: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while receiving the payment. Please try again.');

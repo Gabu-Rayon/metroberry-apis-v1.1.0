@@ -129,10 +129,103 @@ class OrganisationController extends Controller
      * Store a newly created resource in storage.
      */
 
+    // public function store(Request $request)
+    // {
+    //     try {
+
+    //         $data = $request->all();
+
+    //         $validator = Validator::make($data, [
+    //             'name' => 'required|string',
+    //             'phone' => 'required|string',
+    //             'email' => 'required|email|unique:users',
+    //             'address' => 'required|string',
+    //             'logo' => 'required|file|mimes:jpeg,jpg,png,gif,webp|max:2048',
+    //             'organisation_certificate' => 'required|file|mimes:pdf|max:2048',
+    //             'organisation_code' => 'required|string|unique:organisations',
+    //             'password' => 'required|string|min:6',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         DB::beginTransaction();
+    //         $logoPath = null;
+    //         $email = $data['email'];
+    //         $generatedPassword = $data['password'];
+    //         Log::info('Password Generated for this Organisation: ');
+    //         Log::info($generatedPassword);
+
+    //         // Store logo in the public folder
+    //         if ($request->hasFile('logo')) {
+    //             $logoFile = $request->file('logo');
+    //             $logoExtension = $logoFile->getClientOriginalExtension();
+    //             $logoFileName = "{$email}-avatar.{$logoExtension}";
+    //             $logoPath = 'uploads/company-logos/' . $logoFileName; // Store the relative path
+    //             $logoFile->move(public_path('uploads/company-logos'), $logoFileName); // Move the file to the public directory
+    //         }
+
+    //         // Store organization certificate in the public folder
+    //         if ($request->hasFile('organisation_certificate')) {
+    //             $certificateFile = $request->file('organisation_certificate');
+    //             $certificateExtension = $certificateFile->getClientOriginalExtension();
+    //             $certificateFileName = "{$email}-certificate.{$certificateExtension}";
+    //             $certificatePath = 'uploads/organisation-certificates/' . $certificateFileName; // Store the relative path
+    //             $certificateFile->move(public_path('uploads/organisation-certificates'), $certificateFileName); // Move the file to the public directory
+    //         }
+
+
+    //         $user = User::create([
+    //             'name' => $data['name'],
+    //             'email' => $data['email'],
+    //             'phone' => $data['phone'],
+    //             'password' => bcrypt($data['password']),
+    //             'address' => $data['address'],
+    //             'role' => 'organisation',
+    //             'avatar' => $logoPath,
+    //             'created_by' => Auth::user()->id
+    //         ]);
+
+    //         $user->assignRole('organisation');
+
+    //         Organisation::create([
+    //             'user_id' => $user->id,
+    //             'certificate_of_organisation' => $certificatePath,
+    //             'billing_cycle' => null,
+    //             'terms_and_conditions' => null,
+    //             'created_by' => Auth::user()->id,
+    //             'organisation_code' => $data['organisation_code']
+    //         ]);
+
+    //         DB::commit();
+
+
+    //         // Send email with the plain password
+    //         Mail::send('mail-view.organisation-welcome-mail', [
+    //             'organisation' => $user->name,
+    //             'email' => $user->email,
+    //             'password' => $generatedPassword
+    //         ], function ($message) use ($user) {
+    //             $message->to($user->email)
+    //                 ->subject('Your Account Created');
+    //         });
+
+    //         return redirect()->route('organisation')->with('success', 'Organisation created successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('Error Creating Organisation');
+    //         Log::error($e);
+    //         return redirect()->back()->with('error', 'An error occurred while creating organisation')->withInput();
+    //     }
+    // }
+
+
+
+
     public function store(Request $request)
     {
         try {
-
             $data = $request->all();
 
             $validator = Validator::make($data, [
@@ -152,18 +245,22 @@ class OrganisationController extends Controller
 
             DB::beginTransaction();
             $logoPath = null;
+            $certificatePath = null; // Initialize the certificate path
             $email = $data['email'];
             $generatedPassword = $data['password'];
             Log::info('Password Generated for this Organisation: ');
             Log::info($generatedPassword);
+
+            // Define the base path for uploads
+            $baseUploadPath = '/home/kknuicdz/portal_public_html/uploads';
 
             // Store logo in the public folder
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
                 $logoExtension = $logoFile->getClientOriginalExtension();
                 $logoFileName = "{$email}-avatar.{$logoExtension}";
-                $logoPath = 'uploads/company-logos/' . $logoFileName; // Store the relative path
-                $logoFile->move(public_path('uploads/company-logos'), $logoFileName); // Move the file to the public directory
+                $logoPath = 'company-logos/' . $logoFileName; // Store the relative path
+                $logoFile->move("{$baseUploadPath}/company-logos", $logoFileName); // Move the file to the public directory
             }
 
             // Store organization certificate in the public folder
@@ -171,10 +268,9 @@ class OrganisationController extends Controller
                 $certificateFile = $request->file('organisation_certificate');
                 $certificateExtension = $certificateFile->getClientOriginalExtension();
                 $certificateFileName = "{$email}-certificate.{$certificateExtension}";
-                $certificatePath = 'uploads/organisation-certificates/' . $certificateFileName; // Store the relative path
-                $certificateFile->move(public_path('uploads/organisation-certificates'), $certificateFileName); // Move the file to the public directory
+                $certificatePath = 'organisation-certificates/' . $certificateFileName; // Store the relative path
+                $certificateFile->move("{$baseUploadPath}/organisation-certificates", $certificateFileName); // Move the file to the public directory
             }
-
 
             $user = User::create([
                 'name' => $data['name'],
@@ -200,7 +296,6 @@ class OrganisationController extends Controller
 
             DB::commit();
 
-
             // Send email with the plain password
             Mail::send('mail-view.organisation-welcome-mail', [
                 'organisation' => $user->name,
@@ -219,6 +314,7 @@ class OrganisationController extends Controller
             return redirect()->back()->with('error', 'An error occurred while creating organisation')->withInput();
         }
     }
+
 
 
 
@@ -246,6 +342,81 @@ class OrganisationController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    
+    // public function update(Request $request, string $id)
+    // {
+    //     try {
+    //         $organisation = Organisation::findOrFail($id);
+    //         $user = User::findOrFail($organisation->user_id);
+
+    //         $data = $request->all();
+
+    //         $validator = Validator::make($data, [
+    //             'name' => 'required|string',
+    //             'phone' => 'required|string',
+    //             'email' => 'required|email|unique:users,email,' . $user->id,
+    //             'address' => 'required|string',
+    //             'logo' => 'file|mimes:jpeg,jpg,png,gif,webp|max:2048',
+    //             'certificate_of_organisation' => 'file|mimes:pdf|max:2048',
+    //             'organisation_code' => 'required|string|unique:organisations,organisation_code,' . $organisation->id,
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::info('VALIDATION ERRORS');
+    //             Log::info($validator->errors()->first());
+    //             return redirect()->back()->with('error', $validator->errors()->first());
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         $logoPath = $user->avatar; // Keep the existing logo path if not updated
+    //         $certificatePath = $organisation->certificate_of_organisation; // Keep the existing certificate path if not updated
+
+    //         // Store logo in the public folder
+    //         if ($request->hasFile('logo')) {
+    //             $logoFile = $request->file('logo');
+    //             $logoExtension = $logoFile->getClientOriginalExtension();
+    //             $logoFileName = "{$user->email}-avatar.{$logoExtension}";
+    //             $logoPath = 'uploads/company-logos/' . $logoFileName; // Set relative path for logo
+    //             $logoFile->move(public_path('uploads/company-logos'), $logoFileName); // Move the file to public folder
+    //         }
+
+    //         // Store certificate in the public folder
+    //         if ($request->hasFile('certificate_of_organisation')) {
+    //             $certificateFile = $request->file('certificate_of_organisation');
+    //             $certificateExtension = $certificateFile->getClientOriginalExtension();
+    //             $certificateFileName = "{$user->email}-certificate.{$certificateExtension}";
+    //             $certificatePath = 'uploads/organisation-certificates/' . $certificateFileName; // Set relative path for certificate
+    //             $certificateFile->move(public_path('uploads/organisation-certificates'), $certificateFileName); // Move the file to public folder
+    //         }
+
+    //         // Update user and organisation
+    //         $user->update([
+    //             'name' => $data['name'],
+    //             'email' => $data['email'],
+    //             'phone' => $data['phone'],
+    //             'address' => $data['address'],
+    //             'avatar' => $logoPath // Save the path
+    //         ]);
+
+    //         $organisation->update([
+    //             'certificate_of_organisation' => $certificatePath, // Save the path, or keep the existing one
+    //             'organisation_code' => $data['organisation_code']
+    //         ]);
+
+    //         DB::commit();
+
+    //         return redirect()->route('organisation')->with('success', 'Organisation updated successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('ERROR UPDATING Organisation');
+    //         Log::error($e);
+    //         return redirect()->back()->with('error', 'An error occurred while updating organisation');
+    //     }
+    // }
+
+
+
     public function update(Request $request, string $id)
     {
         try {
@@ -275,13 +446,16 @@ class OrganisationController extends Controller
             $logoPath = $user->avatar; // Keep the existing logo path if not updated
             $certificatePath = $organisation->certificate_of_organisation; // Keep the existing certificate path if not updated
 
+            // Define the base path for uploads
+            $baseUploadPath = '/home/kknuicdz/portal_public_html/uploads';
+
             // Store logo in the public folder
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
                 $logoExtension = $logoFile->getClientOriginalExtension();
                 $logoFileName = "{$user->email}-avatar.{$logoExtension}";
-                $logoPath = 'uploads/company-logos/' . $logoFileName; // Set relative path for logo
-                $logoFile->move(public_path('uploads/company-logos'), $logoFileName); // Move the file to public folder
+                $logoPath = 'company-logos/' . $logoFileName; // Set relative path for logo
+                $logoFile->move("{$baseUploadPath}/company-logos", $logoFileName); // Move the file to public folder
             }
 
             // Store certificate in the public folder
@@ -289,8 +463,8 @@ class OrganisationController extends Controller
                 $certificateFile = $request->file('certificate_of_organisation');
                 $certificateExtension = $certificateFile->getClientOriginalExtension();
                 $certificateFileName = "{$user->email}-certificate.{$certificateExtension}";
-                $certificatePath = 'uploads/organisation-certificates/' . $certificateFileName; // Set relative path for certificate
-                $certificateFile->move(public_path('uploads/organisation-certificates'), $certificateFileName); // Move the file to public folder
+                $certificatePath = 'organisation-certificates/' . $certificateFileName; // Set relative path for certificate
+                $certificateFile->move("{$baseUploadPath}/organisation-certificates", $certificateFileName); // Move the file to public folder
             }
 
             // Update user and organisation
@@ -319,6 +493,7 @@ class OrganisationController extends Controller
     }
 
 
+
     /**
      * Remove the specified resource from storage.
      */
@@ -330,6 +505,53 @@ class OrganisationController extends Controller
     }
 
     // Handle the deletion
+    // public function destroy(string $id)
+    // {
+    //     try {
+    //         $organisation = Organisation::findOrFail($id);
+
+    //         if (!$organisation) {
+    //             return redirect()->back()->with('error', 'Organisation not found');
+    //         }
+
+    //         $user = User::find($organisation->user_id);
+
+    //         if (!$user) {
+    //             return redirect()->back()->with('error', 'User not found');
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         // Define file paths
+    //         $certificatePath = public_path('uploads/organisation-certificates/' . $user->email . '-certificate.pdf'); // Update according to your naming convention
+    //         $logoPath = public_path('uploads/company-logos/' . $user->email . '-avatar.' . pathinfo($organisation->certificate_of_organisation, PATHINFO_EXTENSION)); // Get the correct extension or naming convention
+
+    //         // Delete the certificate file if it exists
+    //         if (File::exists($certificatePath)) {
+    //             File::delete($certificatePath);
+    //         }
+
+    //         // Delete the logo file if it exists
+    //         if (File::exists($logoPath)) {
+    //             File::delete($logoPath);
+    //         }
+
+    //         // Delete the organisation and user
+    //         $organisation->delete();
+    //         $user->delete();
+
+    //         DB::commit();
+
+    //         return redirect()->route('organisation')->with('success', 'Organisation deleted successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('ERROR DELETING Organisation');
+    //         Log::error($e);
+    //         return redirect()->back()->with('error', 'An error occurred while deleting organisation');
+    //     }
+    // }
+
+
     public function destroy(string $id)
     {
         try {
@@ -348,8 +570,9 @@ class OrganisationController extends Controller
             DB::beginTransaction();
 
             // Define file paths
-            $certificatePath = public_path('uploads/organisation-certificates/' . $user->email . '-certificate.pdf'); // Update according to your naming convention
-            $logoPath = public_path('uploads/company-logos/' . $user->email . '-avatar.' . pathinfo($organisation->certificate_of_organisation, PATHINFO_EXTENSION)); // Get the correct extension or naming convention
+            $baseUploadPath = '/home/kknuicdz/portal_public_html/uploads';
+            $certificatePath = "{$baseUploadPath}/organisation-certificates/{$user->email}-certificate.pdf"; // Adjust according to your naming convention
+            $logoPath = "{$baseUploadPath}/company-logos/{$user->email}-avatar." . pathinfo($organisation->certificate_of_organisation, PATHINFO_EXTENSION); // Get the correct extension or naming convention
 
             // Delete the certificate file if it exists
             if (File::exists($certificatePath)) {
@@ -375,6 +598,7 @@ class OrganisationController extends Controller
             return redirect()->back()->with('error', 'An error occurred while deleting organisation');
         }
     }
+
 
     public function activateForm(string $id)
     {

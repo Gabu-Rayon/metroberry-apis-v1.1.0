@@ -336,97 +336,194 @@ class CustomerAppController extends Controller
     }
 
 
+    // public function customerProfileUpdate(Request $request, $id)
+    // {
+    //     // Validate the incoming request data
+    //     $request->validate([
+    //         'phone' => 'required|string|max:15',
+    //         'full-name' => 'required|string|max:255',
+    //         'email' => 'required|email|max:255',
+    //         'address' => 'nullable|string|max:255',
+    //         'organisation' => 'required|exists:organisations,id',
+    //         'national_id_no' => 'nullable|string|max:50',
+    //         'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         'national_id_front_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         'national_id_behind_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //     ]);
+
+    //     // Find the customer by ID
+    //     $customer = Customer::findOrFail($id);
+    //     $user = User::find($customer->user_id);
+
+    //     // Update customer details
+    //     $user->name = $request->input('full-name');
+    //     $user->email = $request->input('email');
+    //     $user->phone = $request->input('phone');
+    //     $user->address = $request->input('address');
+    //     $customer->organisation_id = $request->input('organisation');
+    //     $customer->national_id_no = $request->input('national_id_no');
+
+    //     // Handle profile picture upload
+    //     if ($request->hasFile('profile_picture')) {
+    //         // Check if the old file exists and delete it if necessary
+    //         if ($customer->profile_picture) {
+    //             $oldProfilePath = public_path($customer->profile_picture);
+    //             if (file_exists($oldProfilePath)) {
+    //                 unlink($oldProfilePath); // Delete the old profile picture
+    //             }
+    //         }
+
+    //         $file = $request->file('profile_picture');
+    //         $filename = time() . '_profile.' . $file->getClientOriginalExtension();
+    //         $filePath = 'uploads/user-avatars/' . $customer->id . '/' . $filename;
+
+    //         // Move the new file to the public directory
+    //         $file->move(public_path('uploads/user-avatars/' . $customer->id), $filename);
+    //         $customer->profile_picture = $filePath; // Save the relative path
+    //     }
+
+    //     // Handle national ID front avatar upload
+    //     if ($request->hasFile('national_id_front_avatar')) {
+    //         // Check if the old file exists and delete it if necessary
+    //         if ($customer->national_id_front_avatar) {
+    //             $oldFrontIdPath = public_path($customer->national_id_front_avatar);
+    //             if (file_exists($oldFrontIdPath)) {
+    //                 unlink($oldFrontIdPath); // Delete the old front ID avatar
+    //             }
+    //         }
+
+    //         $file = $request->file('national_id_front_avatar');
+    //         $filename = time() . '_national_id_front.' . $file->getClientOriginalExtension();
+    //         $filePath = 'uploads/front-page-ids/' . $customer->id . '/' . $filename;
+
+    //         // Move the new file to the public directory
+    //         $file->move(public_path('uploads/front-page-ids/' . $customer->id), $filename);
+    //         $customer->national_id_front_avatar = $filePath; // Save the relative path
+    //     }
+
+    //     // Handle national ID behind avatar upload
+    //     if ($request->hasFile('national_id_behind_avatar')) {
+    //         // Check if the old file exists and delete it if necessary
+    //         if ($customer->national_id_behind_avatar) {
+    //             $oldBackIdPath = public_path($customer->national_id_behind_avatar);
+    //             if (file_exists($oldBackIdPath)) {
+    //                 unlink($oldBackIdPath); // Delete the old back ID avatar
+    //             }
+    //         }
+
+    //         $file = $request->file('national_id_behind_avatar');
+    //         $filename = time() . '_national_id_behind.' . $file->getClientOriginalExtension();
+    //         $filePath = 'uploads/national_id_avatars/' . $customer->id . '/' . $filename;
+
+    //         // Move the new file to the public directory
+    //         $file->move(public_path('uploads/national_id_avatars/' . $customer->id), $filename);
+    //         $customer->national_id_behind_avatar = $filePath; // Save the relative path
+    //     }
+
+    //     // Save the updated customer details
+    //     $customer->save();
+    //     $user->save(); // Don't forget to save the user details
+
+    //     // Redirect back with a success message
+    //     return redirect()->route('customer.profile', $id)->with('success', 'Profile updated successfully.');
+    // }
+
+
     public function customerProfileUpdate(Request $request, $id)
-    {
-        // Validate the incoming request data
-        $request->validate([
-            'phone' => 'required|string|max:15',
-            'full-name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'address' => 'nullable|string|max:255',
-            'organisation' => 'required|exists:organisations,id',
-            'national_id_no' => 'nullable|string|max:50',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'national_id_front_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'national_id_behind_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+{
+    // Validate the incoming request data
+    $request->validate([
+        'phone' => 'required|string|max:15',
+        'full-name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'address' => 'nullable|string|max:255',
+        'organisation' => 'required|exists:organisations,id',
+        'national_id_no' => 'nullable|string|max:50',
+        'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'national_id_front_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'national_id_behind_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        // Find the customer by ID
-        $customer = Customer::findOrFail($id);
-        $user = User::find($customer->user_id);
+    // Find the customer by ID
+    $customer = Customer::findOrFail($id);
+    $user = User::find($customer->user_id);
 
-        // Update customer details
-        $user->name = $request->input('full-name');
-        $user->email = $request->input('email');
-        $user->phone = $request->input('phone');
-        $user->address = $request->input('address');
-        $customer->organisation_id = $request->input('organisation');
-        $customer->national_id_no = $request->input('national_id_no');
+    // Update customer details
+    $user->name = $request->input('full-name');
+    $user->email = $request->input('email');
+    $user->phone = $request->input('phone');
+    $user->address = $request->input('address');
+    $customer->organisation_id = $request->input('organisation');
+    $customer->national_id_no = $request->input('national_id_no');
 
-        // Handle profile picture upload
-        if ($request->hasFile('profile_picture')) {
-            // Check if the old file exists and delete it if necessary
-            if ($customer->profile_picture) {
-                $oldProfilePath = public_path($customer->profile_picture);
-                if (file_exists($oldProfilePath)) {
-                    unlink($oldProfilePath); // Delete the old profile picture
-                }
+    // Base path for uploads
+    $baseUploadPath = '/home/kknuicdz/portal_public_html/uploads';
+
+    // Handle profile picture upload
+    if ($request->hasFile('profile_picture')) {
+        // Check if the old file exists and delete it if necessary
+        if ($customer->profile_picture) {
+            $oldProfilePath = public_path($customer->profile_picture);
+            if (file_exists($oldProfilePath)) {
+                unlink($oldProfilePath); // Delete the old profile picture
             }
-
-            $file = $request->file('profile_picture');
-            $filename = time() . '_profile.' . $file->getClientOriginalExtension();
-            $filePath = 'uploads/user-avatars/' . $customer->id . '/' . $filename;
-
-            // Move the new file to the public directory
-            $file->move(public_path('uploads/user-avatars/' . $customer->id), $filename);
-            $customer->profile_picture = $filePath; // Save the relative path
         }
 
-        // Handle national ID front avatar upload
-        if ($request->hasFile('national_id_front_avatar')) {
-            // Check if the old file exists and delete it if necessary
-            if ($customer->national_id_front_avatar) {
-                $oldFrontIdPath = public_path($customer->national_id_front_avatar);
-                if (file_exists($oldFrontIdPath)) {
-                    unlink($oldFrontIdPath); // Delete the old front ID avatar
-                }
-            }
+        $file = $request->file('profile_picture');
+        $filename = time() . '_profile.' . $file->getClientOriginalExtension();
+        $filePath = 'user-avatars/' . $customer->id . '/' . $filename;
 
-            $file = $request->file('national_id_front_avatar');
-            $filename = time() . '_national_id_front.' . $file->getClientOriginalExtension();
-            $filePath = 'uploads/front-page-ids/' . $customer->id . '/' . $filename;
-
-            // Move the new file to the public directory
-            $file->move(public_path('uploads/front-page-ids/' . $customer->id), $filename);
-            $customer->national_id_front_avatar = $filePath; // Save the relative path
-        }
-
-        // Handle national ID behind avatar upload
-        if ($request->hasFile('national_id_behind_avatar')) {
-            // Check if the old file exists and delete it if necessary
-            if ($customer->national_id_behind_avatar) {
-                $oldBackIdPath = public_path($customer->national_id_behind_avatar);
-                if (file_exists($oldBackIdPath)) {
-                    unlink($oldBackIdPath); // Delete the old back ID avatar
-                }
-            }
-
-            $file = $request->file('national_id_behind_avatar');
-            $filename = time() . '_national_id_behind.' . $file->getClientOriginalExtension();
-            $filePath = 'uploads/national_id_avatars/' . $customer->id . '/' . $filename;
-
-            // Move the new file to the public directory
-            $file->move(public_path('uploads/national_id_avatars/' . $customer->id), $filename);
-            $customer->national_id_behind_avatar = $filePath; // Save the relative path
-        }
-
-        // Save the updated customer details
-        $customer->save();
-        $user->save(); // Don't forget to save the user details
-
-        // Redirect back with a success message
-        return redirect()->route('customer.profile', $id)->with('success', 'Profile updated successfully.');
+        // Move the new file to the specified directory
+        $file->move($baseUploadPath . '/user-avatars/' . $customer->id, $filename);
+        $customer->profile_picture = $filePath; // Save the relative path
     }
+
+    // Handle national ID front avatar upload
+    if ($request->hasFile('national_id_front_avatar')) {
+        // Check if the old file exists and delete it if necessary
+        if ($customer->national_id_front_avatar) {
+            $oldFrontIdPath = public_path($customer->national_id_front_avatar);
+            if (file_exists($oldFrontIdPath)) {
+                unlink($oldFrontIdPath); // Delete the old front ID avatar
+            }
+        }
+
+        $file = $request->file('national_id_front_avatar');
+        $filename = time() . '_national_id_front.' . $file->getClientOriginalExtension();
+        $filePath = 'front-page-ids/' . $customer->id . '/' . $filename;
+
+        // Move the new file to the specified directory
+        $file->move($baseUploadPath . '/front-page-ids/' . $customer->id, $filename);
+        $customer->national_id_front_avatar = $filePath; // Save the relative path
+    }
+
+    // Handle national ID behind avatar upload
+    if ($request->hasFile('national_id_behind_avatar')) {
+        // Check if the old file exists and delete it if necessary
+        if ($customer->national_id_behind_avatar) {
+            $oldBackIdPath = public_path($customer->national_id_behind_avatar);
+            if (file_exists($oldBackIdPath)) {
+                unlink($oldBackIdPath); // Delete the old back ID avatar
+            }
+        }
+
+        $file = $request->file('national_id_behind_avatar');
+        $filename = time() . '_national_id_behind.' . $file->getClientOriginalExtension();
+        $filePath = 'national_id_avatars/' . $customer->id . '/' . $filename;
+
+        // Move the new file to the specified directory
+        $file->move($baseUploadPath . '/national_id_avatars/' . $customer->id, $filename);
+        $customer->national_id_behind_avatar = $filePath; // Save the relative path
+    }
+
+    // Save the updated customer details
+    $customer->save();
+    $user->save(); // Don't forget to save the user details
+
+    // Redirect back with a success message
+    return redirect()->route('customer.profile', $id)->with('success', 'Profile updated successfully.');
+}
+
 
 
     public function tripsHistory()
@@ -557,6 +654,47 @@ class CustomerAppController extends Controller
         return view('customer-app.trip-cancelled-show', compact('trip'));
     }
 
+    // public function updateProfilePicture(Request $request)
+    // {
+    //     $request->validate([
+    //         'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //     ]);
+
+    //     $user = Auth::user();
+    //     $customer = $user->customer;
+
+    //     if ($request->hasFile('profile_picture')) {
+    //         // Check if the old profile picture exists and delete it if necessary
+    //         if ($customer->user->avatar) {
+    //             $oldProfilePath = public_path($customer->user->avatar);
+    //             if (file_exists($oldProfilePath)) {
+    //                 unlink($oldProfilePath); // Delete the old profile picture
+    //             }
+    //         }
+
+    //         $file = $request->file('profile_picture');
+    //         $fileName = time() . '_' . $file->getClientOriginalName(); // Use a unique name for the file
+    //         $directory = 'uploads/user-avatars/' . $user->id . '/';
+
+    //         // Ensure the directory exists
+    //         if (!is_dir(public_path($directory))) {
+    //             mkdir(public_path($directory), 0755, true); // Create directory if it doesn't exist
+    //         }
+
+    //         // Move the file to the public directory
+    //         $file->move(public_path($directory), $fileName);
+
+    //         // Update the user's profile picture path
+    //         $customer->user->avatar = $directory . $fileName; // Save the relative path
+    //         $customer->user->save();
+
+    //         return response()->json(['newProfilePictureUrl' => asset($customer->user->avatar)]); // Use asset() to get the URL
+    //     }
+
+    //     return response()->json(['error' => 'Failed to upload profile picture'], 400);
+    // }
+
+
     public function updateProfilePicture(Request $request)
     {
         $request->validate([
@@ -569,7 +707,7 @@ class CustomerAppController extends Controller
         if ($request->hasFile('profile_picture')) {
             // Check if the old profile picture exists and delete it if necessary
             if ($customer->user->avatar) {
-                $oldProfilePath = public_path($customer->user->avatar);
+                $oldProfilePath = '/home/kknuicdz/portal_public_html/' . $customer->user->avatar;
                 if (file_exists($oldProfilePath)) {
                     unlink($oldProfilePath); // Delete the old profile picture
                 }
@@ -580,12 +718,13 @@ class CustomerAppController extends Controller
             $directory = 'uploads/user-avatars/' . $user->id . '/';
 
             // Ensure the directory exists
-            if (!is_dir(public_path($directory))) {
-                mkdir(public_path($directory), 0755, true); // Create directory if it doesn't exist
+            $fullDirectoryPath = '/home/kknuicdz/portal_public_html/' . $directory;
+            if (!is_dir($fullDirectoryPath)) {
+                mkdir($fullDirectoryPath, 0755, true); // Create directory if it doesn't exist
             }
 
-            // Move the file to the public directory
-            $file->move(public_path($directory), $fileName);
+            // Move the file to the specified directory
+            $file->move($fullDirectoryPath, $fileName);
 
             // Update the user's profile picture path
             $customer->user->avatar = $directory . $fileName; // Save the relative path
@@ -596,5 +735,6 @@ class CustomerAppController extends Controller
 
         return response()->json(['error' => 'Failed to upload profile picture'], 400);
     }
+
 
 }

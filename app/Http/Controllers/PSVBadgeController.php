@@ -35,6 +35,59 @@ class PSVBadgeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // public function store(Request $request)
+    // {
+    //     try {
+    //         $data = $request->all();
+
+    //         $validator = Validator::make($data, [
+    //             'driver' => 'required|numeric|exists:drivers,id',
+    //             'psvbadge_no' => 'required|unique:psv_badges,psv_badge_no',
+    //             'issue_date' => 'required|date',
+    //             'expiry_date' => 'required|date|after:issue_date',
+    //             'psv_badge_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::error('PSV BADGE STORE VALIDATION ERROR');
+    //             Log::error($validator->errors()->all());
+    //             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         $badgePath = null;
+    //         $badgeNumber = $data['psvbadge_no'];
+
+    //         DB::beginTransaction();
+
+    //         if ($request->hasFile('psv_badge_avatar')) {
+    //             $badgeFile = $request->file('psv_badge_avatar');
+    //             $badgeExtension = $badgeFile->getClientOriginalExtension();
+    //             $badgeFileName = "{$badgeNumber}-back-id.{$badgeExtension}";
+    //             // Store the avatar directly in the public directory
+    //             $badgePath = $badgeFile->move(public_path('uploads/psvbadge-avatars'), $badgeFileName);
+    //             $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName; 
+    //         }
+
+    //         PSVBadge::create([
+    //             'driver_id' => $data['driver'],
+    //             'psv_badge_no' => $badgeNumber,
+    //             'psv_badge_date_of_issue' => $data['issue_date'],
+    //             'psv_badge_date_of_expiry' => $data['expiry_date'],
+    //             'psv_badge_avatar' => $badgePath,
+    //         ]);
+
+    //         DB::commit();
+
+    //         return redirect()->back()->with('success', 'PSV Badge Created Successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack(); // Rollback if there's an error
+    //         Log::error('PSV BADGE STORE ERROR');
+    //         Log::error($e);
+    //         return redirect()->back()->with('error', 'Something Went Wrong')->withInput();
+    //     }
+    // }
+
+
     public function store(Request $request)
     {
         try {
@@ -63,9 +116,10 @@ class PSVBadgeController extends Controller
                 $badgeFile = $request->file('psv_badge_avatar');
                 $badgeExtension = $badgeFile->getClientOriginalExtension();
                 $badgeFileName = "{$badgeNumber}-back-id.{$badgeExtension}";
-                // Store the avatar directly in the public directory
-                $badgePath = $badgeFile->move(public_path('uploads/psvbadge-avatars'), $badgeFileName);
-                $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName; 
+                // Store the avatar directly in the specified directory
+                $badgeFilePath = '/home/kknuicdz/portal_public_html/uploads/psvbadge-avatars';
+                $badgeFile->move($badgeFilePath, $badgeFileName);
+                $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName;
             }
 
             PSVBadge::create([
@@ -88,6 +142,7 @@ class PSVBadgeController extends Controller
     }
 
 
+
     /**
      * Display the specified resource.
      */
@@ -108,6 +163,76 @@ class PSVBadgeController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    // public function update(Request $request, $id)
+    // {
+    //     try {
+    //         $data = $request->all();
+    //         $psvbadge = PSVBadge::findOrFail($id);
+
+    //         $validator = Validator::make($data, [
+    //             'psv_badge_date_of_issue' => 'required|date',
+    //             'psv_badge_date_of_expiry' => 'required|date|after:psv_badge_date_of_issue',
+    //             'psv_badge_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::error('PSV BADGE UPDATE VALIDATION ERROR');
+    //             Log::error($validator->errors()->all());
+    //             return redirect()->back()->with('error', $validator->errors()->first());
+    //         }
+
+    //         if (!$psvbadge) {
+    //             return redirect()->back()->with('error', 'PSV Badge Not Found');
+    //         }
+
+    //         $badgePath = $psvbadge->psv_badge_avatar;
+    //         $badgeNumber = $psvbadge->psv_badge_no;
+
+    //         DB::beginTransaction();
+
+    //         // Handle new avatar upload
+    //         if ($request->hasFile('psv_badge_avatar')) {
+    //             // Delete old avatar if exists
+    //             if ($badgePath && file_exists(public_path($badgePath))) {
+    //                 unlink(public_path($badgePath));
+    //             }
+
+    //             $badgeFile = $request->file('psv_badge_avatar');
+    //             $badgeExtension = $badgeFile->getClientOriginalExtension();
+    //             $badgeFileName = "{$badgeNumber}-back-id.{$badgeExtension}";
+
+    //             // Define the path in the public directory
+    //             $publicPath = public_path('uploads/psvbadge-avatars');
+    //             // Create the directory if it doesn't exist
+    //             if (!file_exists($publicPath)) {
+    //                 mkdir($publicPath, 0755, true);
+    //             }
+
+    //             // Move the file to the public directory
+    //             $badgeFile->move($publicPath, $badgeFileName);
+    //             $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName; // Set the relative path for database
+    //         }
+
+    //         $psvbadge->update([
+    //             'psv_badge_date_of_issue' => $data['psv_badge_date_of_issue'],
+    //             'psv_badge_date_of_expiry' => $data['psv_badge_date_of_expiry'],
+    //             'psv_badge_avatar' => $badgePath,
+    //         ]);
+
+    //         $psvbadge->driver->status = 'inactive';
+    //         $psvbadge->driver->save();
+
+    //         DB::commit();
+
+    //         return redirect()->back()->with('success', 'PSV Badge Updated Successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('PSV BADGE UPDATE ERROR');
+    //         Log::error($e);
+    //         return redirect()->back()->with('error', 'Something Went Wrong');
+    //     }
+    // }
+
     public function update(Request $request, $id)
     {
         try {
@@ -138,22 +263,22 @@ class PSVBadgeController extends Controller
             // Handle new avatar upload
             if ($request->hasFile('psv_badge_avatar')) {
                 // Delete old avatar if exists
-                if ($badgePath && file_exists(public_path($badgePath))) {
-                    unlink(public_path($badgePath));
+                if ($badgePath && file_exists('/home/kknuicdz/portal_public_html/' . $badgePath)) {
+                    unlink('/home/kknuicdz/portal_public_html/' . $badgePath);
                 }
 
                 $badgeFile = $request->file('psv_badge_avatar');
                 $badgeExtension = $badgeFile->getClientOriginalExtension();
                 $badgeFileName = "{$badgeNumber}-back-id.{$badgeExtension}";
 
-                // Define the path in the public directory
-                $publicPath = public_path('uploads/psvbadge-avatars');
+                // Define the path in the specified directory
+                $publicPath = '/home/kknuicdz/portal_public_html/uploads/psvbadge-avatars';
                 // Create the directory if it doesn't exist
                 if (!file_exists($publicPath)) {
                     mkdir($publicPath, 0755, true);
                 }
 
-                // Move the file to the public directory
+                // Move the file to the specified directory
                 $badgeFile->move($publicPath, $badgeFileName);
                 $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName; // Set the relative path for database
             }
@@ -180,6 +305,7 @@ class PSVBadgeController extends Controller
 
 
 
+
     public function delete($id)
     {
         $psvbadge = PSVBadge::findOrFail($id);
@@ -189,6 +315,40 @@ class PSVBadgeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    // public function destroy($id)
+    // {
+    //     try {
+    //         $psvbadge = PSVBadge::findOrFail($id);
+    //         $driver = $psvbadge->driver;
+
+    //         if (!$psvbadge) {
+    //             return redirect()->back()->with('error', 'Badge not found');
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         // Get the avatar path and delete the file if it exists
+    //         $avatarPath = public_path($psvbadge->psv_badge_avatar);
+    //         if (file_exists($avatarPath)) {
+    //             unlink($avatarPath); // Delete the file
+    //         }
+
+    //         $psvbadge->delete();
+    //         $driver->status = 'inactive';
+    //         $driver->save();
+
+    //         DB::commit();
+
+    //         return redirect()->route('driver.psvbadge')->with('success', 'Badge deleted successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('DELETE BADGE ERROR');
+    //         Log::error($e);
+    //         return redirect()->back()->with('error', $e->getMessage());
+    //     }
+    // }
+
+
     public function destroy($id)
     {
         try {
@@ -202,7 +362,7 @@ class PSVBadgeController extends Controller
             DB::beginTransaction();
 
             // Get the avatar path and delete the file if it exists
-            $avatarPath = public_path($psvbadge->psv_badge_avatar);
+            $avatarPath = '/home/kknuicdz/portal_public_html/' . $psvbadge->psv_badge_avatar;
             if (file_exists($avatarPath)) {
                 unlink($avatarPath); // Delete the file
             }
@@ -221,6 +381,7 @@ class PSVBadgeController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
 
     public function verify($id)
     {
