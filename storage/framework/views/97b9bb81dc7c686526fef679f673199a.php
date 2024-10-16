@@ -1,22 +1,22 @@
-@extends('layouts.app')
 
-@section('title', 'Checkout Vehicle Service')
-@section('content')
+
+<?php $__env->startSection('title', 'Checkout Vehicle Service'); ?>
+<?php $__env->startSection('content'); ?>
 
     <body class="fixed sidebar-mini">
 
 
-        @include('components.preloader')
+        <?php echo $__env->make('components.preloader', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
         <!-- react page -->
         <div id="app">
             <!-- Begin page -->
             <div class="wrapper">
                 <!-- start header -->
-                @include('components.sidebar.sidebar')
+                <?php echo $__env->make('components.sidebar.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 <!-- end header -->
                 <div class="content-wrapper">
                     <div class="main-content">
-                        @include('components.navbar')
+                        <?php echo $__env->make('components.navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                         <div class="body-content">
                             <div class="tile">
@@ -32,43 +32,43 @@
                                         <div class="row">
                                             <div class="actions">
                                                 <p class="mb-0 mr-3 text-dark fw-bold">Status :</p>
-                                                @if ($service->service_status == 'billed')
+                                                <?php if($service->service_status == 'billed'): ?>
                                                     <span class="badge bg-success">Billed</span>
-                                                @elseif ($service->service_status == 'paid')
+                                                <?php elseif($service->service_status == 'paid'): ?>
                                                     <span class="badge bg-success">Paid</span>
-                                                @else
+                                                <?php else: ?>
                                                     <span class="badge bg-danger">Partially Paid</span>
-                                                @endif
+                                                <?php endif; ?>
                                                 <div class="accordion-header d-flex justify-content-end align-items-center"
                                                     id="flush-headingOne">
                                                     <a class="btn btn-success btn-sm" href="javascript:void(0);"
-                                                        onclick="axiosModal('{{ route('billed.vehicle.service.send.invoice', ['id' => $service->id]) }}')">
+                                                        onclick="axiosModal('<?php echo e(route('billed.vehicle.service.send.invoice', ['id' => $service->id])); ?>')">
                                                         <i class="fa-solid fa-arrow-right"></i> &nbsp;
                                                         Send Vehicle Service Invoice
                                                     </a>
 
                                                     <span class="m-1"></span>
                                                     <a class="btn btn-success btn-sm" href="javascript:void(0);"
-                                                        onclick="axiosModal('{{ route('billed.vehicle.service.resend.invoice', ['id' => $service->id]) }}')">
+                                                        onclick="axiosModal('<?php echo e(route('billed.vehicle.service.resend.invoice', ['id' => $service->id])); ?>')">
                                                         <i class="fas fa-share-square"></i> &nbsp;
                                                         Resend Vehicle Service Invoice
                                                     </a>
 
                                                     <span class="m-1"></span>
                                                     <a class="btn btn-success btn-sm" href="javascript:void(0);"
-                                                        onclick="axiosModal('{{ route('billed.vehicle.service.download.invoice', ['id' => $service->id]) }}')">
+                                                        onclick="axiosModal('<?php echo e(route('billed.vehicle.service.download.invoice', ['id' => $service->id])); ?>')">
                                                         <i class="fa-solid fa-download"></i> &nbsp;
                                                         Download Vehicle Service Invoice
                                                     </a>
 
                                                     <span class="m-1"></span>
-                                                    @if (in_array($service->service_status, ['billed', 'partially paid']))
+                                                    <?php if(in_array($service->service_status, ['billed', 'partially paid'])): ?>
                                                         <a class="btn btn-success btn-sm" href="javascript:void(0);"
-                                                            onclick="axiosModal('{{ route('billed.vehicle.service.receive.payment', ['id' => $service->id]) }}')">
+                                                            onclick="axiosModal('<?php echo e(route('billed.vehicle.service.receive.payment', ['id' => $service->id])); ?>')">
                                                             <i class="fa-solid fa-plus"></i> &nbsp;
                                                             Receive Vehicle Service Payment
                                                         </a>
-                                                    @endif
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -95,28 +95,28 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @php $item = 1 @endphp
+                                                    <?php $item = 1 ?>
                                                     <tr>
-                                                        <td>{{ $item++ }}</td>
-                                                        <td> {{ $service->vehicle->plate_number ?? null }}</td>
-                                                        <td> {{ $service->serviceType->name }} </td>
-                                                        <td>{{ $service->service_date }}</td>
-                                                        <td> {{ $service->service_description }}</td>
-                                                        <td> {{ $service->vehicle->plate_number ?? null  }}</td>
-                                                        <td>{{ $service->serviceCategory->name }}</td>
-                                                        <td>Kes. {{ $service->service_cost }}</td>
+                                                        <td><?php echo e($item++); ?></td>
+                                                        <td> <?php echo e($service->vehicle->plate_number ?? null); ?></td>
+                                                        <td> <?php echo e($service->serviceType->name); ?> </td>
+                                                        <td><?php echo e($service->service_date); ?></td>
+                                                        <td> <?php echo e($service->service_description); ?></td>
+                                                        <td> <?php echo e($service->vehicle->plate_number ?? null); ?></td>
+                                                        <td><?php echo e($service->serviceCategory->name); ?></td>
+                                                        <td>Kes. <?php echo e($service->service_cost); ?></td>
 
                                                     </tr>
                                                     <tr>
                                                         <td colspan="3" class="text-right my-20"><strong>Total</strong>
                                                         </td>
-                                                        <td><strong>Kes.{{ $service->service_cost }}</strong></td>
+                                                        <td><strong>Kes.<?php echo e($service->service_cost); ?></strong></td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="3" class="text-right my-20">
                                                             <strong>Balance</strong>
                                                         </td>
-                                                        <td><strong>Kes.{{ $remainingAmount }}</strong></td>
+                                                        <td><strong>Kes.<?php echo e($remainingAmount); ?></strong></td>
                                                     </tr>
 
                                                 </tbody>
@@ -152,27 +152,27 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($ThisMaintenanceServicePayment as $payment)
+                                                    <?php $__currentLoopData = $ThisMaintenanceServicePayment; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $payment): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <tr>
-                                                            <td> <a href="{{ route('billed.vehicle.service.download.invoice', ['id' => $payment->id]) }}"
+                                                            <td> <a href="<?php echo e(route('billed.vehicle.service.download.invoice', ['id' => $payment->id])); ?>"
                                                                     class="btn btn-primary btn-sm"> <i
                                                                         class="fa-solid fa-download"></i> &nbsp;</a></td>
-                                                            <td>{{ $payment->payment_date }}</td>
-                                                            <td>Kes.{{ $payment->total_amount }}</td>
-                                                            <td>{{ $payment->payment_type_code }}</td>
-                                                            <td>{{ $payment->account->holder_name }}</td>
-                                                            <td>{{ $payment->reference }}</td>
-                                                            <td>{{ $payment->remark }}</td>
+                                                            <td><?php echo e($payment->payment_date); ?></td>
+                                                            <td>Kes.<?php echo e($payment->total_amount); ?></td>
+                                                            <td><?php echo e($payment->payment_type_code); ?></td>
+                                                            <td><?php echo e($payment->account->holder_name); ?></td>
+                                                            <td><?php echo e($payment->reference); ?></td>
+                                                            <td><?php echo e($payment->remark); ?></td>
                                                             <td>
-                                                                <a href="{{ asset($payment->payment_receipt) }}"
+                                                                <a href="<?php echo e(asset($payment->payment_receipt)); ?>"
                                                                     download>
                                                                     <i class="fa-solid fa-file-pdf"></i> Receipt
                                                                 </a>
                                                             </td>
                                                             </td>
-                                                            <td>{{ $payment->invoice_no }}</td>
+                                                            <td><?php echo e($payment->invoice_no); ?></td>
                                                         </tr>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                                                 </tbody>
                                             </table>
@@ -182,10 +182,12 @@
                             </div>
                         </div>
                         <div class="overlay"></div>
-                        @include('components.footer')
+                        <?php echo $__env->make('components.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                     </div>
                 </div>
                 <!--end  vue page -->
             </div>
             <!-- END layout-wrapper -->
-        @endsection
+        <?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\metroberry-apis-v1.1.0\resources\views/vehicle/maintenance-services/serviceCheckout/vehicle-service-checkout.blade.php ENDPATH**/ ?>

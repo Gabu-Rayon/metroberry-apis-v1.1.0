@@ -280,111 +280,365 @@ class EmployeeController extends Controller
      */
 
 
-    public function create(Request $request)
-    {
-        $organisations = Organisation::with('user')->where('status', 'active')->get();
-        return view('employee.create', compact('organisations'));
-    }
+    // public function create(Request $request)
+    // {
+    //     $organisations = Organisation::with('user')->where('status', 'active')->get();
+    //     return view('employee.create', compact('organisations'));
+    // }
 
-    public function edit(Request $request, $id)
-    {
-        $customer = Customer::findOrFail($id);
-        $organisations = Organisation::with('user')->get();
-        return view('employee.edit', compact('customer', 'organisations'));
-    }
+    // public function edit(Request $request, $id)
+    // {
+    //     $customer = Customer::findOrFail($id);
+    //     $organisations = Organisation::with('user')->get();
+    //     return view('employee.edit', compact('customer', 'organisations'));
+    // }
+
+    // public function update(Request $request, $id)
+    // {
+    //     try {
+
+    //         $customer = Customer::find($id);
+    //         $user = User::find($customer->user_id);
+    //         $data = $request->all();
+    //         $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
+
+    //         if (!$customer) {
+    //             return redirect()->back()->with('error', 'Customer not found');
+    //         }
+
+    //         if (!$user) {
+    //             return redirect()->back()->with('error', 'User not found');
+    //         }
+
+
+    //         if (!$organisation) {
+    //             return redirect()->back()->with('error', 'Organisation not found');
+    //         }
+
+    //         $validator = Validator::make($data, [
+    //             'name' => 'required|string',
+    //             'phone' => 'required|string',
+    //             'organisation' => 'required|string',
+    //             'email' => 'required|email|unique:users,email,' . $user->id,
+    //             'address' => 'nullable|string',
+    //             'national_id_no' => 'required|string|unique:customers,national_id_no,' . $customer->id,
+    //             'front_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+    //             'back_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+    //             'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         $user->name = $data['name'];
+    //         $user->email = $data['email'];
+    //         $user->phone = $data['phone'];
+    //         $user->address = $data['address'];
+    //         $customer->national_id_no = $data['national_id_no'];
+    //         $email = $data['email'];
+
+    //         $avatarPath = null;
+    //         $frontIdPath = null;
+    //         $backIdPath = null;
+
+    //         // Handle avatar upload
+    //         if ($request->hasFile('avatar')) {
+    //             // Check if the user already has an avatar and delete the old one
+    //             if ($user->avatar) {
+    //                 $oldAvatarPath = public_path($user->avatar);
+    //                 if (file_exists($oldAvatarPath)) {
+    //                     unlink($oldAvatarPath); // Delete the old avatar
+    //                 }
+    //             }
+
+    //             $avatarFile = $request->file('avatar');
+    //             $avatarExtension = $avatarFile->getClientOriginalExtension();
+    //             $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+
+    //             // Move the new file to the public/uploads/user-avatars directory
+    //             $avatarPath = $avatarFile->move(public_path('uploads/user-avatars'), $avatarFileName);
+    //             $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
+    //         }
+
+    //         // Handle front ID upload
+    //         if ($request->hasFile('front_page_id')) {
+    //             // Check if the customer already has a front ID and delete the old one
+    //             if ($customer->national_id_front_avatar) {
+    //                 $oldFrontIdPath = public_path($customer->national_id_front_avatar);
+    //                 if (file_exists($oldFrontIdPath)) {
+    //                     unlink($oldFrontIdPath); // Delete the old front ID
+    //                 }
+    //             }
+
+    //             $frontIdFile = $request->file('front_page_id');
+    //             $frontIdExtension = $frontIdFile->getClientOriginalExtension();
+    //             $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+
+    //             // Move the new file to the public/uploads/front-page-ids directory
+    //             $frontIdPath = $frontIdFile->move(public_path('uploads/front-page-ids'), $frontIdFileName);
+    //             $customer->national_id_front_avatar = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
+    //         }
+
+    //         // Handle back ID upload
+    //         if ($request->hasFile('back_page_id')) {
+    //             // Check if the customer already has a back ID and delete the old one
+    //             if ($customer->national_id_behind_avatar) {
+    //                 $oldBackIdPath = public_path($customer->national_id_behind_avatar);
+    //                 if (file_exists($oldBackIdPath)) {
+    //                     unlink($oldBackIdPath); // Delete the old back ID
+    //                 }
+    //             }
+
+    //             $backIdFile = $request->file('back_page_id');
+    //             $backIdExtension = $backIdFile->getClientOriginalExtension();
+    //             $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+
+    //             // Move the new file to the public/uploads/back-page-ids directory
+    //             $backIdPath = $backIdFile->move(public_path('uploads/back-page-ids'), $backIdFileName);
+    //             $customer->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
+    //         }
+
+
+    //         $customer->organisation_id = $organisation->id;
+    //         $customer->customer_organisation_code = $data['organisation'];
+    //         $customer->status = 'inactive';
+
+    //         $customer->save();
+    //         $user->save();
+
+    //         DB::commit();
+
+    //         return redirect()->route('employee')->with('success', 'Customer updated successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info('UPDATE CUSTOMER ERROR');
+    //         Log::info($e);
+    //         return redirect()->back()->with('error', 'An error occurred while updating customer');
+    //     }
+    // }
+
+
+
+    // public function update(Request $request, $id)
+    // {
+    //     try {
+    //         $customer = Customer::find($id);
+    //         $user = User::find($customer->user_id);
+    //         $data = $request->all();
+    //         $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
+
+    //         if (!$customer) {
+    //             return redirect()->back()->with('error', 'Customer not found');
+    //         }
+
+    //         if (!$user) {
+    //             return redirect()->back()->with('error', 'User not found');
+    //         }
+
+    //         if (!$organisation) {
+    //             return redirect()->back()->with('error', 'Organisation not found');
+    //         }
+
+    //         $validator = Validator::make($data, [
+    //             'name' => 'required|string',
+    //             'phone' => 'required|string',
+    //             'organisation' => 'required|string',
+    //             'email' => 'required|email|unique:users,email,' . $user->id,
+    //             'address' => 'nullable|string',
+    //             'national_id_no' => 'required|string|unique:customers,national_id_no,' . $customer->id,
+    //             'front_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+    //             'back_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+    //             'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         $user->name = $data['name'];
+    //         $user->email = $data['email'];
+    //         $user->phone = $data['phone'];
+    //         $user->address = $data['address'];
+    //         $customer->national_id_no = $data['national_id_no'];
+    //         $email = $data['email'];
+
+    //         $avatarPath = null;
+    //         $frontIdPath = null;
+    //         $backIdPath = null;
+
+    //         // Handle avatar upload
+    //         if ($request->hasFile('avatar')) {
+    //             // Check if the user already has an avatar and delete the old one
+    //             if ($user->avatar) {
+    //                 $oldAvatarPath = '/home/kknuicdz/portal_public_html/' . $user->avatar;
+    //                 if (file_exists($oldAvatarPath)) {
+    //                     unlink($oldAvatarPath); // Delete the old avatar
+    //                 }
+    //             }
+
+    //             $avatarFile = $request->file('avatar');
+    //             $avatarExtension = $avatarFile->getClientOriginalExtension();
+    //             $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+
+    //             // Move the new file to the specified directory
+    //             $avatarPath = $avatarFile->move('/home/kknuicdz/portal_public_html/uploads/user-avatars', $avatarFileName);
+    //             $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
+    //         }
+
+    //         // Handle front ID upload
+    //         if ($request->hasFile('front_page_id')) {
+    //             // Check if the customer already has a front ID and delete the old one
+    //             if ($customer->national_id_front_avatar) {
+    //                 $oldFrontIdPath = '/home/kknuicdz/portal_public_html/' . $customer->national_id_front_avatar;
+    //                 if (file_exists($oldFrontIdPath)) {
+    //                     unlink($oldFrontIdPath); // Delete the old front ID
+    //                 }
+    //             }
+
+    //             $frontIdFile = $request->file('front_page_id');
+    //             $frontIdExtension = $frontIdFile->getClientOriginalExtension();
+    //             $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+
+    //             // Move the new file to the specified directory
+    //             $frontIdPath = $frontIdFile->move('/home/kknuicdz/portal_public_html/uploads/front-page-ids', $frontIdFileName);
+    //             $customer->national_id_front_avatar = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
+    //         }
+
+    //         // Handle back ID upload
+    //         if ($request->hasFile('back_page_id')) {
+    //             // Check if the customer already has a back ID and delete the old one
+    //             if ($customer->national_id_behind_avatar) {
+    //                 $oldBackIdPath = '/home/kknuicdz/portal_public_html/' . $customer->national_id_behind_avatar;
+    //                 if (file_exists($oldBackIdPath)) {
+    //                     unlink($oldBackIdPath); // Delete the old back ID
+    //                 }
+    //             }
+
+    //             $backIdFile = $request->file('back_page_id');
+    //             $backIdExtension = $backIdFile->getClientOriginalExtension();
+    //             $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+
+    //             // Move the new file to the specified directory
+    //             $backIdPath = $backIdFile->move('/home/kknuicdz/portal_public_html/uploads/back-page-ids', $backIdFileName);
+    //             $customer->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
+    //         }
+
+    //         $customer->organisation_id = $organisation->id;
+    //         $customer->customer_organisation_code = $data['organisation'];
+    //         $customer->status = 'inactive';
+
+    //         $customer->save();
+    //         $user->save();
+
+    //         DB::commit();
+
+    //         return redirect()->route('employee')->with('success', 'Customer updated successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info('UPDATE CUSTOMER ERROR');
+    //         Log::info($e);
+    //         return redirect()->back()->with('error', 'An error occurred while updating customer');
+    //     }
+    // }
 
     public function update(Request $request, $id)
-    {
-        try {
+{
+    try {
+        $customer = Customer::find($id);
+        $user = User::find($customer->user_id);
+        $data = $request->all();
+        $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
 
-            $customer = Customer::find($id);
-            $user = User::find($customer->user_id);
-            $data = $request->all();
-            $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
-
-            if (!$customer) {
-                return redirect()->back()->with('error', 'Customer not found');
-            }
-
-            if (!$user) {
-                return redirect()->back()->with('error', 'User not found');
-            }
-
-
-            if (!$organisation) {
-                return redirect()->back()->with('error', 'Organisation not found');
-            }
-
-            $validator = Validator::make($data, [
-                'name' => 'required|string',
-                'phone' => 'required|string',
-                'organisation' => 'required|string',
-                'email' => 'required|email|unique:users,email,' . $user->id,
-                'address' => 'nullable|string',
-                'national_id_no' => 'required|string|unique:customers,national_id_no,' . $customer->id,
-                'front_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
-                'back_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
-                'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
-            ]);
-
-            if ($validator->fails()) {
-                return redirect()->back()->with('error', $validator->errors()->first())->withInput();
-            }
-
-            DB::beginTransaction();
-
-            $user->name = $data['name'];
-            $user->email = $data['email'];
-            $user->phone = $data['phone'];
-            $user->address = $data['address'];
-            $customer->national_id_no = $data['national_id_no'];
-
-            $avatarPath = null;
-            $frontIdPath = null;
-            $backIdPath = null;
-            $email = $data['email'];
-
-            if ($request->hasFile('avatar')) {
-                $avatarFile = $request->file('avatar');
-                $avatarExtension = $avatarFile->getClientOriginalExtension();
-                $avatarFileName = "{$email}-avatar.{$avatarExtension}";
-                $avatarPath = $avatarFile->storeAs('uploads/user-avatars', $avatarFileName, 'public');
-                $user->avatar = $avatarPath;
-            }
-
-            if ($request->hasFile('front_page_id')) {
-                $frontIdFile = $request->file('front_page_id');
-                $frontIdExtension = $frontIdFile->getClientOriginalExtension();
-                $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
-                $frontIdPath = $frontIdFile->storeAs('uploads/front-page-ids', $frontIdFileName, 'public');
-                $customer->national_id_front_avatar = $frontIdPath;
-            }
-
-            if ($request->hasFile('back_page_id')) {
-                $backIdFile = $request->file('back_page_id');
-                $backIdExtension = $backIdFile->getClientOriginalExtension();
-                $backIdFileName = "{$email}-back-id.{$backIdExtension}";
-                $backIdPath = $backIdFile->storeAs('uploads/back-page-ids', $backIdFileName, 'public');
-                $customer->national_id_behind_avatar = $backIdPath;
-            }
-
-            $customer->organisation_id = $organisation->id;
-            $customer->customer_organisation_code = $data['organisation'];
-            $customer->status = 'inactive';
-
-            $customer->save();
-            $user->save();
-
-            DB::commit();
-
-            return redirect()->route('employee')->with('success', 'Customer updated successfully');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info('UPDATE CUSTOMER ERROR');
-            Log::info($e);
-            return redirect()->back()->with('error', 'An error occurred while updating customer');
+        // Check if customer, user, and organisation exist
+        if (!$customer) {
+            return redirect()->back()->with('error', 'Customer not found');
         }
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'User not found');
+        }
+
+        if (!$organisation) {
+            return redirect()->back()->with('error', 'Organisation not found');
+        }
+
+        // Validate the incoming data
+        $validator = Validator::make($data, [
+            'name' => 'required|string',
+            'phone' => 'required|string',
+            'organisation' => 'required|string',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'address' => 'nullable|string',
+            'national_id_no' => 'required|string|unique:customers,national_id_no,' . $customer->id,
+            'front_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+            'back_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+            'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+        }
+
+        DB::beginTransaction();
+
+        // Update user and customer details
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        $user->phone = $data['phone'];
+        $user->address = $data['address'];
+        $customer->national_id_no = $data['national_id_no'];
+        $email = $data['email'];
+
+        // Handle file uploads
+        $this->handleFileUpload($request, 'avatar', $user, 'user-avatars', "{$email}-avatar");
+        $this->handleFileUpload($request, 'front_page_id', $customer, 'front-page-ids', "{$email}-front-id");
+        $this->handleFileUpload($request, 'back_page_id', $customer, 'back-page-ids', "{$email}-back-id");
+
+        // Update organisation details
+        $customer->organisation_id = $organisation->id;
+        $customer->customer_organisation_code = $data['organisation'];
+        $customer->status = 'inactive';
+
+        // Save changes
+        $customer->save();
+        $user->save();
+
+        DB::commit();
+
+        return redirect()->route('employee')->with('success', 'Customer updated successfully');
+    } catch (Exception $e) {
+        DB::rollBack();
+        Log::info('UPDATE CUSTOMER ERROR');
+        Log::info($e);
+        return redirect()->back()->with('error', 'An error occurred while updating customer');
     }
+}
+
+private function handleFileUpload(Request $request, string $fileInputName, $model, string $directory, string $fileName)
+{
+    if ($request->hasFile($fileInputName)) {
+        // Check if the model already has a file and delete the old one
+        $oldFilePath = '/home/kknuicdz/portal_public_html/' . $model->{$fileInputName}; // Assuming field name matches the file input
+        if ($model->{$fileInputName} && file_exists($oldFilePath)) {
+            unlink($oldFilePath); // Delete the old file
+        }
+
+        $file = $request->file($fileInputName);
+        $extension = $file->getClientOriginalExtension();
+        $fileNameWithExtension = "{$fileName}.{$extension}";
+
+        // Move the new file to the specified directory
+        $file->move('/home/kknuicdz/portal_public_html/uploads/' . $directory, $fileNameWithExtension);
+        $model->{$fileInputName} = 'uploads/' . $directory . '/' . $fileNameWithExtension; // Save the relative path
+    }
+}
+
+
 
 
     public function activateForm($id)
@@ -485,49 +739,115 @@ class EmployeeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    // public function destroy(string $id)
+    // {
+    //     try {
+    //         $customer = Customer::find($id);
+
+    //         if (!$customer) {
+    //             return redirect()->back()->with('error', 'Customer not found');
+    //         }
+
+    //         $user = User::find($customer->user_id);
+
+    //         if (!$user) {
+    //             return redirect()->back()->with('error', 'User not found');
+    //         }
+
+    //         // Delete associated files
+    //         if ($user->avatar) {
+    //             $oldAvatarPath = public_path($user->avatar);
+    //             if (file_exists($oldAvatarPath)) {
+    //                 unlink($oldAvatarPath); // Delete the old avatar
+    //             }
+    //         }
+
+    //         if ($customer->national_id_front_avatar) {
+    //             $oldFrontIdPath = public_path($customer->national_id_front_avatar);
+    //             if (file_exists($oldFrontIdPath)) {
+    //                 unlink($oldFrontIdPath); // Delete the old front ID
+    //             }
+    //         }
+
+    //         if ($customer->national_id_behind_avatar) {
+    //             $oldBackIdPath = public_path($customer->national_id_behind_avatar);
+    //             if (file_exists($oldBackIdPath)) {
+    //                 unlink($oldBackIdPath); // Delete the old back ID
+    //             }
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         $customer->delete();
+    //         $user->delete();
+
+    //         DB::commit();
+
+    //         return redirect()->route('employee')->with('success', 'Customer Details deleted successfully!');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info('DELETE CUSTOMER ERROR');
+    //         Log::info($e);
+    //         return redirect()->back()->with('error', 'An error occurred while deleting customer');
+    //     }
+    // }
+
+
+
     public function destroy(string $id)
-    {
-        try {
-            $customer = Customer::find($id);
+{
+    try {
+        $customer = Customer::find($id);
 
-            if (!$customer) {
-                return redirect()->back()->with('error', 'Customer not found');
-            }
-
-            $user = User::find($customer->user_id);
-
-            if (!$user) {
-                return redirect()->back()->with('error', 'User not found');
-            }
-
-            // Delete associated files
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            if ($customer->national_id_front_avatar) {
-                Storage::disk('public')->delete($customer->national_id_front_avatar);
-            }
-
-            if ($customer->national_id_behind_avatar) {
-                Storage::disk('public')->delete($customer->national_id_behind_avatar);
-            }
-
-            DB::beginTransaction();
-
-            $customer->delete();
-            $user->delete();
-
-            DB::commit();
-
-            return redirect()->route('employee')->with('success', 'Customer Details deleted successfully!');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info('DELETE CUSTOMER ERROR');
-            Log::info($e);
-            return redirect()->back()->with('error', 'An error occurred while deleting customer');
+        if (!$customer) {
+            return redirect()->back()->with('error', 'Customer not found');
         }
+
+        $user = User::find($customer->user_id);
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'User not found');
+        }
+
+        // Delete associated files
+        if ($user->avatar) {
+            $oldAvatarPath = '/home/kknuicdz/portal_public_html/' . $user->avatar;
+            if (file_exists($oldAvatarPath)) {
+                unlink($oldAvatarPath); // Delete the old avatar
+            }
+        }
+
+        if ($customer->national_id_front_avatar) {
+            $oldFrontIdPath = '/home/kknuicdz/portal_public_html/' . $customer->national_id_front_avatar;
+            if (file_exists($oldFrontIdPath)) {
+                unlink($oldFrontIdPath); // Delete the old front ID
+            }
+        }
+
+        if ($customer->national_id_behind_avatar) {
+            $oldBackIdPath = '/home/kknuicdz/portal_public_html/' . $customer->national_id_behind_avatar;
+            if (file_exists($oldBackIdPath)) {
+                unlink($oldBackIdPath); // Delete the old back ID
+            }
+        }
+
+        DB::beginTransaction();
+
+        $customer->delete();
+        $user->delete();
+
+        DB::commit();
+
+        return redirect()->route('employee')->with('success', 'Customer details deleted successfully!');
+    } catch (Exception $e) {
+        DB::rollBack();
+        Log::info('DELETE CUSTOMER ERROR');
+        Log::info($e);
+        return redirect()->back()->with('error', 'An error occurred while deleting customer');
     }
+}
+
+
 
 
     // public function export()

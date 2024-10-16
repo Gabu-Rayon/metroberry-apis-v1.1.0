@@ -38,7 +38,7 @@
                           <?php echo csrf_field(); ?>
                           <div class="profile-picture-container">
                               <img id="profile-picture"
-                                  src="<?php echo e($customer->user->avatar ? asset('storage/' . $customer->user->avatar) : asset('mobile-app-assets/images/avatar.svg')); ?>"
+                                  src="<?php echo e($customer->user->avatar ? asset($customer->user->avatar) : asset('mobile-app-assets/images/avatar.svg')); ?>"
                                   alt="Profile Picture" class="rounded-profile-picture" />
                               <span class="fas fa-camera">
                                   <input class="file-prompt" type="file" accept="image/*"
@@ -56,18 +56,18 @@
                   <!--Profile Information Fields Container Start-->
 
                   <?php if(session('success')): ?>
-                    <div id="success-message" class="alert alert-success" style="display: none;">
-                        <?php echo e(session('success')); ?>
+                      <div id="success-message" class="alert alert-success" style="display: none;">
+                          <?php echo e(session('success')); ?>
 
-                    </div>
-                <?php endif; ?>
+                      </div>
+                  <?php endif; ?>
 
-                <?php if(session('error')): ?>
-                    <div id="error-message" class="alert alert-danger" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: none;">
-                        <?php echo e(session('error')); ?>
+                  <?php if(session('error')): ?>
+                      <div id="error-message" class="alert alert-danger" style="display: none;">
+                          <?php echo e(session('error')); ?>
 
-                    </div>
-                <?php endif; ?>
+                      </div>
+                  <?php endif; ?>
                   <div class="sign-up-form-container text-center">
                       <form class="width-100" method="POST" action="<?php echo e(route('customer.profile.update', $customer->id)); ?>"
                           enctype="multipart/form-data">
@@ -159,7 +159,8 @@
                               <label class="width-100">
                                   <div class="display-flex justify-content-between">
                                       <span class="position-relative upload-btn">
-                                          <img src="<?php echo e(asset('mobile-app-assets/icons/upload.svg')); ?>" alt="Upload Icon" />
+                                          <img src="<?php echo e(asset('mobile-app-assets/icons/upload.svg')); ?>"
+                                              alt="Upload Icon" />
                                           <input class="scan-prompt" type="file" accept="image/*"
                                               name="national_id_front_avatar" id="national-id-front-input" />
                                       </span>
@@ -176,7 +177,7 @@
                                                   <span class="#">
                                                       <img id="national-id-front-preview"
                                                           src="<?php echo e($customer->national_id_front_avatar
-                                                              ? asset('storage/' . $customer->national_id_front_avatar)
+                                                              ? asset($customer->national_id_front_avatar)
                                                               : asset('mobile-app-assets/icons/photocamera.svg')); ?>"
                                                           alt="National ID Front" />
                                                   </span>
@@ -210,7 +211,7 @@
                                                   <span class="#">
                                                       <img id="national-id-back-preview"
                                                           src="<?php echo e($customer->national_id_behind_avatar
-                                                              ? asset('storage/' . $customer->national_id_behind_avatar)
+                                                              ? asset($customer->national_id_behind_avatar)
                                                               : asset('mobile-app-assets/icons/photocamera.svg')); ?>"
                                                           alt="National ID Back" />
                                                   </span>

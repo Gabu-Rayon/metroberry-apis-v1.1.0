@@ -58,7 +58,7 @@
                             placeholder="Front Page ID Picture" id="front_page_id" value="" />
                         @if ($driver->national_id_front_avatar)
                             <div class="mt-2">
-                                <a href="{{ url('storage/' . $driver->national_id_front_avatar) }}" download>Download
+                                <a href="{{ asset( $driver->national_id_front_avatar) }}" download>Download
                                     Front Page ID</a>
                             </div>
                         @endif
@@ -72,7 +72,7 @@
                     <div class="col-sm-7">
                         <input name="avatar" class="form-control" type="file" placeholder="Avatar" id="avatar"
                             value="" />
-                        <img src="{{ url('storage/' . $driver->user->avatar) }}" alt="Avatar" class="form-control" />
+                        <img src="{{ asset($driver->user->avatar) }}" alt="Avatar" class="form-control" />
                     </div>
                 </div>
 
@@ -122,7 +122,7 @@
                             placeholder="Back Page ID Picture" id="back_page_id" value="" />
                         @if ($driver->national_id_behind_avatar)
                             <div class="mt-2">
-                                <a href="{{ url('storage/' . $driver->national_id_behind_avatar) }}" download>Download
+                                <a href="{{ asset($driver->national_id_behind_avatar) }}" download>Download
                                     Back Page ID</a>
                             </div>
                         @endif
@@ -137,7 +137,7 @@
                         <div class="col-sm-7">
                             <input name="vehicle" class="form-control" type="text" placeholder="Vehicle"
                                 id="vehicle" readonly value="{{ $driver->vehicle->plate_number }}" />
-                            <img src="{{ asset('images/' . $driver->vehicle->avatar) }}" alt="Vehicle"
+                            <img src="{{ asset($driver->vehicle->avatar) }}" alt="Vehicle"
                                 class="form-control" />
                         </div>
                     </div>

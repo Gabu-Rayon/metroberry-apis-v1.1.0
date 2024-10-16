@@ -47,12 +47,99 @@ class MaintenanceRepairPaymentController extends Controller
 
 
 
+    // public function billedVehicleRepairMaintenanceRecievePaymentStore(Request $request, $id)
+    // {
+    //     try {
+    //         $data = $request->all();
+
+    //         Log::info('Data from the Form to receive payment of billed Vehicle Repair Maintenance');
+    //         Log::info($data);
+
+    //         $creator = Auth::user();
+
+    //         Log::info('User who is processing the payment');
+    //         Log::info($creator);
+
+    //         // Validation rules
+    //         $validator = Validator::make($data, [
+    //             'payment_date' => 'required|date',
+    //             'amount' => 'required|numeric',
+    //             'account_id' => 'required|exists:accounts,id',
+    //             'remark' => 'nullable|string',
+    //             'payment_receipt' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx|max:2048',
+    //             'reference' => 'required|string',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::info('Validation Error');
+    //             Log::info($validator->errors());
+    //             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         $invoiceNo = $this->generateInvoiceNumber();
+    //         Log::info('Generated Invoice Number');
+    //         Log::info($invoiceNo);
+
+    //         // Retrieve service details based on $id
+    //         $maintenanceRepair = MaintenanceRepair::findOrFail($id);
+
+    //         $maintenanceRepairPayment = new MaintenanceRepairPayment();
+    //         $maintenanceRepairPayment->maintenance_repair_id = $maintenanceRepair->id;
+    //         $maintenanceRepairPayment->vehicle_id = $maintenanceRepair->vehicle_id;
+    //         $maintenanceRepairPayment->part_id = $maintenanceRepair->part_id;
+    //         $maintenanceRepairPayment->repair_type = $maintenanceRepair->repair_type;
+    //         $maintenanceRepairPayment->repair_cost = $maintenanceRepair->repair_cost;
+    //         $maintenanceRepairPayment->account_id = $data['account_id'];
+    //         $maintenanceRepairPayment->invoice_no = $invoiceNo;
+    //         $maintenanceRepairPayment->receipt_type_code = null;
+    //         $maintenanceRepairPayment->payment_type_code = null;
+    //         $maintenanceRepairPayment->confirm_date = null;
+    //         $maintenanceRepairPayment->payment_date = $data['payment_date'];
+    //         $maintenanceRepairPayment->total_taxable_amount = $maintenanceRepair->service_cost;
+    //         $maintenanceRepairPayment->total_tax_amount = null;
+    //         $maintenanceRepairPayment->total_amount = $data['amount'];
+    //         $maintenanceRepairPayment->remark = $data['remark'];
+    //         $maintenanceRepairPayment->reference = $data['reference'];
+    //         $maintenanceRepairPayment->qr_code_url = null;
+    //         $maintenanceRepairPayment->created_by = $creator->id;
+
+    //         // Handle payment receipt file upload
+    //         if ($request->hasFile('payment_receipt')) {
+    //             $file = $request->file('payment_receipt');
+    //             $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
+
+    //             // Move the uploaded file to the public folder
+    //             $file->move(public_path('maintenance_repair_payment_receipts'), $fileName);
+    //             $maintenanceRepairPayment->payment_receipt = 'maintenance_repair_payment_receipts/' . $fileName; // Store the relative path
+    //         }
+
+    //         $maintenanceRepairPayment->save();
+    //         Log::info('Maintenance Repair Payment Saved');
+
+    //         // Update the MaintenanceService status
+    //         $totalPaid = MaintenanceRepairPayment::where('maintenance_repair_id', $maintenanceRepair->id)->sum('total_amount');
+
+    //         if ($totalPaid >= $maintenanceRepair->repair_cost) {
+    //             $maintenanceRepair->repair_status = 'paid';
+    //         } else {
+    //             $maintenanceRepair->repair_status = 'partially paid';
+    //         }
+    //         $maintenanceRepair->save();
+
+    //         return redirect()->route('maintenance.repair.payment.checkout', ['id' => $id])
+    //             ->with('success', 'Payment received and added successfully.');
+    //     } catch (\Exception $e) {
+    //         Log::error('Error receiving payment for Maintenance Service: ' . $e->getMessage());
+    //         return redirect()->back()->with('error', 'An error occurred while receiving the payment for the Maintenance Repair. Please try again.');
+    //     }
+    // }
+
     public function billedVehicleRepairMaintenanceRecievePaymentStore(Request $request, $id)
     {
         try {
             $data = $request->all();
 
-            Log::info('Data from the Form to receive payment of billed Vehicle Repair Maintenance ');
+            Log::info('Data from the Form to receive payment of billed Vehicle Repair Maintenance');
             Log::info($data);
 
             $creator = Auth::user();
@@ -64,7 +151,7 @@ class MaintenanceRepairPaymentController extends Controller
             $validator = Validator::make($data, [
                 'payment_date' => 'required|date',
                 'amount' => 'required|numeric',
-                'account_id' => 'required|exists:accounts,id', 
+                'account_id' => 'required|exists:accounts,id',
                 'remark' => 'nullable|string',
                 'payment_receipt' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx|max:2048',
                 'reference' => 'required|string',
@@ -83,7 +170,6 @@ class MaintenanceRepairPaymentController extends Controller
             // Retrieve service details based on $id
             $maintenanceRepair = MaintenanceRepair::findOrFail($id);
 
-
             $maintenanceRepairPayment = new MaintenanceRepairPayment();
             $maintenanceRepairPayment->maintenance_repair_id = $maintenanceRepair->id;
             $maintenanceRepairPayment->vehicle_id = $maintenanceRepair->vehicle_id;
@@ -97,7 +183,7 @@ class MaintenanceRepairPaymentController extends Controller
             $maintenanceRepairPayment->confirm_date = null;
             $maintenanceRepairPayment->payment_date = $data['payment_date'];
             $maintenanceRepairPayment->total_taxable_amount = $maintenanceRepair->service_cost;
-            $maintenanceRepairPayment->total_tax_amount = null; 
+            $maintenanceRepairPayment->total_tax_amount = null;
             $maintenanceRepairPayment->total_amount = $data['amount'];
             $maintenanceRepairPayment->remark = $data['remark'];
             $maintenanceRepairPayment->reference = $data['reference'];
@@ -108,8 +194,18 @@ class MaintenanceRepairPaymentController extends Controller
             if ($request->hasFile('payment_receipt')) {
                 $file = $request->file('payment_receipt');
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('maintenance_repair_payment_receipts'), $fileName);
-                $maintenanceRepairPayment->payment_receipt = $fileName;
+
+                // Define the upload path
+                $uploadPath = '/home/kknuicdz/portal_public_html/maintenance_repair_payment_receipts';
+
+                // Ensure the directory exists
+                if (!is_dir($uploadPath)) {
+                    mkdir($uploadPath, 0755, true); // Create directory if it doesn't exist
+                }
+
+                // Move the uploaded file to the specified path
+                $file->move($uploadPath, $fileName);
+                $maintenanceRepairPayment->payment_receipt = 'maintenance_repair_payment_receipts/' . $fileName; // Store the relative path
             }
 
             $maintenanceRepairPayment->save();
@@ -132,6 +228,8 @@ class MaintenanceRepairPaymentController extends Controller
             return redirect()->back()->with('error', 'An error occurred while receiving the payment for the Maintenance Repair. Please try again.');
         }
     }
+
+
 
 
     /**

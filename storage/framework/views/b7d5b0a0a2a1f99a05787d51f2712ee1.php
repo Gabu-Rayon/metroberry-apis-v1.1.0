@@ -7,12 +7,12 @@
              </div>
              <div class="profile-picture text-center">
                  <?php if(Auth::user()->avatar): ?>
-                     <img src="<?php echo e(asset('storage/' . Auth::user()->avatar)); ?>" alt="Profile Picture"
-                         class="rounded-profile-picture" />
+                     <img src="<?php echo e(asset(Auth::user()->avatar)); ?>" alt="Profile Picture" class="rounded-profile-picture" />
                  <?php else: ?>
                      <img src="<?php echo e(asset('mobile-app-assets/images/anonymous.jpeg')); ?>" alt="Profile Picture"
                          class="rounded-profile-picture" />
                  <?php endif; ?>
+
              </div>
              <div class="profile-info">
                  <div class="profile-name text-center"><?php echo e(Auth::user()->name); ?></div>

@@ -7,12 +7,12 @@
              </div>
              <div class="profile-picture text-center">
                  @if (Auth::user()->avatar)
-                     <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Profile Picture"
-                         class="rounded-profile-picture" />
+                     <img src="{{ asset(Auth::user()->avatar) }}" alt="Profile Picture" class="rounded-profile-picture" />
                  @else
                      <img src="{{ asset('mobile-app-assets/images/anonymous.jpeg') }}" alt="Profile Picture"
                          class="rounded-profile-picture" />
                  @endif
+
              </div>
              <div class="profile-info">
                  <div class="profile-name text-center">{{ Auth::user()->name }}</div>

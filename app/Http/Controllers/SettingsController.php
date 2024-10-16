@@ -142,10 +142,9 @@ class SettingsController extends Controller
 
     public function siteSettingUpdate(Request $request)
     {
-
         $data = $request->all();
 
-        Log::info('Data from  form creating');
+        Log::info('Data from form creating');
         Log::info($request->all());
 
         $validator = Validator::make($data, [
@@ -163,38 +162,42 @@ class SettingsController extends Controller
             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
         }
 
-
         // Update the database with the new settings
         $settings = [
             'site_url' => $request->input('site_url'),
             'name_of_website' => $request->input('site_name'),
             'description' => $request->input('app_description'),
-            'logo_white' => $request->input('logo_white'),
-            'logo_black' => $request->input('logo_black'),
-            'site_favicon' => $request->input('site_favicon'),
+            'logo_white' => null, // Set initial value to null for file paths
+            'logo_black' => null,
+            'site_favicon' => null,
         ];
-
-        foreach ($settings as $key => $value) {
-            Config::set("app.$key", $value);
-        }
 
         // Handle file uploads
         if ($request->hasFile('logo_white')) {
-            $logoWhitePath = $request->file('logo_white')->storeAs('public', 'logo_white.' . $request->file('logo_white')->getClientOriginalExtension());
-            $settings['logo_white'] = $logoWhitePath;
-            Config::set('site.logo_light', $logoWhitePath);
+            $logoWhitePath = $request->file('logo_white')->storeAs('', 'logo_white.' . $request->file('logo_white')->getClientOriginalExtension(), 'public');
+            // Store the relative path in the settings array
+            $settings['logo_white'] = 'logo_white.' . $request->file('logo_white')->getClientOriginalExtension();
+            Config::set('site.logo_light', $settings['logo_white']);
+            // Move the uploaded file to the public folder directly
+            $request->file('logo_white')->move(public_path(), $settings['logo_white']);
         }
 
         if ($request->hasFile('logo_black')) {
-            $logoBlackPath = $request->file('logo_black')->storeAs('public', 'logo_black.' . $request->file('logo_black')->getClientOriginalExtension());
-            $settings['logo_black'] = $logoBlackPath;
-            Config::set('site.logo_black', $logoBlackPath);
+            $logoBlackPath = $request->file('logo_black')->storeAs('', 'logo_black.' . $request->file('logo_black')->getClientOriginalExtension(), 'public');
+            // Store the relative path in the settings array
+            $settings['logo_black'] = 'logo_black.' . $request->file('logo_black')->getClientOriginalExtension();
+            Config::set('site.logo_black', $settings['logo_black']);
+            // Move the uploaded file to the public folder directly
+            $request->file('logo_black')->move(public_path(), $settings['logo_black']);
         }
 
         if ($request->hasFile('site_favicon')) {
-            $faviconPath = $request->file('site_favicon')->storeAs('public', 'favicon.' . $request->file('site_favicon')->getClientOriginalExtension());
-            $settings['site_favicon'] = $faviconPath;
-            Config::set('site.favicon', $faviconPath);
+            $faviconPath = $request->file('site_favicon')->storeAs('', 'favicon.' . $request->file('site_favicon')->getClientOriginalExtension(), 'public');
+            // Store the relative path in the settings array
+            $settings['site_favicon'] = 'favicon.' . $request->file('site_favicon')->getClientOriginalExtension();
+            Config::set('site.favicon', $settings['site_favicon']);
+            // Move the uploaded file to the public folder directly
+            $request->file('site_favicon')->move(public_path(), $settings['site_favicon']);
         }
 
         // Update the SiteSetting model
@@ -208,7 +211,6 @@ class SettingsController extends Controller
         // Update the .env file if necessary
         $envUpdateData = [
             'APP_URL' => $settings['site_url'],
-
             'APP_NAME' => "'" . $settings['name_of_website'] . "'",
         ];
 
@@ -217,6 +219,7 @@ class SettingsController extends Controller
         // Flash message and redirect
         return redirect()->back()->with('success', 'Site settings updated successfully.');
     }
+
 
     protected function updateEnvFile(array $data)
     {

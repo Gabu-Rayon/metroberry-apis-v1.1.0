@@ -143,44 +143,128 @@ class DriverAppController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
 
+    // public function iddocs(Request $request, $id)
+    // {
+    //     try {
+    //         $data = $request->all();
+
+    //         // Validate the request data
+    //         $validator = Validator::make($data, [
+    //             'national_id_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+    //             'national_id_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::error('VALIDATION ERROR');
+    //             Log::error($validator->errors()->all());
+
+    //             return back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         // Find the driver by ID
+    //         $driver = Driver::findOrFail($id);
+
+    //         // Define the directories for the ID uploads
+    //         $frontIdDirectory = public_path('uploads/front-page-ids');
+    //         $backIdDirectory = public_path('uploads/back-page-ids');
+
+    //         // Ensure the directories exist
+    //         if (!is_dir($frontIdDirectory)) {
+    //             mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
+    //         }
+
+    //         if (!is_dir($backIdDirectory)) {
+    //             mkdir($backIdDirectory, 0755, true); // Create directory if it doesn't exist
+    //         }
+
+    //         // Upload front and back images
+    //         $national_id_front_avatar = $request->file('national_id_front_avatar');
+    //         $national_id_back_avatar = $request->file('national_id_back_avatar');
+
+    //         // Create file names
+    //         $frontFileName = "{$driver->email}-national-id-front." . $national_id_front_avatar->getClientOriginalExtension();
+    //         $backFileName = "{$driver->email}-national-id-back." . $national_id_back_avatar->getClientOriginalExtension();
+
+    //         // Move the uploaded files to the public directories
+    //         $national_id_front_avatar->move($frontIdDirectory, $frontFileName);
+    //         $national_id_back_avatar->move($backIdDirectory, $backFileName);
+
+    //         // Update driver details with the relative paths
+    //         $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontFileName;
+    //         $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backFileName;
+    //         $driver->save();
+
+    //         return redirect()->route('driver.dashboard')->with('success', 'Driver personal documents uploaded successfully.');
+    //     } catch (Exception $e) {
+    //         Log::error('UPLOAD DRIVER PERSONAL DOCUMENTS ERROR');
+    //         Log::error($e->getMessage());
+
+    //         return back()->with('error', 'Something went wrong.')->withInput();
+    //     }
+    // }
+
+
     public function iddocs(Request $request, $id)
-    {
-        try {
-            $data = $request->all();
+{
+    try {
+        $data = $request->all();
 
-            // Validate the request data
-            $validator = Validator::make($data, [
-                'national_id_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'national_id_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            ]);
+        // Validate the request data
+        $validator = Validator::make($data, [
+            'national_id_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'national_id_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
 
-            if ($validator->fails()) {
-                Log::error(message: 'VALIDATION ERROR');
-                Log::error($validator->errors()->all());
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR');
+            Log::error($validator->errors()->all());
 
-                return back()->with('error', $validator->errors()->first())->withInput();
-            }
-
-            // Upload front and back images
-            $national_id_front_avatar = $request->file('national_id_front_avatar')->store('uploads/front-page-ids', 'public');
-            $national_id_back_avatar = $request->file('national_id_back_avatar')->store('uploads/back-page-ids', 'public');
-
-            // Find the driver by ID
-            $driver = Driver::findOrFail($id);
-
-            // Update driver details
-            $driver->national_id_front_avatar = $national_id_front_avatar;
-            $driver->national_id_behind_avatar = $national_id_back_avatar;
-            $driver->save();
-
-            return redirect()->route('driver.dashboard')->with('success', 'Driver personal documents uploaded successfully.');
-        } catch (Exception $e) {
-            Log::error('UPLOAD DRIVER PERSONAL DOCUMENTS ERROR');
-            Log::error($e->getMessage());
-
-            return back()->with('error', 'Something went wrong.')->withInput();
+            return back()->with('error', $validator->errors()->first())->withInput();
         }
+
+        // Find the driver by ID
+        $driver = Driver::findOrFail($id);
+
+        // Define the directories for the ID uploads
+        $frontIdDirectory = '/home/kknuicdz/portal_public_html/uploads/front-page-ids';
+        $backIdDirectory = '/home/kknuicdz/portal_public_html/uploads/back-page-ids';
+
+        // Ensure the directories exist
+        if (!is_dir($frontIdDirectory)) {
+            mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
+        }
+
+        if (!is_dir($backIdDirectory)) {
+            mkdir($backIdDirectory, 0755, true); // Create directory if it doesn't exist
+        }
+
+        // Upload front and back images
+        $national_id_front_avatar = $request->file('national_id_front_avatar');
+        $national_id_back_avatar = $request->file('national_id_back_avatar');
+
+        // Create file names
+        $frontFileName = "{$driver->email}-national-id-front." . $national_id_front_avatar->getClientOriginalExtension();
+        $backFileName = "{$driver->email}-national-id-back." . $national_id_back_avatar->getClientOriginalExtension();
+
+        // Move the uploaded files to the new directories
+        $national_id_front_avatar->move($frontIdDirectory, $frontFileName);
+        $national_id_back_avatar->move($backIdDirectory, $backFileName);
+
+        // Update driver details with the relative paths
+        $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontFileName;
+        $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backFileName;
+        $driver->save();
+
+        return redirect()->route('driver.dashboard')->with('success', 'Driver personal documents uploaded successfully.');
+    } catch (Exception $e) {
+        Log::error('UPLOAD DRIVER PERSONAL DOCUMENTS ERROR');
+        Log::error($e->getMessage());
+
+        return back()->with('error', 'Something went wrong.')->withInput();
     }
+}
+
+
 
     /**
      * Store Driver License
@@ -188,59 +272,144 @@ class DriverAppController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
+    // public function license(Request $request)
+    // {
+    //     try {
+    //         $data = $request->all();
+
+    //         // Validate the incoming request data
+    //         $validator = Validator::make($data, [
+    //             'driving_license_no' => 'required|string|max:255|unique:drivers_licenses',
+    //             'issue_date' => 'required|date',
+    //             'expiry_date' => 'required|date|after:issue_date',
+    //             'license_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+    //             'license_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::error('VALIDATION ERROR');
+    //             Log::error($validator->errors()->all());
+
+    //             return back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         // Define directories for license uploads
+    //         $frontLicenseDirectory = public_path('uploads/front-license-pics');
+    //         $backLicenseDirectory = public_path('uploads/back-license-pics');
+
+    //         // Ensure the directories exist
+    //         if (!is_dir($frontLicenseDirectory)) {
+    //             mkdir($frontLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+    //         }
+
+    //         if (!is_dir($backLicenseDirectory)) {
+    //             mkdir($backLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+    //         }
+
+    //         // Upload front license image
+    //         $license_front_avatar = $request->file('license_front_avatar');
+    //         $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();
+    //         $license_front_avatar->move($frontLicenseDirectory, $frontFileName);
+
+    //         // Upload back license image
+    //         $license_back_avatar = $request->file('license_back_avatar');
+    //         $backFileName = auth()->user()->driver->email . '-back-license.' . $license_back_avatar->getClientOriginalExtension();
+    //         $license_back_avatar->move($backLicenseDirectory, $backFileName);
+
+    //         // Create a new driver license record with the stored file paths
+    //         DriversLicenses::create([
+    //             'driver_id' => auth()->user()->driver->id,
+    //             'driving_license_no' => $data['driving_license_no'],
+    //             'driving_license_date_of_issue' => $data['issue_date'],
+    //             'driving_license_date_of_expiry' => $data['expiry_date'],
+    //             'driving_license_avatar_front' => 'uploads/front-license-pics/' . $frontFileName,
+    //             'driving_license_avatar_back' => 'uploads/back-license-pics/' . $backFileName,
+    //         ]);
+
+    //         DB::commit();
+
+    //         return redirect()->route('driver.dashboard')->with('success', 'Driver license uploaded successfully.');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('UPLOAD DRIVER LICENSE ERROR');
+    //         Log::error($e);
+
+    //         return back()->with('error', 'Something went wrong.')->withInput();
+    //     }
+    // }
+
 
     public function license(Request $request)
-    {
-        try {
-            $data = $request->all();
+{
+    try {
+        $data = $request->all();
 
-            // Validate the incoming request data
-            $validator = Validator::make($data, [
-                'driving_license_no' => 'required|string|max:255|unique:drivers_licenses',
-                'issue_date' => 'required|date',
-                'expiry_date' => 'required|date|after:issue_date',
-                'license_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'license_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            ]);
+        // Validate the incoming request data
+        $validator = Validator::make($data, [
+            'driving_license_no' => 'required|string|max:255|unique:drivers_licenses',
+            'issue_date' => 'required|date',
+            'expiry_date' => 'required|date|after:issue_date',
+            'license_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'license_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
 
-            if ($validator->fails()) {
-                Log::error('VALIDATION ERROR');
-                Log::error($validator->errors()->all());
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR');
+            Log::error($validator->errors()->all());
 
-                return back()->with('error', $validator->errors()->first())->withInput();
-            }
-
-            DB::beginTransaction();
-
-            // Store files in the storage/app/public/uploads directory
-
-            // Front license image uploaded to uploads/front-license-pics
-            $driving_license_avatar_front = $request->file('license_front_avatar')->store('uploads/front-license-pics', 'public');
-
-            // Back license image uploaded to uploads/back-license-pics
-            $driving_license_avatar_back = $request->file('license_back_avatar')->store('uploads/back-license-pics', 'public');
-
-            // Create a new driver license record with the stored file paths
-            DriversLicenses::create([
-                'driver_id' => auth()->user()->driver->id,
-                'driving_license_no' => $data['driving_license_no'],
-                'driving_license_date_of_issue' => $data['issue_date'],
-                'driving_license_date_of_expiry' => $data['expiry_date'],
-                'driving_license_avatar_front' => $driving_license_avatar_front,
-                'driving_license_avatar_back' => $driving_license_avatar_back,
-            ]);
-
-            DB::commit();
-
-            return redirect()->route('driver.dashboard')->with('success', 'Driver license uploaded successfully.');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('UPLOAD DRIVER LICENSE ERROR');
-            Log::error($e);
-
-            return back()->with('error', 'Something went wrong.')->withInput();
+            return back()->with('error', $validator->errors()->first())->withInput();
         }
+
+        DB::beginTransaction();
+
+        // Define directories for license uploads
+        $frontLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/front-license-pics';
+        $backLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/back-license-pics';
+
+        // Ensure the directories exist
+        if (!is_dir($frontLicenseDirectory)) {
+            mkdir($frontLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+        }
+
+        if (!is_dir($backLicenseDirectory)) {
+            mkdir($backLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+        }
+
+        // Upload front license image
+        $license_front_avatar = $request->file('license_front_avatar');
+        $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();
+        $license_front_avatar->move($frontLicenseDirectory, $frontFileName);
+
+        // Upload back license image
+        $license_back_avatar = $request->file('license_back_avatar');
+        $backFileName = auth()->user()->driver->email . '-back-license.' . $license_back_avatar->getClientOriginalExtension();
+        $license_back_avatar->move($backLicenseDirectory, $backFileName);
+
+        // Create a new driver license record with the stored file paths
+        DriversLicenses::create([
+            'driver_id' => auth()->user()->driver->id,
+            'driving_license_no' => $data['driving_license_no'],
+            'driving_license_date_of_issue' => $data['issue_date'],
+            'driving_license_date_of_expiry' => $data['expiry_date'],
+            'driving_license_avatar_front' => 'uploads/front-license-pics/' . $frontFileName,
+            'driving_license_avatar_back' => 'uploads/back-license-pics/' . $backFileName,
+        ]);
+
+        DB::commit();
+
+        return redirect()->route('driver.dashboard')->with('success', 'Driver license uploaded successfully.');
+    } catch (Exception $e) {
+        DB::rollBack();
+        Log::error('UPLOAD DRIVER LICENSE ERROR');
+        Log::error($e);
+
+        return back()->with('error', 'Something went wrong.')->withInput();
     }
+}
+
+
 
     /**
      * Update Driver License
@@ -250,59 +419,179 @@ class DriverAppController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
 
+    // public function updateLicense(Request $request, $id)
+    // {
+    //     try {
+    //         $data = $request->all();
+
+    //         // Validate the incoming request data
+    //         $validator = Validator::make($data, [
+    //             'driving_license_no' => 'nullable|string|max:255',
+    //             'driving_license_date_of_issue' => 'nullable|date',
+    //             'driving_license_date_of_expiry' => 'nullable|date|after:driving_license_date_of_issue',
+    //             'license_front_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+    //             'license_back_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::error('VALIDATION ERROR');
+    //             Log::error($validator->errors()->all());
+
+    //             return back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         // Get the current license for the authenticated driver
+    //         $license = Auth::user()->driver->license;
+
+    //         // Define directories for license uploads
+    //         $frontLicenseDirectory = public_path('uploads/front-license-pics');
+    //         $backLicenseDirectory = public_path('uploads/back-license-pics');
+
+    //         // Ensure the directories exist
+    //         if (!is_dir($frontLicenseDirectory)) {
+    //             mkdir($frontLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+    //         }
+
+    //         if (!is_dir($backLicenseDirectory)) {
+    //             mkdir($backLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+    //         }
+
+    //         // Handle file uploads
+    //         if ($request->hasFile('license_front_avatar')) {
+    //             // Delete the old front avatar if it exists
+    //             if ($license->driving_license_avatar_front && file_exists(public_path($license->driving_license_avatar_front))) {
+    //                 unlink(public_path($license->driving_license_avatar_front));
+    //             }
+
+    //             // Upload the new front license image
+    //             $license_front_avatar = $request->file('license_front_avatar');
+    //             $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();
+    //             $license_front_avatar->move($frontLicenseDirectory, $frontFileName);
+    //             $license->driving_license_avatar_front = 'uploads/front-license-pics/' . $frontFileName; // Set the new value
+    //         }
+
+    //         if ($request->hasFile('license_back_avatar')) {
+    //             // Delete the old back avatar if it exists
+    //             if ($license->driving_license_avatar_back && file_exists(public_path($license->driving_license_avatar_back))) {
+    //                 unlink(public_path($license->driving_license_avatar_back));
+    //             }
+
+    //             // Upload the new back license image
+    //             $license_back_avatar = $request->file('license_back_avatar');
+    //             $backFileName = auth()->user()->driver->email . '-back-license.' . $license_back_avatar->getClientOriginalExtension();
+    //             $license_back_avatar->move($backLicenseDirectory, $backFileName);
+    //             $license->driving_license_avatar_back = 'uploads/back-license-pics/' . $backFileName; // Set the new value
+    //         }
+
+    //         // Update only non-null fields
+    //         $license->driving_license_no = $data['driving_license_no'] ?? $license->driving_license_no;
+    //         $license->driving_license_date_of_issue = $data['driving_license_date_of_issue'] ?? $license->driving_license_date_of_issue;
+    //         $license->driving_license_date_of_expiry = $data['driving_license_date_of_expiry'] ?? $license->driving_license_date_of_expiry;
+
+    //         $license->save();
+
+    //         DB::commit();
+
+    //         return redirect()->route('driver.dashboard')->with('success', 'Driver license updated successfully.');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('UPDATE DRIVER LICENSE ERROR');
+    //         Log::error($e);
+
+    //         return back()->with('error', 'Something went wrong.')->withInput();
+    //     }
+    // }
+
+
+
     public function updateLicense(Request $request, $id)
-    {
-        try {
-            $data = $request->all();
+{
+    try {
+        $data = $request->all();
 
-            $validator = Validator::make($data, [
-                'driving_license_no' => 'nullable|string|max:255',
-                'driving_license_date_of_issue' => 'nullable|date',
-                'driving_license_date_of_expiry' => 'nullable|date|after:driving_license_date_of_issue',
-                'license_front_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'license_back_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            ]);
+        // Validate the incoming request data
+        $validator = Validator::make($data, [
+            'driving_license_no' => 'nullable|string|max:255',
+            'driving_license_date_of_issue' => 'nullable|date',
+            'driving_license_date_of_expiry' => 'nullable|date|after:driving_license_date_of_issue',
+            'license_front_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'license_back_avatar' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
 
-            if ($validator->fails()) {
-                Log::error('VALIDATION ERROR');
-                Log::error($validator->errors()->all());
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR');
+            Log::error($validator->errors()->all());
 
-                return back()->with('error', $validator->errors()->first())->withInput();
-            }
-
-            DB::beginTransaction();
-
-            $license = Auth::user()->driver->license;
-
-            // Handle file uploads
-            if ($request->hasFile('license_front_avatar')) {
-                $driving_license_avatar_front = $request->file('license_front_avatar')->store('uploads/front-license-pics', 'public');
-                $license->driving_license_avatar_front = $driving_license_avatar_front; // Set the new value
-            }
-
-            if ($request->hasFile('license_back_avatar')) {
-                $driving_license_avatar_back = $request->file('license_back_avatar')->store('uploads/back-license-pics', 'public');
-                $license->driving_license_avatar_back = $driving_license_avatar_back; // Set the new value
-            }
-
-            // Update only non-null fields
-            $license->driving_license_no = $data['driving_license_no'] ?? $license->driving_license_no;
-            $license->driving_license_date_of_issue = $data['driving_license_date_of_issue'] ?? $license->driving_license_date_of_issue;
-            $license->driving_license_date_of_expiry = $data['driving_license_date_of_expiry'] ?? $license->driving_license_date_of_expiry;
-
-            $license->save();
-
-            DB::commit();
-
-            return redirect()->route('driver.dashboard')->with('success', 'Driver license updated successfully.');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('UPDATE DRIVER LICENSE ERROR');
-            Log::error($e);
-
-            return back()->with('error', 'Something went wrong.')->withInput();
+            return back()->with('error', $validator->errors()->first())->withInput();
         }
+
+        DB::beginTransaction();
+
+        // Get the current license for the authenticated driver
+        $license = Auth::user()->driver->license;
+
+        // Define directories for license uploads
+        $frontLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/front-license-pics';
+        $backLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/back-license-pics';
+
+        // Ensure the directories exist
+        if (!is_dir($frontLicenseDirectory)) {
+            mkdir($frontLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+        }
+
+        if (!is_dir($backLicenseDirectory)) {
+            mkdir($backLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+        }
+
+        // Handle file uploads
+        if ($request->hasFile('license_front_avatar')) {
+            // Delete the old front avatar if it exists
+            if ($license->driving_license_avatar_front && file_exists(public_path($license->driving_license_avatar_front))) {
+                unlink(public_path($license->driving_license_avatar_front));
+            }
+
+            // Upload the new front license image
+            $license_front_avatar = $request->file('license_front_avatar');
+            $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();
+            $license_front_avatar->move($frontLicenseDirectory, $frontFileName);
+            $license->driving_license_avatar_front = 'uploads/front-license-pics/' . $frontFileName; // Set the new value
+        }
+
+        if ($request->hasFile('license_back_avatar')) {
+            // Delete the old back avatar if it exists
+            if ($license->driving_license_avatar_back && file_exists(public_path($license->driving_license_avatar_back))) {
+                unlink(public_path($license->driving_license_avatar_back));
+            }
+
+            // Upload the new back license image
+            $license_back_avatar = $request->file('license_back_avatar');
+            $backFileName = auth()->user()->driver->email . '-back-license.' . $license_back_avatar->getClientOriginalExtension();
+            $license_back_avatar->move($backLicenseDirectory, $backFileName);
+            $license->driving_license_avatar_back = 'uploads/back-license-pics/' . $backFileName; // Set the new value
+        }
+
+        // Update only non-null fields
+        $license->driving_license_no = $data['driving_license_no'] ?? $license->driving_license_no;
+        $license->driving_license_date_of_issue = $data['driving_license_date_of_issue'] ?? $license->driving_license_date_of_issue;
+        $license->driving_license_date_of_expiry = $data['driving_license_date_of_expiry'] ?? $license->driving_license_date_of_expiry;
+
+        $license->save();
+
+        DB::commit();
+
+        return redirect()->route('driver.dashboard')->with('success', 'Driver license updated successfully.');
+    } catch (Exception $e) {
+        DB::rollBack();
+        Log::error('UPDATE DRIVER LICENSE ERROR');
+        Log::error($e);
+
+        return back()->with('error', 'Something went wrong.')->withInput();
     }
+}
+
+
 
 
 
@@ -312,54 +601,124 @@ class DriverAppController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
+    // public function psvBadgeCreate(Request $request)
+    // {
+    //     try {
+    //         $data = $request->all();
+    //         Log::info('Data for creating Driver PSV Badge : ');
+    //         Log::info($data);
+
+    //         // Validate the incoming request data
+    //         $validator = Validator::make($data, [
+    //             'psv_badge_no' => 'required|string|max:255|unique:psv_badges',
+    //             'psv_issue_date' => 'required|date',
+    //             'psv_expiry_date' => 'required|date|after:psv_issue_date', // Corrected the field name
+    //             'badge_copy' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::error('VALIDATION ERROR');
+    //             Log::error($validator->errors()->all());
+
+    //             return back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         // Define the directory for storing PSV badge images
+    //         $psvBadgeDirectory = public_path('uploads/psvbadge-avatars');
+
+    //         // Ensure the directory exists
+    //         if (!is_dir($psvBadgeDirectory)) {
+    //             mkdir($psvBadgeDirectory, 0755, true); // Create directory if it doesn't exist
+    //         }
+
+    //         // Handle the file upload
+    //         $badge_copy = $request->file('badge_copy');
+    //         $badgeFileName = auth()->user()->driver->email . '-psv-badge.' . $badge_copy->getClientOriginalExtension();
+    //         $badge_copy->move($psvBadgeDirectory, $badgeFileName);
+
+    //         // Create a new PSV badge record
+    //         PSVBadge::create([
+    //             'driver_id' => auth()->user()->driver->id,
+    //             'psv_badge_no' => $data['psv_badge_no'],
+    //             'psv_badge_date_of_issue' => $data['psv_issue_date'],
+    //             'psv_badge_date_of_expiry' => $data['psv_expiry_date'],
+    //             'psv_badge_avatar' => 'uploads/psvbadge-avatars/' . $badgeFileName, // Store relative path
+    //         ]);
+
+    //         DB::commit();
+
+    //         return redirect()->route('driver.dashboard')->with('success', 'Driver PSV badge uploaded successfully.');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('UPLOAD DRIVER PSV BADGE ERROR');
+    //         Log::error($e);
+
+    //         return back()->with('error', 'Something went wrong.')->withInput();
+    //     }
+    // }
+
 
     public function psvBadgeCreate(Request $request)
-    {
-        try {
-            $data = $request->all();
-            Log::info('Data for creating Driver PSV Badge : ');
-            Log::info($data);
+{
+    try {
+        $data = $request->all();
+        Log::info('Data for creating Driver PSV Badge: ');
+        Log::info($data);
 
-            // Validate the incoming request data
-            $validator = Validator::make($data, [
-                'psv_badge_no' => 'required|string|max:255|unique:psv_badges',
-                'psv_issue_date' => 'required|date',
-                'psv_expiry_date' => 'required|date|after:issue_date',
-                'badge_copy' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            ]);
+        // Validate the incoming request data
+        $validator = Validator::make($data, [
+            'psv_badge_no' => 'required|string|max:255|unique:psv_badges',
+            'psv_issue_date' => 'required|date',
+            'psv_expiry_date' => 'required|date|after:psv_issue_date',
+            'badge_copy' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
 
-            if ($validator->fails()) {
-                Log::error('VALIDATION ERROR');
-                Log::error($validator->errors()->all());
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR');
+            Log::error($validator->errors()->all());
 
-                return back()->with('error', $validator->errors()->first())->withInput();
-            }
-
-            DB::beginTransaction();
-
-            // Store the uploaded file in the public disk under uploads/psvbadge-avatars
-            $psv_badge_avatar = $request->file('badge_copy')->store('uploads/psvbadge-avatars', 'public');
-
-            // Create a new PSV badge record
-            PSVBadge::create([
-                'driver_id' => auth()->user()->driver->id,
-                'psv_badge_no' => $data['psv_badge_no'],
-                'psv_badge_date_of_issue' => $data['psv_issue_date'],
-                'psv_badge_date_of_expiry' => $data['psv_expiry_date'],
-                'psv_badge_avatar' => $psv_badge_avatar,
-            ]);
-
-            DB::commit();
-
-            return redirect()->route('driver.dashboard')->with('success', 'Driver PSV badge uploaded successfully.');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('UPLOAD DRIVER PSV BADGE ERROR');
-            Log::error($e);
-
-            return back()->with('error', 'Something went wrong.')->withInput();
+            return back()->with('error', $validator->errors()->first())->withInput();
         }
+
+        DB::beginTransaction();
+
+        // Define the directory for storing PSV badge images
+        $psvBadgeDirectory = '/home/kknuicdz/portal_public_html/uploads/psvbadge-avatars';
+
+        // Ensure the directory exists
+        if (!is_dir($psvBadgeDirectory)) {
+            mkdir($psvBadgeDirectory, 0755, true); // Create directory if it doesn't exist
+        }
+
+        // Handle the file upload
+        $badge_copy = $request->file('badge_copy');
+        $badgeFileName = auth()->user()->driver->email . '-psv-badge.' . $badge_copy->getClientOriginalExtension();
+        $badge_copy->move($psvBadgeDirectory, $badgeFileName);
+
+        // Create a new PSV badge record
+        PSVBadge::create([
+            'driver_id' => auth()->user()->driver->id,
+            'psv_badge_no' => $data['psv_badge_no'],
+            'psv_badge_date_of_issue' => $data['psv_issue_date'],
+            'psv_badge_date_of_expiry' => $data['psv_expiry_date'],
+            'psv_badge_avatar' => 'uploads/psvbadge-avatars/' . $badgeFileName, // Store relative path
+        ]);
+
+        DB::commit();
+
+        return redirect()->route('driver.dashboard')->with('success', 'Driver PSV badge uploaded successfully.');
+    } catch (Exception $e) {
+        DB::rollBack();
+        Log::error('UPLOAD DRIVER PSV BADGE ERROR');
+        Log::error($e);
+
+        return back()->with('error', 'Something went wrong.')->withInput();
     }
+}
+
+
 
     /**
      * Update Driver PSV Badge
@@ -370,57 +729,137 @@ class DriverAppController extends Controller
      * @return \Illuminate\View\View
      */
 
+    // public function updatePsvBadge(Request $request, $id)
+    // {
+    //     try {
+    //         $data = $request->all();
+
+    //         Log::info('DATA');
+    //         Log::info($data);
+
+    //         $validator = Validator::make($data, [
+    //             'psv_badge_no' => 'required|string|max:255',
+    //             'psv_badge_date_of_issue' => 'required|date',
+    //             'psv_badge_date_of_expiry' => 'required|date|after:psv_badge_date_of_issue', // Corrected the field name
+    //             'badge_copy' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             Log::error('VALIDATION ERROR');
+    //             Log::error($validator->errors()->all());
+
+    //             return back()->with('error', $validator->errors()->first())->withInput();
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         // Find the existing PSV badge
+    //         $psvBadge = PSVBadge::findOrFail($id); // Use findOrFail for better error handling
+
+    //         // Handle file upload if a new file is provided
+    //         if ($request->hasFile('badge_copy')) {
+    //             // Define the directory for storing PSV badge images
+    //             $psvBadgeDirectory = public_path('uploads/psvbadge-avatars');
+
+    //             // Ensure the directory exists
+    //             if (!is_dir($psvBadgeDirectory)) {
+    //                 mkdir($psvBadgeDirectory, 0755, true); // Create directory if it doesn't exist
+    //             }
+
+    //             // Handle the file upload
+    //             $badge_copy = $request->file('badge_copy');
+    //             $badgeFileName = auth()->user()->driver->email . '-psv-badge-' . time() . '.' . $badge_copy->getClientOriginalExtension();
+    //             $badge_copy->move($psvBadgeDirectory, $badgeFileName);
+
+    //             // Update the badge avatar path
+    //             $psvBadge->psv_badge_avatar = 'uploads/psvbadge-avatars/' . $badgeFileName;
+    //         }
+
+    //         // Update the PSV badge details
+    //         $psvBadge->psv_badge_no = $data['psv_badge_no'] ?? $psvBadge->psv_badge_no;
+    //         $psvBadge->psv_badge_date_of_issue = $data['psv_badge_date_of_issue'] ?? $psvBadge->psv_badge_date_of_issue;
+    //         $psvBadge->psv_badge_date_of_expiry = $data['psv_badge_date_of_expiry'] ?? $psvBadge->psv_badge_date_of_expiry;
+
+    //         $psvBadge->save();
+
+    //         DB::commit();
+
+    //         return redirect()->route('driver.dashboard')->with('success', 'Driver PSV badge updated successfully.');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('UPDATE DRIVER PSV BADGE ERROR');
+    //         Log::error($e);
+
+    //         return back()->with('error', 'Something went wrong.')->withInput();
+    //     }
+    // }
+
+
     public function updatePsvBadge(Request $request, $id)
-    {
-        try {
-            $data = $request->all();
+{
+    try {
+        $data = $request->all();
 
-            Log::info('DATA');
-            Log::info($data);
+        Log::info('DATA');
+        Log::info($data);
 
-            $validator = Validator::make($data, [
-                'psv_badge_no' => 'required|string|max:255',
-                'psv_badge_date_of_issue' => 'required|date',
-                'psv_badge_date_of_expiry' => 'required|date|after:issue_date',
-                'badge_copy' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            ]);
+        $validator = Validator::make($data, [
+            'psv_badge_no' => 'required|string|max:255',
+            'psv_badge_date_of_issue' => 'required|date',
+            'psv_badge_date_of_expiry' => 'required|date|after:psv_badge_date_of_issue',
+            'badge_copy' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
 
-            if ($validator->fails()) {
-                Log::error('VALIDATION ERROR');
-                Log::error($validator->errors()->all());
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR');
+            Log::error($validator->errors()->all());
 
-                return back()->with('error', $validator->errors()->first())->withInput();
-            }
-
-            DB::beginTransaction();
-
-            $psvBadge = PSVBadge::find($id);
-
-            if ($request->hasFile('badge_copy')) {
-                //Psv to be upoaded to uploads/psvbadge-avatars
-                $psv_badge_avatar = $request->file('badge_copy')->store('uploads/psvbadge-avatars', 'public');
-                $psvBadge->update(['psv_badge_avatar' => $psv_badge_avatar]);
-            }
-
-            $psvBadge->update([
-                'psv_badge_no' => $data['psv_badge_no'] ?? $psvBadge->psv_badge_no,
-                'psv_badge_date_of_issue' => $data['psv_badge_date_of_issue'] ?? $psvBadge->psv_badge_date_of_issue,
-                'psv_badge_date_of_expiry' => $data['psv_badge_date_of_expiry'] ?? $psvBadge->psv_badge_date_of_expiry,
-            ]);
-
-            $psvBadge->save();
-
-            DB::commit();
-
-            return redirect()->route('driver.dashboard')->with('success', 'Driver PSV badge updated successfully.');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('UPDATE DRIVER PSV BADGE ERROR');
-            Log::error($e);
-
-            return back()->with('error', 'Something went wrong.')->withInput();
+            return back()->with('error', $validator->errors()->first())->withInput();
         }
+
+        DB::beginTransaction();
+
+        // Find the existing PSV badge
+        $psvBadge = PSVBadge::findOrFail($id); // Use findOrFail for better error handling
+
+        // Handle file upload if a new file is provided
+        if ($request->hasFile('badge_copy')) {
+            // Define the directory for storing PSV badge images
+            $psvBadgeDirectory = '/home/kknuicdz/portal_public_html/uploads/psvbadge-avatars';
+
+            // Ensure the directory exists
+            if (!is_dir($psvBadgeDirectory)) {
+                mkdir($psvBadgeDirectory, 0755, true); // Create directory if it doesn't exist
+            }
+
+            // Handle the file upload
+            $badge_copy = $request->file('badge_copy');
+            $badgeFileName = auth()->user()->driver->email . '-psv-badge-' . time() . '.' . $badge_copy->getClientOriginalExtension();
+            $badge_copy->move($psvBadgeDirectory, $badgeFileName);
+
+            // Update the badge avatar path
+            $psvBadge->psv_badge_avatar = 'uploads/psvbadge-avatars/' . $badgeFileName;
+        }
+
+        // Update the PSV badge details
+        $psvBadge->psv_badge_no = $data['psv_badge_no'] ?? $psvBadge->psv_badge_no;
+        $psvBadge->psv_badge_date_of_issue = $data['psv_badge_date_of_issue'] ?? $psvBadge->psv_badge_date_of_issue;
+        $psvBadge->psv_badge_date_of_expiry = $data['psv_badge_date_of_expiry'] ?? $psvBadge->psv_badge_date_of_expiry;
+
+        $psvBadge->save();
+
+        DB::commit();
+
+        return redirect()->route('driver.dashboard')->with('success', 'Driver PSV badge updated successfully.');
+    } catch (Exception $e) {
+        DB::rollBack();
+        Log::error('UPDATE DRIVER PSV BADGE ERROR');
+        Log::error($e);
+
+        return back()->with('error', 'Something went wrong.')->withInput();
     }
+}
+
 
     /**
      * Driver Documents Page
@@ -621,31 +1060,36 @@ class DriverAppController extends Controller
     }
 
 
-    public function updateProfilePicture(Request $request)
-    {
-        $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+  public function updateProfilePicture(Request $request)
+{
+    $request->validate([
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        $user = Auth::user();
-        $driver = $user->driver;
+    $user = Auth::user();
+    $driver = $user->driver;
 
-        if ($request->hasFile('profile_picture')) {
-            $file = $request->file('profile_picture');
-            $fileName = $file->getClientOriginalName();
-            $directory = 'uploads/user-avatars/' . $user->id . '/';
-            $filePath = $directory . $fileName;
+    if ($request->hasFile('profile_picture')) {
+        $file = $request->file('profile_picture');
+        $fileName = time() . '-' . $file->getClientOriginalName(); // Adding a timestamp to the filename
+        $directory = '/home/kknuicdz/portal_public_html/uploads/user-avatars/' . $user->id . '/';
 
-            // Store the file in the public disk in this folder of uploads/user-avatars
-            Storage::disk('public')->put($filePath, file_get_contents($file));
-
-            // Update the user's profile picture path
-            $driver->user->avatar = $filePath;
-            $driver->user->save();
-
-            return response()->json(['newProfilePictureUrl' => Storage::url($filePath)]);
+        // Ensure the directory exists
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true); // Create directory if it doesn't exist
         }
 
-        return response()->json(['error' => 'Failed to upload profile picture'], 400);
+        // Move the uploaded file to the specified directory
+        $file->move($directory, $fileName);
+
+        // Update the user's profile picture path
+        $driver->user->avatar = 'uploads/user-avatars/' . $user->id . '/' . $fileName;
+        $driver->user->save();
+
+        return response()->json(['newProfilePictureUrl' => asset($driver->user->avatar)]); // Use asset() for public URL
     }
+
+    return response()->json(['error' => 'Failed to upload profile picture'], 400);
+}
+
 }
