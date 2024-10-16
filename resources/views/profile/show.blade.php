@@ -24,7 +24,7 @@
                                                 <div class="align-left p-1">
                                                     <a href="#" class="profile-image">
                                                         <a href="#" class="profile-image">
-                                                            <img src="{{ url('storage/' . \Auth::user()->avatar) }}"
+                                                            <img src="{{ asset(\Auth::user()->avatar) }}"
                                                                 class="avatar avatar-xl rounded-circle img-border height-100"
                                                                 alt="Profile Image">
                                                         </a>

@@ -48,7 +48,7 @@
                             <div class="card-number">
                                 {{-- Customer_id --}}
                                 {{-- @if (isset($customer))
-                                    <p>Customer ID: {{ $customer->id }}</p>
+                                    <p>Customer ID: {{ $customer->user->id }}</p>
                                 @else
                                     <p>Customer details not found.</p>
                                 @endif --}}
@@ -59,7 +59,7 @@
                                         {{-- <span class="label-title">Customer id</span> --}}
                                         <span class="car-info-wrap display-block">
                                             <input name="customer_id" class="form-control" type="hidden" id="customer_id"
-                                                value="{{ isset($customer) ? $customer->id : '' }}" required>
+                                                value="{{ isset($customer) ? $customer->user->id : '' }}" required>
 
                                         </span>
                                     </label>

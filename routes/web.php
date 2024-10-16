@@ -827,11 +827,11 @@ Route::get('trip/billed/{id}/payment/checkout', [TripController::class, 'tripPay
 
 Route::get('trip/billed/{id}/recieve/payment', [TripPaymentController::class, 'billedTripRecievePayment'])
     ->name('billed.trip.recieve.payment')
-    ->middleware('auth', 'recieve trip payment');
+    ->middleware('auth', 'can:recieve trip payment');
 
 Route::post('trip/billed/{id}/recieve/payment/store', [TripPaymentController::class, 'billedTripRecievePaymentStore'])
     ->name('billed.trip.recieve.payment.store')
-    ->middleware('auth', 'recieve trip payment');
+    ->middleware('auth', 'can:recieve trip payment');
 
 Route::get('billed/trip/{id}/resend/invoice', [TripPaymentController::class, 'billedTripResendInvoice'])
     ->name('billed.trip.resend.invoice')
@@ -1087,7 +1087,7 @@ Route::get('maintenance/service/{id}/payment/checkout', [MaintenanceServiceContr
  *
  */
 
-Route::get('maintenance/service/{id}/receive/payment', [MaintenanceServicePaymentController::class, 'billedVehiclmaintenance/repaireServiceMaintenanceRecievePayment'])
+Route::get('maintenance/service/{id}/receive/payment', [MaintenanceServicePaymentController::class, 'billedVehicleServiceMaintenanceRecievePayment'])
     ->name('billed.vehicle.service.receive.payment')
     ->middleware('auth', 'can:edit maintenance');
 

@@ -40,7 +40,6 @@ class DriversLicensesController extends Controller
     public function store(Request $request)
     {
         try {
-
             $data = $request->all();
 
             $validator = Validator::make($data, [
@@ -58,22 +57,28 @@ class DriversLicensesController extends Controller
                 return redirect()->back()->with('error', $validator->errors()->first())->withInput();
             }
 
+            $licenseNumber = $data['license_no'];
             $frontLicensePath = null;
             $backLicensePath = null;
-            $licenseNumber = $data['license_no'];
 
+            // Handle the front license image upload
             if ($request->hasFile('front_page_id')) {
                 $frontLicenseFile = $request->file('front_page_id');
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
                 $frontLicenseFileName = "{$licenseNumber}-front-id.{$frontLicenseExtension}";
-                $frontLicensePath = $frontLicenseFile->storeAs('uploads/front-license-pics', $frontLicenseFileName, 'public');
+                // Move the file to the public directory
+                $frontLicensePath = 'uploads/front-license-pics/' . $frontLicenseFileName;
+                $frontLicenseFile->move(public_path('uploads/front-license-pics'), $frontLicenseFileName);
             }
 
+            // Handle the back license image upload
             if ($request->hasFile('back_page_id')) {
                 $backLicenseFile = $request->file('back_page_id');
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
                 $backLicenseFileName = "{$licenseNumber}-back-id.{$backLicenseExtension}";
-                $backLicensePath = $backLicenseFile->storeAs('uploads/back-license-pics', $backLicenseFileName, 'public');
+                // Move the file to the public directory
+                $backLicensePath = 'uploads/back-license-pics/' . $backLicenseFileName;
+                $backLicenseFile->move(public_path('uploads/back-license-pics'), $backLicenseFileName);
             }
 
             DB::beginTransaction();
@@ -98,6 +103,7 @@ class DriversLicensesController extends Controller
         }
     }
 
+
     /**
      * Display the specified resource.
      */
@@ -121,7 +127,6 @@ class DriversLicensesController extends Controller
     public function update(Request $request, $id)
     {
         try {
-
             $license = DriversLicenses::findOrFail($id);
             $data = $request->all();
 
@@ -139,29 +144,40 @@ class DriversLicensesController extends Controller
                 return redirect()->back()->with('error', $validator->errors()->first());
             }
 
-            if (!$license) {
-                return redirect()->back()->with('error', 'License not found');
-            }
+            $frontLicensePath = $license->driving_license_avatar_front; // Preserve the old path
+            $backLicensePath = $license->driving_license_avatar_back; // Preserve the old path
 
-            $frontLicensePath = null;
-            $backLicensePath = null;
-
+            // Handle new front license image upload
             if ($request->hasFile('driving_license_avatar_front')) {
+                // If there's an existing front image, delete it
+                if ($frontLicensePath && file_exists(public_path($frontLicensePath))) {
+                    unlink(public_path($frontLicensePath));
+                }
+                // Store the new front image in the public directory
                 $frontLicenseFile = $request->file('driving_license_avatar_front');
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
                 $frontLicenseFileName = "{$license->driving_license_no}-front-id.{$frontLicenseExtension}";
-                $frontLicensePath = $frontLicenseFile->storeAs('uploads/front-license-pics', $frontLicenseFileName, 'public');
+                $frontLicensePath = 'uploads/front-license-pics/' . $frontLicenseFileName; // Path to store
+                $frontLicenseFile->move(public_path('uploads/front-license-pics'), $frontLicenseFileName); // Move file
             }
 
+            // Handle new back license image upload
             if ($request->hasFile('driving_license_avatar_back')) {
+                // If there's an existing back image, delete it
+                if ($backLicensePath && file_exists(public_path($backLicensePath))) {
+                    unlink(public_path($backLicensePath));
+                }
+                // Store the new back image in the public directory
                 $backLicenseFile = $request->file('driving_license_avatar_back');
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
                 $backLicenseFileName = "{$license->driving_license_no}-back-id.{$backLicenseExtension}";
-                $backLicensePath = $backLicenseFile->storeAs('uploads/back-license-pics', $backLicenseFileName, 'public');
+                $backLicensePath = 'uploads/back-license-pics/' . $backLicenseFileName; // Path to store
+                $backLicenseFile->move(public_path('uploads/back-license-pics'), $backLicenseFileName); // Move file
             }
 
             DB::beginTransaction();
 
+            // Update license details
             $license->update([
                 'driving_license_date_of_issue' => $data['driving_license_date_of_issue'],
                 'driving_license_date_of_expiry' => $data['driving_license_date_of_expiry'],
@@ -184,6 +200,7 @@ class DriversLicensesController extends Controller
         }
     }
 
+
     public function delete($id)
     {
         $license = DriversLicenses::findOrFail($id);
@@ -196,25 +213,41 @@ class DriversLicensesController extends Controller
     public function destroy($id)
     {
         try {
-
+            // Find the license by ID
             $license = DriversLicenses::findOrFail($id);
             $driver = $license->driver;
 
+            // Check if the license is found
             if (!$license) {
                 return redirect()->back()->with('error', 'License not found');
             }
 
+            // Start a database transaction
             DB::beginTransaction();
 
-            $license->delete();
-            $driver->status = 'inactive';
+            // Delete the front avatar if it exists
+            if ($license->driving_license_avatar_front && file_exists(public_path($license->driving_license_avatar_front))) {
+                unlink(public_path($license->driving_license_avatar_front)); // Delete the front avatar
+            }
 
+            // Delete the back avatar if it exists
+            if ($license->driving_license_avatar_back && file_exists(public_path($license->driving_license_avatar_back))) {
+                unlink(public_path($license->driving_license_avatar_back)); // Delete the back avatar
+            }
+
+            // Delete the license
+            $license->delete();
+
+            // Update driver status
+            $driver->status = 'inactive';
             $driver->save();
 
+            // Commit the transaction
             DB::commit();
 
             return redirect()->route('driver.license')->with('success', 'License deleted successfully');
         } catch (Exception $e) {
+            // Rollback transaction on error
             DB::rollBack();
             Log::error('DELETE LICENSE ERROR');
             Log::error($e);

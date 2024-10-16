@@ -1,22 +1,22 @@
-@extends('layouts.app')
 
-@section('title', 'Vehicle Services')
 
-@section('content')
+<?php $__env->startSection('title', 'Vehicle Services'); ?>
 
-    @include('components.preloader')
+<?php $__env->startSection('content'); ?>
+
+    <?php echo $__env->make('components.preloader', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
     <!-- React page -->
     <div id="app">
         <!-- Begin page -->
         <div class="wrapper">
             <!-- Start header -->
-            @include('components.sidebar.sidebar')
+            <?php echo $__env->make('components.sidebar.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
             <!-- End header -->
 
             <div class="content-wrapper">
                 <div class="main-content">
-                    @include('components.navbar')
+                    <?php echo $__env->make('components.navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                     <div class="body-content">
                         <div class="tile">
@@ -48,72 +48,72 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($maintenanceServices as $service)
+                                                <?php $__currentLoopData = $maintenanceServices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $service): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                     <tr>
-                                                        <td>{{ $service->vehicle->plate_number ?? null}}</td>
-                                                        <td>{{ $service->serviceCategory->name }}</td>
-                                                        <td>{{ $service->service_date }}</td>
-                                                        <td>KES {{ $service->service_cost }}</td>
+                                                        <td><?php echo e($service->vehicle->plate_number ?? null); ?></td>
+                                                        <td><?php echo e($service->serviceCategory->name); ?></td>
+                                                        <td><?php echo e($service->service_date); ?></td>
+                                                        <td>KES <?php echo e($service->service_cost); ?></td>
                                                         <td>
-                                                            @switch($service->service_status)
-                                                                @case('pending')
+                                                            <?php switch($service->service_status):
+                                                                case ('pending'): ?>
                                                                     <span class="badge bg-secondary">Pending</span>
-                                                                @break
+                                                                <?php break; ?>
 
-                                                                @case('billed')
+                                                                <?php case ('billed'): ?>
                                                                     <span class="badge bg-success">Billed</span>
-                                                                @break
+                                                                <?php break; ?>
 
-                                                                @case('approved')
+                                                                <?php case ('approved'): ?>
                                                                     <span class="badge bg-info">Approved</span>
-                                                                @break
+                                                                <?php break; ?>
 
-                                                                @case('rejected')
+                                                                <?php case ('rejected'): ?>
                                                                     <span class="badge bg-danger">Rejected</span>
-                                                                @break
+                                                                <?php break; ?>
 
-                                                                @case('paid')
+                                                                <?php case ('paid'): ?>
                                                                     <span class="badge bg-danger">Paid</span>
-                                                                @break
+                                                                <?php break; ?>
 
-                                                                @case('partially paid')
+                                                                <?php case ('partially paid'): ?>
                                                                     <span class="badge bg-warning">Partially Paid</span>
-                                                                @break
+                                                                <?php break; ?>
 
-                                                                @default
+                                                                <?php default: ?>
                                                                     <span class="badge bg-warning">Invalid Status</span>
-                                                            @endswitch
+                                                            <?php endswitch; ?>
                                                         </td>
                                                         <td class="text-center">
-                                                            @if ($service->service_status == 'pending')
+                                                            <?php if($service->service_status == 'pending'): ?>
                                                                 <a href="javascript:void(0);"
-                                                                    onclick="axiosModal('{{ route('maintenance.service.approve', $service->id) }}')"
+                                                                    onclick="axiosModal('<?php echo e(route('maintenance.service.approve', $service->id)); ?>')"
                                                                     class="btn btn-primary btn-sm" title="Approve">
                                                                     <i class="fa-solid fa-thumbs-up"></i>
                                                                 </a>
                                                                 <a href="javascript:void(0);"
-                                                                    onclick="axiosModal('{{ route('maintenance.service.reject', $service->id) }}')"
+                                                                    onclick="axiosModal('<?php echo e(route('maintenance.service.reject', $service->id)); ?>')"
                                                                     class="btn btn-danger btn-sm" title="Reject">
                                                                     <i class="fa-solid fa-ban"></i>
                                                                 </a>
-                                                            @endif
-                                                            @if ($service->service_status == 'approved')
+                                                            <?php endif; ?>
+                                                            <?php if($service->service_status == 'approved'): ?>
                                                                 <a href="javascript:void(0);"
-                                                                    onclick="axiosModal('{{ route('maintenance.service.bill', $service->id) }}')"
+                                                                    onclick="axiosModal('<?php echo e(route('maintenance.service.bill', $service->id)); ?>')"
                                                                     class="btn btn-primary btn-sm" title="Bill">
                                                                     <i class="fa-solid fa-money-bill"></i>
                                                                 </a>
-                                                            @endif
-                                                            @if (in_array($service->service_status, ['billed', 'paid', 'partially paid']))
-                                                                <a href="{{ route('maintenance.service.payment.checkout', ['id' => $service->id]) }}"
+                                                            <?php endif; ?>
+                                                            <?php if(in_array($service->service_status, ['billed', 'paid', 'partially paid'])): ?>
+                                                                <a href="<?php echo e(route('maintenance.service.payment.checkout', ['id' => $service->id])); ?>"
                                                                     class="btn btn-primary btn-sm"
                                                                     title="Checkout to Pay Vehicle maintenance service charges.">
                                                                     <small><i class="fa-solid fa-money-bill"></i></small>
                                                                 </a>
-                                                            @endif
+                                                            <?php endif; ?>
                                                         </td>
                                                     </tr>
-                                                @endforeach
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -124,7 +124,7 @@
                     </div>
                 </div>
                 <div class="overlay"></div>
-                @include('components.footer')
+                <?php echo $__env->make('components.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
             </div>
         </div>
         <!-- End Vue page -->
@@ -134,9 +134,9 @@
     <div class="modal fade" id="maintenanceServiceModal" tabindex="-1" aria-labelledby="maintenanceServiceModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form action="{{ route('maintenance.service.create') }}" method="POST" class="needs-validation modal-content"
+            <form action="<?php echo e(route('maintenance.service.create')); ?>" method="POST" class="needs-validation modal-content"
                 enctype="multipart/form-data">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <div class="card-header my-3 p-2 border-bottom">
                     <h4>Add Vehicle Service</h4>
                 </div>
@@ -150,9 +150,9 @@
                                 <div class="col-sm-7">
                                     <select name="vehicle" class="form-control" id="vehicle" required>
                                         <option value="">Select Vehicle</option>
-                                        @foreach ($vehicles as $vehicle)
-                                            <option value="{{ $vehicle->id }}">{{ $vehicle->plate_number }}</option>
-                                        @endforeach
+                                        <?php $__currentLoopData = $vehicles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $vehicle): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($vehicle->id); ?>"><?php echo e($vehicle->plate_number); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
                             </div>
@@ -163,11 +163,11 @@
                                 <div class="col-sm-7">
                                     <select name="service_type_id" class="form-control" id="service_type_id" required>
                                         <option value="">Select Service Type</option>
-                                        @foreach ($serviceTypes as $serviceType)
-                                            <option value="{{ $serviceType->id }}"
-                                                {{ old('service_type_id') == $serviceType->id ? 'selected' : '' }}>
-                                                {{ $serviceType->name }}</option>
-                                        @endforeach
+                                        <?php $__currentLoopData = $serviceTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $serviceType): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($serviceType->id); ?>"
+                                                <?php echo e(old('service_type_id') == $serviceType->id ? 'selected' : ''); ?>>
+                                                <?php echo e($serviceType->name); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
                             </div>
@@ -177,7 +177,7 @@
                                 </label>
                                 <div class="col-sm-7">
                                     <input type="date" name="service_date" class="form-control" id="service_date"required
-                                        value="{{ old('service_date') }}">
+                                        value="<?php echo e(old('service_date')); ?>">
                                 </div>
                             </div>
                             <div class="form-group row my-2">
@@ -185,7 +185,7 @@
                                     Service Description <i class="text-danger">*</i>
                                 </label>
                                 <div class="col-sm-7">
-                                    <textarea name="service_description" class="form-control" id="service_description" rows="4" required>{{ old('service_description') }}</textarea>
+                                    <textarea name="service_description" class="form-control" id="service_description" rows="4" required><?php echo e(old('service_description')); ?></textarea>
                                 </div>
                             </div>
                         </div>
@@ -196,7 +196,7 @@
                                 </label>
                                 <div class="col-sm-7">
                                     <select name="creator_id" class="form-control" id="creator_id" readonly disabled>
-                                        <option value="{{ auth()->user()->id }}">{{ auth()->user()->name }}</option>
+                                        <option value="<?php echo e(auth()->user()->id); ?>"><?php echo e(auth()->user()->name); ?></option>
                                     </select>
                                 </div>
                             </div>
@@ -218,7 +218,7 @@
                                 <div class="col-sm-7">
                                     <input type="number" name="service_cost" class="form-control" id="service_cost"
                                         placeholder="0.00" step="0.01" min="0" required
-                                        value="{{ old('service_cost') }}">
+                                        value="<?php echo e(old('service_cost')); ?>">
                                 </div>
                             </div>
                             <div class="form-group row my-2">
@@ -227,7 +227,7 @@
                                 </label>
                                 <div class="col-sm-7">
                                     <input type="file" name="receipt_image" class="form-control" id="receipt_image"
-                                        accept="image/*" required value="{{ old('receipt_image') }}">
+                                        accept="image/*" required value="<?php echo e(old('receipt_image')); ?>">
                                 </div>
                             </div>
                         </div>
@@ -274,4 +274,6 @@
         });
     </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\metroberry-apis-v1.1.0\resources\views/vehicle/maintenance-services/index.blade.php ENDPATH**/ ?>

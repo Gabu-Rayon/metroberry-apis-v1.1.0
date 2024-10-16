@@ -12,14 +12,14 @@
     <title>
         @yield('title')
     </title>
-    <meta name="description"content="Metro-Berry-Admin-Template" />
+    <meta name="description"content="Metroberry-Admin-Template" />
     <link rel="canonical"href="/" />
     <meta name="robots"content="all" />
-    <meta property="og:description"content="Metro-Berry-Admin-Template" />
+    <meta property="og:description"content="Metroberry-Admin-Template" />
     <meta property="og:title"content="Metroberry" />
     <meta property="og:url"content="metrobery.co.ke" />
     <meta property="og:type"content="WebPage" />
-    <meta property="og:Metro-Berry"content="Metro-Berry" />
+    <meta property="og:Metroberry"content="Metroberry Tours & Travel" />
 
     <link rel="shortcut icon"href="{{ asset('favicon.ico') }}">
     <link href="{{ asset('admin-assets/vendor/bootstrap/css/bootstrap.min.css?v=1') }}"rel="stylesheet">

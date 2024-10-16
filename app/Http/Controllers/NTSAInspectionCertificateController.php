@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\File;
+
 
 class NTSAInspectionCertificateController extends Controller
 {
@@ -38,7 +40,6 @@ class NTSAInspectionCertificateController extends Controller
     public function store(Request $request)
     {
         try {
-
             $data = $request->all();
 
             $validator = Validator::make($data, [
@@ -60,24 +61,32 @@ class NTSAInspectionCertificateController extends Controller
             $avatarPath = null;
             $certNo = $data['ntsa_inspection_certificate_no'];
 
-            $avatarPath = $request->file('avatar')->store('uploads/ntsa-insp-cert-copies', 'public');
+            // Generate a unique filename for the avatar
+            $avatarFile = $request->file('avatar');
+            $avatarExtension = $avatarFile->getClientOriginalExtension();
+            $avatarFileName = "{$certNo}-inspection-certificate.{$avatarExtension}";
 
-            $cert = NTSAInspectionCertificate::create([
+            // Store the avatar directly in the public folder
+            $avatarPath = $avatarFile->move(public_path('uploads/ntsa-insp-cert-copies'), $avatarFileName);
+
+            // Create the NTSA inspection certificate record
+            NTSAInspectionCertificate::create([
                 'vehicle_id' => $data['vehicle'],
                 'creator_id' => auth()->id(),
                 'ntsa_inspection_certificate_no' => $certNo,
                 'ntsa_inspection_certificate_date_of_issue' => $data['ntsa_inspection_certificate_date_of_issue'],
                 'ntsa_inspection_certificate_date_of_expiry' => $data['ntsa_inspection_certificate_date_of_expiry'],
-                'ntsa_inspection_certificate_avatar' => $avatarPath,
+                'ntsa_inspection_certificate_avatar' => 'uploads/ntsa-insp-cert-copies/' . $avatarFileName, // Store relative path for DB
             ]);
 
-        //   Expense::create([
-        //         'name' => 'NTSA Inspection Certificate',
-        //         'amount' => $cert->cost,
-        //         'category' => 'ntsa_inspection_certificate',
-        //         'entry_date' => now(),
-        //         'description' => 'Add NTSA Inspection Certificate for ' . $cert->vehicle->plate_number,
-        //     ]);
+            // Uncomment and adjust if you want to log an expense related to this certificate
+            // Expense::create([
+            //     'name' => 'NTSA Inspection Certificate',
+            //     'amount' => $cert->cost,
+            //     'category' => 'ntsa_inspection_certificate',
+            //     'entry_date' => now(),
+            //     'description' => 'Add NTSA Inspection Certificate for ' . $cert->vehicle->plate_number,
+            // ]);
 
             DB::commit();
 
@@ -89,6 +98,7 @@ class NTSAInspectionCertificateController extends Controller
             return back()->with('error', 'Something went wrong.');
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -132,18 +142,27 @@ class NTSAInspectionCertificateController extends Controller
 
             DB::beginTransaction();
 
-            $certificate = NTSAInspectionCertificate::find($id);
+            $certificate = NTSAInspectionCertificate::findOrFail($id); // Use findOrFail for better error handling
 
-            $avatarPath = $certificate->ntsa_inspection_certificate_avatar;
+            $avatarPath = $certificate->ntsa_inspection_certificate_avatar; // Keep the existing path initially
             $certNo = $data['ntsa_inspection_certificate_no'];
 
+            // Check if a new avatar file is uploaded
             if ($request->hasFile('avatar')) {
+                // Remove the old avatar file if it exists
+                if (File::exists(public_path($avatarPath))) {
+                    File::delete(public_path($avatarPath));
+                }
+
+                // Upload new avatar file
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$certNo}-avatar.{$avatarExtension}";
-                $avatarPath = $avatarFile->storeAs('uploads/ntsa-insp-cert-copies', $avatarFileName, 'public');
+                $avatarPath = 'uploads/ntsa-insp-cert-copies/' . $avatarFileName; // Save the relative path
+                $avatarFile->move(public_path('uploads/ntsa-insp-cert-copies'), $avatarFileName); // Move the file
             }
 
+            // Update the certificate
             $certificate->update([
                 'vehicle_id' => $data['vehicle'],
                 'creator_id' => auth()->id(),
@@ -155,8 +174,6 @@ class NTSAInspectionCertificateController extends Controller
             ]);
 
             $certificate->vehicle->status = 'inactive';
-
-            $certificate->save();
             $certificate->vehicle->save();
 
             DB::commit();
@@ -169,6 +186,7 @@ class NTSAInspectionCertificateController extends Controller
             return back()->with('error', 'Something went wrong.');
         }
     }
+
 
     public function verifyForm($id)
     {
@@ -257,24 +275,34 @@ class NTSAInspectionCertificateController extends Controller
     public function destroy($id)
     {
         try {
-            $certificate = NTSAInspectionCertificate::findOrfail($id);
+            $certificate = NTSAInspectionCertificate::findOrFail($id);
 
             DB::beginTransaction();
 
+            // Change vehicle status to inactive
             $certificate->vehicle->status = 'inactive';
-
             $certificate->vehicle->save();
+
+            // Delete the associated image from the public directory
+            $avatarPath = public_path($certificate->ntsa_inspection_certificate_avatar);
+            if (File::exists($avatarPath)) {
+                File::delete($avatarPath);
+            }
+
+            // Delete the inspection certificate
             $certificate->delete();
 
             DB::commit();
 
             return redirect()->route('vehicle.inspection.certificate')->with('success', 'Inspection Certificate deleted successfully.');
         } catch (Exception $e) {
+            DB::rollBack();
             Log::error('DELETE INSPECTION CERTIFICATE ERROR');
             Log::error($e);
             return back()->with('error', 'Something went wrong.');
         }
     }
+
 
     public function export()
     {

@@ -45,7 +45,7 @@
                                                 <label for="avatar" class="form-label">Profile Image</label>
                                                 <input type="file" class="form-control @error('avatar') is-invalid @enderror" id="avatar" name="avatar">
                                                 @if (Auth::user()->avatar)
-                                                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Profile Image" class="img-thumbnail mt-2" style="max-height: 150px;">
+                                                    <img src="{{ asset(Auth::user()->avatar) }}" alt="Profile Image" class="img-thumbnail mt-2" style="max-height: 150px;">
                                                 @endif
                                                 @error('avatar')
                                                     <span class="invalid-feedback" role="alert">

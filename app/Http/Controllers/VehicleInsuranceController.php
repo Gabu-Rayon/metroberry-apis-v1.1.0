@@ -111,7 +111,17 @@ class VehicleInsuranceController extends Controller
             // Log the request data
             Log::info('Vehicle Insurance store request data:', $request->all());
 
-            $policyDocument = $request->file('avatar')->store('uploads/vehicle_insurance_policy_document', 'public');
+
+            if ($request->hasFile('policy_document')) {
+                $file = $request->file('policy_document');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $directory = 'uploads/vehicle_insurance_policy_document/';
+                $policyDocument = $directory . $fileName;
+
+                // Store the file in the public folder
+                $file->move(public_path($directory), $fileName);
+            }
+
 
             // Create a new vehicle insurance record
             $vehicleInsurance = new VehicleInsurance();
@@ -218,11 +228,18 @@ class VehicleInsuranceController extends Controller
             if ($request->hasFile('policy_document')) {
                 $file = $request->file('policy_document');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('policy_documents', $filename, 'public');
+                $directory = 'uploads/policy_documents/';
+                $filePath = $directory . $filename;
+
+                // Move the file to the public disk (no symbolic links)
+                $file->move(public_path($directory), $filename);
 
                 // Delete old policy document if it exists
                 if ($vehicleInsurance->policy_document) {
-                    Storage::disk('public')->delete($vehicleInsurance->policy_document);
+                    $oldFilePath = public_path($vehicleInsurance->policy_document);
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
                 }
 
                 // Set new policy document path
@@ -260,7 +277,6 @@ class VehicleInsuranceController extends Controller
         }
     }
 
-
     /**
      * Remove the specified resource from storage.
      */
@@ -292,7 +308,10 @@ class VehicleInsuranceController extends Controller
 
             // Delete old policy document if it exists
             if ($insurance->policy_document) {
-                Storage::disk('public')->delete($insurance->policy_document);
+                $filePath = public_path($insurance->policy_document);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
             }
 
             DB::beginTransaction();
@@ -312,6 +331,7 @@ class VehicleInsuranceController extends Controller
         }
     }
 
+
     public function export()
     {
         return Excel::download(new VehicleInsuranceExport, 'vehicle_insurances.xlsx');
@@ -322,7 +342,8 @@ class VehicleInsuranceController extends Controller
         return view('vehicle.insurance.renew', compact('insurance'));
     }
 
-    public function renewPost($id, Request $request) {
+    public function renewPost($id, Request $request)
+    {
         try {
             $insurance = VehicleInsurance::findOrFail($id);
 
@@ -346,15 +367,27 @@ class VehicleInsuranceController extends Controller
                 'status' => true,
             ]);
 
-            $policyDocument = null;
-
             // handle file upload
             if ($request->hasFile('policy_document')) {
-                $policyDocument = time() . '.' . $request->policy_document->extension();
-                $request->policy_document->move(public_path('images'), $policyDocument);
-            }
+                $file = $request->file('policy_document');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $directory = 'uploads/policy_documents/';
+                $filePath = $directory . $filename;
 
-            $insurance->policy_document = $policyDocument;
+                // Move the file to the public disk (no symbolic links)
+                $file->move(public_path($directory), $filename);
+
+                // Delete old policy document if it exists
+                if ($insurance->policy_document) {
+                    $oldFilePath = public_path($insurance->policy_document);
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
+                }
+
+                // Set new policy document path
+                $insurance->policy_document = $filePath;
+            }
 
             $insurance->save();
 
@@ -376,4 +409,5 @@ class VehicleInsuranceController extends Controller
             return back()->with('error', 'Something went wrong.');
         }
     }
+
 }

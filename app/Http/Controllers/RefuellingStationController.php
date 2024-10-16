@@ -43,7 +43,6 @@ class RefuellingStationController extends Controller
     public function store(Request $request)
     {
         try {
-
             $data = $request->all();
 
             $validator = Validator::make($data, [
@@ -74,13 +73,17 @@ class RefuellingStationController extends Controller
             $certificateOfOperationsFile = $request->file('certificate_of_operations');
             $certificateOfOperationsExtension = $certificateOfOperationsFile->getClientOriginalExtension();
             $certificateOfOperationsFileName = "{$email}-cert-op.{$certificateOfOperationsExtension}";
-            $certificateOfOperationsPath = $certificateOfOperationsFile->storeAs('uploads/cert-ops', $certificateOfOperationsFileName, 'public');
+            $certificateOfOperationsFilePath = public_path('uploads/cert-ops');
+            $certificateOfOperationsFile->move($certificateOfOperationsFilePath, $certificateOfOperationsFileName);
+            $certificateOfOperationsPath = 'uploads/cert-ops/' . $certificateOfOperationsFileName;
 
             if ($request->hasFile('avatar')) {
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$email}-avatar.{$avatarExtension}";
-                $avatarPath = $avatarFile->storeAs('uploads/user-avatars', $avatarFileName, 'public');
+                $avatarFilePath = public_path('uploads/user-avatars');
+                $avatarFile->move($avatarFilePath, $avatarFileName);
+                $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
             }
 
             $user = User::create([
@@ -105,8 +108,6 @@ class RefuellingStationController extends Controller
 
             DB::commit();
 
-
-
             // Send email with the plain password
             Mail::send('mail-view.fuel-station-welcome-mail', [
                 'station' => $user->name,
@@ -117,7 +118,6 @@ class RefuellingStationController extends Controller
                     ->subject('Your Account Created');
             });
 
-
             return redirect()->route('refueling.station')->with('success', 'Refueling Station created successfully');
         } catch (Exception $e) {
             Log::error('STORE REFUELING STATION ERROR');
@@ -125,6 +125,7 @@ class RefuellingStationController extends Controller
             return redirect()->back()->with('error', $e->getMessage())->withInput();
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -150,8 +151,8 @@ class RefuellingStationController extends Controller
     {
         try {
             $data = $request->all();
-            $station = RefuellingStation::findOrfail($id);
-            $user = User::findOrfail($station->user_id);
+            $station = RefuellingStation::findOrFail($id);
+            $user = User::findOrFail($station->user_id);
 
             $validator = Validator::make($data, [
                 'name' => 'required|string|max:255',
@@ -175,11 +176,20 @@ class RefuellingStationController extends Controller
             $email = $data['email'];
 
             if ($request->hasFile('certificate_of_operations')) {
-                $certificateOfOperationsPath = $station->certificate_of_operations;
                 $certificateOfOperationsFile = $request->file('certificate_of_operations');
                 $certificateOfOperationsExtension = $certificateOfOperationsFile->getClientOriginalExtension();
                 $certificateOfOperationsFileName = "{$email}-cert-op.{$certificateOfOperationsExtension}";
-                $certificateOfOperationsPath = $certificateOfOperationsFile->storeAs('uploads/cert-ops', $certificateOfOperationsFileName, 'public');
+                $certificateOfOperationsFilePath = public_path('uploads/cert-ops');
+                $certificateOfOperationsFile->move($certificateOfOperationsFilePath, $certificateOfOperationsFileName);
+                $certificateOfOperationsPath = 'uploads/cert-ops/' . $certificateOfOperationsFileName;
+
+                // Delete the old certificate file if a new one is uploaded
+                if ($station->certificate_of_operations) {
+                    $oldCertificatePath = public_path($station->certificate_of_operations);
+                    if (file_exists($oldCertificatePath)) {
+                        unlink($oldCertificatePath);
+                    }
+                }
             } else {
                 $certificateOfOperationsPath = $station->certificate_of_operations;
             }
@@ -190,23 +200,33 @@ class RefuellingStationController extends Controller
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$email}-avatar.{$avatarExtension}";
-                $avatarPath = $avatarFile->storeAs('uploads/user-avatars', $avatarFileName, 'public');
+                $avatarFilePath = public_path('uploads/user-avatars');
+                $avatarFile->move($avatarFilePath, $avatarFileName);
+                $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
+
+                // Delete the old avatar file if a new one is uploaded
+                if ($user->avatar) {
+                    $oldAvatarPath = public_path($user->avatar);
+                    if (file_exists($oldAvatarPath)) {
+                        unlink($oldAvatarPath);
+                    }
+                }
             }
 
-            $user->name = $data['name'];
-            $user->email = $email;
-            $user->phone = $data['phone'];
-            $user->address = $data['address'];
-            $user->avatar = $avatarPath;
-            $user->save();
+            $user->update([
+                'name' => $data['name'],
+                'email' => $email,
+                'phone' => $data['phone'],
+                'address' => $data['address'],
+                'avatar' => $avatarPath,
+            ]);
 
-            $station->station_code = $data['station_code'];
-            if ($request->hasFile('certificate_of_operations')) {
-                $station->certificate_of_operations = $certificateOfOperationsPath;
-            }
-            $station->payment_period = $data['payment_period'];
-            $station->status = 'inactive';
-            $station->save();
+            $station->update([
+                'station_code' => $data['station_code'],
+                'certificate_of_operations' => $certificateOfOperationsPath,
+                'payment_period' => $data['payment_period'],
+                'status' => 'inactive',
+            ]);
 
             DB::commit();
 
@@ -218,6 +238,7 @@ class RefuellingStationController extends Controller
             return redirect()->back()->with('error', $e->getMessage())->withInput();
         }
     }
+
 
     public function activateForm($id)
     {
@@ -299,8 +320,8 @@ class RefuellingStationController extends Controller
     public function destroy($id)
     {
         try {
-            $station = RefuellingStation::findOrfail($id);
-            $user = User::findOrfail($station->user_id);
+            $station = RefuellingStation::findOrFail($id);
+            $user = User::findOrFail($station->user_id);
 
             if (!$station) {
                 return redirect()->back()->with('error', 'Refueling Station not found');
@@ -312,8 +333,23 @@ class RefuellingStationController extends Controller
 
             DB::beginTransaction();
 
-            $station->delete();
+            // Delete certificate of operations file if it exists
+            if ($station->certificate_of_operations) {
+                $certificatePath = public_path($station->certificate_of_operations);
+                if (file_exists($certificatePath)) {
+                    unlink($certificatePath);
+                }
+            }
 
+            // Delete avatar file if it exists
+            if ($user->avatar) {
+                $avatarPath = public_path($user->avatar);
+                if (file_exists($avatarPath)) {
+                    unlink($avatarPath);
+                }
+            }
+
+            $station->delete();
             $user->delete();
 
             DB::commit();
@@ -326,4 +362,5 @@ class RefuellingStationController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
 }

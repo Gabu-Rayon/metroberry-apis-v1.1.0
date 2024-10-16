@@ -151,27 +151,30 @@ class OrganisationController extends Controller
             }
 
             DB::beginTransaction();
-
             $logoPath = null;
             $email = $data['email'];
-            $generatedPassword =  $data['password'];
-            Log::info('password Generated for this  Organisation : ');
-
+            $generatedPassword = $data['password'];
+            Log::info('Password Generated for this Organisation: ');
             Log::info($generatedPassword);
 
+            // Store logo in the public folder
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
                 $logoExtension = $logoFile->getClientOriginalExtension();
                 $logoFileName = "{$email}-avatar.{$logoExtension}";
-                $logoPath = $logoFile->storeAs('uploads/company-logos', $logoFileName, 'public');
+                $logoPath = 'uploads/company-logos/' . $logoFileName; // Store the relative path
+                $logoFile->move(public_path('uploads/company-logos'), $logoFileName); // Move the file to the public directory
             }
 
+            // Store organization certificate in the public folder
             if ($request->hasFile('organisation_certificate')) {
                 $certificateFile = $request->file('organisation_certificate');
                 $certificateExtension = $certificateFile->getClientOriginalExtension();
                 $certificateFileName = "{$email}-certificate.{$certificateExtension}";
-                $certificatePath = $certificateFile->storeAs('uploads/organisation-certificates', $certificateFileName, 'public');
+                $certificatePath = 'uploads/organisation-certificates/' . $certificateFileName; // Store the relative path
+                $certificateFile->move(public_path('uploads/organisation-certificates'), $certificateFileName); // Move the file to the public directory
             }
+
 
             $user = User::create([
                 'name' => $data['name'],
@@ -246,9 +249,8 @@ class OrganisationController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-
-            $organisation = Organisation::findOrfail($id);
-            $user = User::findOrfail($organisation->user_id);
+            $organisation = Organisation::findOrFail($id);
+            $user = User::findOrFail($organisation->user_id);
 
             $data = $request->all();
 
@@ -270,32 +272,38 @@ class OrganisationController extends Controller
 
             DB::beginTransaction();
 
-            $logoPath = $user->avatar;
+            $logoPath = $user->avatar; // Keep the existing logo path if not updated
+            $certificatePath = $organisation->certificate_of_organisation; // Keep the existing certificate path if not updated
 
+            // Store logo in the public folder
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
                 $logoExtension = $logoFile->getClientOriginalExtension();
                 $logoFileName = "{$user->email}-avatar.{$logoExtension}";
-                $logoPath = $logoFile->storeAs('uploads/company-logos', $logoFileName, 'public');
+                $logoPath = 'uploads/company-logos/' . $logoFileName; // Set relative path for logo
+                $logoFile->move(public_path('uploads/company-logos'), $logoFileName); // Move the file to public folder
             }
 
+            // Store certificate in the public folder
             if ($request->hasFile('certificate_of_organisation')) {
                 $certificateFile = $request->file('certificate_of_organisation');
                 $certificateExtension = $certificateFile->getClientOriginalExtension();
                 $certificateFileName = "{$user->email}-certificate.{$certificateExtension}";
-                $certificatePath = $certificateFile->storeAs('uploads/organisation-certificates', $certificateFileName, 'public');
+                $certificatePath = 'uploads/organisation-certificates/' . $certificateFileName; // Set relative path for certificate
+                $certificateFile->move(public_path('uploads/organisation-certificates'), $certificateFileName); // Move the file to public folder
             }
 
+            // Update user and organisation
             $user->update([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'address' => $data['address'],
-                'avatar' => $logoPath
+                'avatar' => $logoPath // Save the path
             ]);
 
             $organisation->update([
-                'certificate_of_organisation' => $certificatePath ?? $organisation->certificate_of_organisation,
+                'certificate_of_organisation' => $certificatePath, // Save the path, or keep the existing one
                 'organisation_code' => $data['organisation_code']
             ]);
 
@@ -309,6 +317,7 @@ class OrganisationController extends Controller
             return redirect()->back()->with('error', 'An error occurred while updating organisation');
         }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -338,17 +347,18 @@ class OrganisationController extends Controller
 
             DB::beginTransaction();
 
-            // Delete related files
-            $certificatesPath = public_path('uploads/organisation-certificates/' . $organisation->id);
-            $logosPath = public_path('uploads/company-logos/' . $organisation->id);
+            // Define file paths
+            $certificatePath = public_path('uploads/organisation-certificates/' . $user->email . '-certificate.pdf'); // Update according to your naming convention
+            $logoPath = public_path('uploads/company-logos/' . $user->email . '-avatar.' . pathinfo($organisation->certificate_of_organisation, PATHINFO_EXTENSION)); // Get the correct extension or naming convention
 
-            // Check if the directories exist and delete them
-            if (File::exists($certificatesPath)) {
-                File::deleteDirectory($certificatesPath);
+            // Delete the certificate file if it exists
+            if (File::exists($certificatePath)) {
+                File::delete($certificatePath);
             }
 
-            if (File::exists($logosPath)) {
-                File::deleteDirectory($logosPath);
+            // Delete the logo file if it exists
+            if (File::exists($logoPath)) {
+                File::delete($logoPath);
             }
 
             // Delete the organisation and user

@@ -338,35 +338,69 @@ class EmployeeController extends Controller
             $user->phone = $data['phone'];
             $user->address = $data['address'];
             $customer->national_id_no = $data['national_id_no'];
+            $email = $data['email'];
 
             $avatarPath = null;
             $frontIdPath = null;
             $backIdPath = null;
-            $email = $data['email'];
 
+            // Handle avatar upload
             if ($request->hasFile('avatar')) {
+                // Check if the user already has an avatar and delete the old one
+                if ($user->avatar) {
+                    $oldAvatarPath = public_path($user->avatar);
+                    if (file_exists($oldAvatarPath)) {
+                        unlink($oldAvatarPath); // Delete the old avatar
+                    }
+                }
+
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$email}-avatar.{$avatarExtension}";
-                $avatarPath = $avatarFile->storeAs('uploads/user-avatars', $avatarFileName, 'public');
-                $user->avatar = $avatarPath;
+
+                // Move the new file to the public/uploads/user-avatars directory
+                $avatarPath = $avatarFile->move(public_path('uploads/user-avatars'), $avatarFileName);
+                $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
             }
 
+            // Handle front ID upload
             if ($request->hasFile('front_page_id')) {
+                // Check if the customer already has a front ID and delete the old one
+                if ($customer->national_id_front_avatar) {
+                    $oldFrontIdPath = public_path($customer->national_id_front_avatar);
+                    if (file_exists($oldFrontIdPath)) {
+                        unlink($oldFrontIdPath); // Delete the old front ID
+                    }
+                }
+
                 $frontIdFile = $request->file('front_page_id');
                 $frontIdExtension = $frontIdFile->getClientOriginalExtension();
                 $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
-                $frontIdPath = $frontIdFile->storeAs('uploads/front-page-ids', $frontIdFileName, 'public');
-                $customer->national_id_front_avatar = $frontIdPath;
+
+                // Move the new file to the public/uploads/front-page-ids directory
+                $frontIdPath = $frontIdFile->move(public_path('uploads/front-page-ids'), $frontIdFileName);
+                $customer->national_id_front_avatar = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
             }
 
+            // Handle back ID upload
             if ($request->hasFile('back_page_id')) {
+                // Check if the customer already has a back ID and delete the old one
+                if ($customer->national_id_behind_avatar) {
+                    $oldBackIdPath = public_path($customer->national_id_behind_avatar);
+                    if (file_exists($oldBackIdPath)) {
+                        unlink($oldBackIdPath); // Delete the old back ID
+                    }
+                }
+
                 $backIdFile = $request->file('back_page_id');
                 $backIdExtension = $backIdFile->getClientOriginalExtension();
                 $backIdFileName = "{$email}-back-id.{$backIdExtension}";
-                $backIdPath = $backIdFile->storeAs('uploads/back-page-ids', $backIdFileName, 'public');
-                $customer->national_id_behind_avatar = $backIdPath;
+
+                // Move the new file to the public/uploads/back-page-ids directory
+                $backIdPath = $backIdFile->move(public_path('uploads/back-page-ids'), $backIdFileName);
+                $customer->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
             }
+
 
             $customer->organisation_id = $organisation->id;
             $customer->customer_organisation_code = $data['organisation'];
@@ -502,15 +536,24 @@ class EmployeeController extends Controller
 
             // Delete associated files
             if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
+                $oldAvatarPath = public_path($user->avatar);
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath); // Delete the old avatar
+                }
             }
 
             if ($customer->national_id_front_avatar) {
-                Storage::disk('public')->delete($customer->national_id_front_avatar);
+                $oldFrontIdPath = public_path($customer->national_id_front_avatar);
+                if (file_exists($oldFrontIdPath)) {
+                    unlink($oldFrontIdPath); // Delete the old front ID
+                }
             }
 
             if ($customer->national_id_behind_avatar) {
-                Storage::disk('public')->delete($customer->national_id_behind_avatar);
+                $oldBackIdPath = public_path($customer->national_id_behind_avatar);
+                if (file_exists($oldBackIdPath)) {
+                    unlink($oldBackIdPath); // Delete the old back ID
+                }
             }
 
             DB::beginTransaction();
@@ -528,6 +571,7 @@ class EmployeeController extends Controller
             return redirect()->back()->with('error', 'An error occurred while deleting customer');
         }
     }
+
 
 
     // public function export()

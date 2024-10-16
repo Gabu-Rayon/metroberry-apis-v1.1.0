@@ -63,7 +63,9 @@ class PSVBadgeController extends Controller
                 $badgeFile = $request->file('psv_badge_avatar');
                 $badgeExtension = $badgeFile->getClientOriginalExtension();
                 $badgeFileName = "{$badgeNumber}-back-id.{$badgeExtension}";
-                $badgePath = $badgeFile->storeAs('uploads/psvbadge-avatars', $badgeFileName, 'public');
+                // Store the avatar directly in the public directory
+                $badgePath = $badgeFile->move(public_path('uploads/psvbadge-avatars'), $badgeFileName);
+                $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName; 
             }
 
             PSVBadge::create([
@@ -78,11 +80,13 @@ class PSVBadgeController extends Controller
 
             return redirect()->back()->with('success', 'PSV Badge Created Successfully');
         } catch (Exception $e) {
+            DB::rollBack(); // Rollback if there's an error
             Log::error('PSV BADGE STORE ERROR');
             Log::error($e);
             return redirect()->back()->with('error', 'Something Went Wrong')->withInput();
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -113,7 +117,7 @@ class PSVBadgeController extends Controller
             $validator = Validator::make($data, [
                 'psv_badge_date_of_issue' => 'required|date',
                 'psv_badge_date_of_expiry' => 'required|date|after:psv_badge_date_of_issue',
-                'psv_badge_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'psv_badge_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -126,16 +130,32 @@ class PSVBadgeController extends Controller
                 return redirect()->back()->with('error', 'PSV Badge Not Found');
             }
 
-            $badgePath = null;
+            $badgePath = $psvbadge->psv_badge_avatar;
             $badgeNumber = $psvbadge->psv_badge_no;
 
             DB::beginTransaction();
 
+            // Handle new avatar upload
             if ($request->hasFile('psv_badge_avatar')) {
+                // Delete old avatar if exists
+                if ($badgePath && file_exists(public_path($badgePath))) {
+                    unlink(public_path($badgePath));
+                }
+
                 $badgeFile = $request->file('psv_badge_avatar');
                 $badgeExtension = $badgeFile->getClientOriginalExtension();
                 $badgeFileName = "{$badgeNumber}-back-id.{$badgeExtension}";
-                $badgePath = $badgeFile->storeAs('uploads/psvbadge-avatars', $badgeFileName, 'public');
+
+                // Define the path in the public directory
+                $publicPath = public_path('uploads/psvbadge-avatars');
+                // Create the directory if it doesn't exist
+                if (!file_exists($publicPath)) {
+                    mkdir($publicPath, 0755, true);
+                }
+
+                // Move the file to the public directory
+                $badgeFile->move($publicPath, $badgeFileName);
+                $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName; // Set the relative path for database
             }
 
             $psvbadge->update([
@@ -158,6 +178,8 @@ class PSVBadgeController extends Controller
         }
     }
 
+
+
     public function delete($id)
     {
         $psvbadge = PSVBadge::findOrFail($id);
@@ -170,7 +192,6 @@ class PSVBadgeController extends Controller
     public function destroy($id)
     {
         try {
-
             $psvbadge = PSVBadge::findOrFail($id);
             $driver = $psvbadge->driver;
 
@@ -180,9 +201,14 @@ class PSVBadgeController extends Controller
 
             DB::beginTransaction();
 
+            // Get the avatar path and delete the file if it exists
+            $avatarPath = public_path($psvbadge->psv_badge_avatar);
+            if (file_exists($avatarPath)) {
+                unlink($avatarPath); // Delete the file
+            }
+
             $psvbadge->delete();
             $driver->status = 'inactive';
-
             $driver->save();
 
             DB::commit();

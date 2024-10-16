@@ -58,7 +58,7 @@
                             placeholder="Front Page ID Picture" id="front_page_id" value="" />
                         @if ($customer->national_id_front_avatar)
                             <div class="mt-2">
-                                <a href="{{ url('storage/' . $customer->national_id_front_avatar) }}" download>Download
+                                <a href="{{ asset($customer->national_id_front_avatar) }}" download>Download
                                     Front Page ID</a>
                             </div>
                         @endif
@@ -72,7 +72,7 @@
                     <div class="col-sm-7">
                         <input name="avatar" class="form-control" type="file" placeholder="Avatar" id="avatar"
                             value="" />
-                        <img src="{{ url('storage/' . $customer->user->avatar) }}" alt="Avatar"
+                        <img src="{{ asset($customer->user->avatar) }}" alt="Avatar"
                             class="form-control" />
                     </div>
                 </div>
@@ -123,7 +123,7 @@
                             placeholder="Back Page ID Picture" id="back_page_id" value="" />
                         @if ($customer->national_id_behind_avatar)
                             <div class="mt-2">
-                                <a href="{{ url('storage/' . $customer->national_id_behind_avatar) }}"
+                                <a href="{{ asset($customer->national_id_behind_avatar) }}"
                                     download>Download Back Page ID</a>
                             </div>
                         @endif

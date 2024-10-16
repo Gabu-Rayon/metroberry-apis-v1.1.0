@@ -49,9 +49,9 @@
                         <input name="avatar" class="form-control" type="file" accept="image/*" id="avatar"
                             required />
                         @if ($certificate->ntsa_inspection_certificate_avatar)
-                            <a href="{{ asset('storage/' . $certificate->ntsa_inspection_certificate_avatar) }}"
+                            <a href="{{ asset($certificate->ntsa_inspection_certificate_avatar) }}"
                                 target="_blank">
-                                <img src="{{ asset('storage/' . $certificate->ntsa_inspection_certificate_avatar) }}"
+                                <img src="{{ asset($certificate->ntsa_inspection_certificate_avatar) }}"
                                     alt="Certificate Copy" class="img-fluid mt-2" />
                             </a>
                         @endif

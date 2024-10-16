@@ -39,7 +39,7 @@
                             placeholder="Front Page License Picture" id="driving_license_avatar_front" value="" />
                         @if ($license->driving_license_avatar_front)
                             <div class="mt-2">
-                                <a href="{{ url('storage/' . $license->driving_license_avatar_front) }}"
+                                <a href="{{ asset($license->driving_license_avatar_front) }}"
                                     download>Download Front Page License Picture</a>
                             </div>
                         @endif
@@ -80,9 +80,10 @@
                             placeholder="Back Page License Picture" id="driving_license_avatar_back" value="" />
                         @if ($license->driving_license_avatar_back)
                             <div class="mt-2">
-                                <a href="{{ url('storage/' . $license->driving_license_avatar_back) }}"
-                                    download>Download Back Page License Picture</a>
+                                <a href="{{ asset($license->driving_license_avatar_back) }}"
+                                    download>Download Back Page License Picture</a>                                    
                             </div>
+
                         @endif
                     </div>
                 </div>

@@ -52,7 +52,7 @@ class MaintenanceRepairPaymentController extends Controller
         try {
             $data = $request->all();
 
-            Log::info('Data from the Form to receive payment of billed Vehicle Repair Maintenance ');
+            Log::info('Data from the Form to receive payment of billed Vehicle Repair Maintenance');
             Log::info($data);
 
             $creator = Auth::user();
@@ -64,7 +64,7 @@ class MaintenanceRepairPaymentController extends Controller
             $validator = Validator::make($data, [
                 'payment_date' => 'required|date',
                 'amount' => 'required|numeric',
-                'account_id' => 'required|exists:accounts,id', 
+                'account_id' => 'required|exists:accounts,id',
                 'remark' => 'nullable|string',
                 'payment_receipt' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx|max:2048',
                 'reference' => 'required|string',
@@ -83,7 +83,6 @@ class MaintenanceRepairPaymentController extends Controller
             // Retrieve service details based on $id
             $maintenanceRepair = MaintenanceRepair::findOrFail($id);
 
-
             $maintenanceRepairPayment = new MaintenanceRepairPayment();
             $maintenanceRepairPayment->maintenance_repair_id = $maintenanceRepair->id;
             $maintenanceRepairPayment->vehicle_id = $maintenanceRepair->vehicle_id;
@@ -97,7 +96,7 @@ class MaintenanceRepairPaymentController extends Controller
             $maintenanceRepairPayment->confirm_date = null;
             $maintenanceRepairPayment->payment_date = $data['payment_date'];
             $maintenanceRepairPayment->total_taxable_amount = $maintenanceRepair->service_cost;
-            $maintenanceRepairPayment->total_tax_amount = null; 
+            $maintenanceRepairPayment->total_tax_amount = null;
             $maintenanceRepairPayment->total_amount = $data['amount'];
             $maintenanceRepairPayment->remark = $data['remark'];
             $maintenanceRepairPayment->reference = $data['reference'];
@@ -108,8 +107,10 @@ class MaintenanceRepairPaymentController extends Controller
             if ($request->hasFile('payment_receipt')) {
                 $file = $request->file('payment_receipt');
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
+
+                // Move the uploaded file to the public folder
                 $file->move(public_path('maintenance_repair_payment_receipts'), $fileName);
-                $maintenanceRepairPayment->payment_receipt = $fileName;
+                $maintenanceRepairPayment->payment_receipt = 'maintenance_repair_payment_receipts/' . $fileName; // Store the relative path
             }
 
             $maintenanceRepairPayment->save();
@@ -132,6 +133,7 @@ class MaintenanceRepairPaymentController extends Controller
             return redirect()->back()->with('error', 'An error occurred while receiving the payment for the Maintenance Repair. Please try again.');
         }
     }
+
 
 
     /**

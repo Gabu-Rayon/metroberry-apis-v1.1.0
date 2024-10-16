@@ -98,9 +98,9 @@
                                                     @php $item = 1 @endphp
                                                     <tr>
                                                         <td>{{ $item++ }}</td>
-                                                        <td> {{ $maintenanceRepair->vehicle->model }}</td>
-                                                        <td> {{ $maintenanceRepair->part->name }} </td>
-                                                        <td>{{ $maintenanceRepair->repair_date }}</td>
+                                                        <td> {{ $maintenanceRepair->vehicle->model ?? null }}</td>
+                                                        <td> {{ $maintenanceRepair->part->name ?? null }} </td>
+                                                        <td>{{ $maintenanceRepair->repair_date ?? null }}</td>
                                                         <td> Kes. {{ $maintenanceRepair->repair_type }}</td>
                                                         <td> Kes. {{ $maintenanceRepair->repair_cost }}</td>
                                                         <td>{{ $maintenanceRepair->amount }}</td>
@@ -164,7 +164,7 @@
                                                             <td>{{ $payment->reference }}</td>
                                                             <td>{{ $payment->remark }}</td>
                                                             <td>
-                                                                <a href="{{ asset('maintenance_repair_payment_receipts/' . $payment->payment_receipt) }}"
+                                                                <a href="{{ asset($payment->payment_receipt) }}"
                                                                     download>
                                                                     <i class="fa-solid fa-file-pdf"></i> Receipt
                                                                 </a>

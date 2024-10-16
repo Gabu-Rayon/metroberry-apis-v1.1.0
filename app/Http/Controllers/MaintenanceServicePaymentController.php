@@ -68,7 +68,7 @@ class MaintenanceServicePaymentController extends Controller
             $validator = Validator::make($data, [
                 'payment_date' => 'required|date',
                 'amount' => 'required|numeric',
-                'account_id' => 'required|exists:accounts,id', // Assuming 'accounts' is the table name and 'id' is the primary key
+                'account_id' => 'required|exists:accounts,id',
                 'remark' => 'nullable|string',
                 'payment_receipt' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx|max:2048',
                 'reference' => 'required|string',
@@ -112,8 +112,11 @@ class MaintenanceServicePaymentController extends Controller
             if ($request->hasFile('payment_receipt')) {
                 $file = $request->file('payment_receipt');
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
+
+                // Move the uploaded file to the public folder
                 $file->move(public_path('maintenance_service_payment_receipts'), $fileName);
-                $maintenanceServicePayment->payment_receipt = $fileName;
+                // Store the relative path to the database
+                $maintenanceServicePayment->payment_receipt = 'maintenance_service_payment_receipts/' . $fileName;
             }
 
             $maintenanceServicePayment->save();
@@ -136,6 +139,7 @@ class MaintenanceServicePaymentController extends Controller
             return redirect()->back()->with('error', 'An error occurred while receiving the payment for the Maintenance Service. Please try again.')->withInput();
         }
     }
+
 
 
     /**

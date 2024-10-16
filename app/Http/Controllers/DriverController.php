@@ -247,35 +247,92 @@ class DriverController extends Controller
             $user->address = $data['address'];
             $driver->national_id_no = $data['national_id_no'];
 
+            $email = $data['email'];
             $avatarPath = null;
             $frontIdPath = null;
             $backIdPath = null;
-            $email = $data['email'];
 
+            // Update avatar if a new file is uploaded
             if ($request->hasFile('avatar')) {
+                // Check if the user already has an avatar and delete it
+                if ($user->avatar) {
+                    $oldAvatarPath = public_path($user->avatar);
+                    if (file_exists($oldAvatarPath)) {
+                        unlink($oldAvatarPath); // Delete the old avatar
+                    }
+                }
+
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$email}-avatar.{$avatarExtension}";
-                $avatarPath = $avatarFile->storeAs('uploads/user-avatars', $avatarFileName, 'public');
-                $user->avatar = $avatarPath;
+
+                // Define the directory for the avatar
+                $avatarDirectory = public_path('uploads/user-avatars');
+
+                // Ensure the directory exists
+                if (!is_dir($avatarDirectory)) {
+                    mkdir($avatarDirectory, 0755, true); // Create directory if it doesn't exist
+                }
+
+                // Move the file to the public/uploads/user-avatars directory
+                $avatarFile->move($avatarDirectory, $avatarFileName);
+                $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
             }
 
+            // Update front ID if a new file is uploaded
             if ($request->hasFile('front_page_id')) {
+                // Check if the driver already has a front ID and delete it
+                if ($driver->national_id_front_avatar) {
+                    $oldFrontIdPath = public_path($driver->national_id_front_avatar);
+                    if (file_exists($oldFrontIdPath)) {
+                        unlink($oldFrontIdPath); // Delete the old front ID
+                    }
+                }
+
                 $frontIdFile = $request->file('front_page_id');
                 $frontIdExtension = $frontIdFile->getClientOriginalExtension();
                 $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
-                $frontIdPath = $frontIdFile->storeAs('uploads/front-page-ids', $frontIdFileName, 'public');
-                $driver->national_id_front_avatar = $frontIdPath;
+
+                // Define the directory for the front ID
+                $frontIdDirectory = public_path('uploads/front-page-ids');
+
+                // Ensure the directory exists
+                if (!is_dir($frontIdDirectory)) {
+                    mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
+                }
+
+                // Move the file to the public/uploads/front-page-ids directory
+                $frontIdFile->move($frontIdDirectory, $frontIdFileName);
+                $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
             }
 
+            // Update back ID if a new file is uploaded
             if ($request->hasFile('back_page_id')) {
+                // Check if the driver already has a back ID and delete it
+                if ($driver->national_id_behind_avatar) {
+                    $oldBackIdPath = public_path($driver->national_id_behind_avatar);
+                    if (file_exists($oldBackIdPath)) {
+                        unlink($oldBackIdPath); // Delete the old back ID
+                    }
+                }
+
                 $backIdFile = $request->file('back_page_id');
                 $backIdExtension = $backIdFile->getClientOriginalExtension();
                 $backIdFileName = "{$email}-back-id.{$backIdExtension}";
-                $backIdPath = $backIdFile->storeAs('uploads/back-page-ids', $backIdFileName, 'public');
-                $driver->national_id_behind_avatar = $backIdPath;
-            }
 
+                // Define the directory for the back ID
+                $backIdDirectory = public_path('uploads/back-page-ids');
+
+                // Ensure the directory exists
+                if (!is_dir($backIdDirectory)) {
+                    mkdir($backIdDirectory, 0755, true); // Create directory if it doesn't exist
+                }
+
+                // Move the file to the public/uploads/back-page-ids directory
+                $backIdFile->move($backIdDirectory, $backIdFileName);
+                $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
+            }
+            
             $driver->save();
             $user->save();
 
@@ -353,34 +410,58 @@ class DriverController extends Controller
     public function destroy($id)
     {
         try {
-
+            // Find the driver by ID
             $driver = Driver::find($id);
-
             if (!$driver) {
                 return redirect()->back()->with('error', 'Driver not found');
             }
 
+            // Find the associated user
             $user = User::find($driver->user_id);
-
             if (!$user) {
                 return redirect()->back()->with('error', 'User not found');
             }
 
+            // Begin the transaction
             DB::beginTransaction();
 
+            // Delete associated files if they exist
+            if ($user->avatar) {
+                $oldAvatarPath = public_path($user->avatar);
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath); // Delete the old avatar file
+                }
+            }
+
+            if ($driver->national_id_front_avatar) {
+                $oldFrontIdPath = public_path($driver->national_id_front_avatar);
+                if (file_exists($oldFrontIdPath)) {
+                    unlink($oldFrontIdPath); // Delete the old front ID file
+                }
+            }
+
+            if ($driver->national_id_behind_avatar) {
+                $oldBackIdPath = public_path($driver->national_id_behind_avatar);
+                if (file_exists($oldBackIdPath)) {
+                    unlink($oldBackIdPath); // Delete the old back ID file
+                }
+            }
+
+            // Delete the driver and user records
             $driver->delete();
             $user->delete();
 
+            // Commit the transaction
             DB::commit();
 
             return redirect()->route('driver')->with('success', 'Driver deleted successfully');
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('DELETE DRIVER ERROR');
-            Log::error($e);
+            Log::error('DELETE DRIVER ERROR: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred');
         }
     }
+
 
     public function driverPerformance()
     {

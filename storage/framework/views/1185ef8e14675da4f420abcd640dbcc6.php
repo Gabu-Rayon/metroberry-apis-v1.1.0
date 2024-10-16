@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="copy">
-                    © 2024 <a class="text-capitalize text-black" href="" target="_blank">Metro Berry Tour
+                    © 2024 <a class="text-capitalize text-black" href="" target="_blank">Metroberry Tours
                         <small><i>&
                             </i></small> Travel</a>.
                 </div>

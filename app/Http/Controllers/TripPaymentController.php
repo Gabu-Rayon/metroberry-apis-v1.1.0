@@ -177,7 +177,7 @@ class TripPaymentController extends Controller
     /**
      * Receive payment for a billed trip.
      */
-    public function billedTripRecievePayment($id)
+    public function billedTripRecievePayment(Request $request, $id)
     {
         try {
             Log::info('Trip billed to receive Payment');
@@ -225,12 +225,11 @@ class TripPaymentController extends Controller
                 'amount' => 'required|numeric',
                 'account_id' => 'required|string',
                 'remark' => 'nullable|string',
-                'payment_receipt' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx',
+                'payment_receipt' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx|max:2048', // Add max file size if necessary
                 'reference' => 'required|string',
             ]);
 
             if ($validator->fails()) {
-                // Log::info('VALIDATION ERROR:', $validator->errors());
                 return redirect()->back()->with('error', $validator->errors()->first())->withInput();
             }
 
@@ -256,7 +255,6 @@ class TripPaymentController extends Controller
             $tripPayment->total_tax_amount = null;
             $tripPayment->total_amount = $data['amount'];
             $tripPayment->remark = $data['remark'];
-            $tripPayment->payment_receipt = $data['payment_receipt'];
             $tripPayment->reference = $data['reference'];
             $tripPayment->qr_code_url = null;
             $tripPayment->created_by = $creator->id;
@@ -265,8 +263,10 @@ class TripPaymentController extends Controller
             if ($request->hasFile('payment_receipt')) {
                 $file = $request->file('payment_receipt');
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
+                // Move the uploaded file to the public folder directly
                 $file->move(public_path('payment_receipts'), $fileName);
-                $tripPayment->payment_receipt = $fileName;
+                // Store the relative path in the trip payment record
+                $tripPayment->payment_receipt = 'payment_receipts/' . $fileName;
             }
 
             $tripPayment->save();
@@ -276,7 +276,6 @@ class TripPaymentController extends Controller
             $totalPaidAmount = TripPayment::where('trip_id', $trip->id)->sum('total_amount');
             Log::info('Total Paid Amount:');
             Log::info($totalPaidAmount);
-
 
             // Update trip status based on total paid amount
             if ($totalPaidAmount >= $trip->total_price) {
