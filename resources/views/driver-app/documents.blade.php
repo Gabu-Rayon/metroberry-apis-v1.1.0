@@ -92,28 +92,28 @@
                         @method('PUT')
                         <div class="mb-3">
                             <label for="driving_license_no" class="form-label">License no</label>
-                            <input type="text" id="driving_license_no" name="driving_license_no" class="form-control"
+                            <input type="text" id="driving_license_no" name="driving_license_no" class="form-control"  value="{{ old('driving_license_no') }}"
                                 required>
                         </div>
 
                         <div class="mb-3">
                             <label for="issue_date" class="form-label">Issue Date</label>
-                            <input type="date" id="issue_date" name="issue_date" class="form-control" required>
+                            <input type="date" id="issue_date" name="issue_date" class="form-control"  value="{{ old('issue_date') }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="expiry_date" class="form-label">Expiry Date</label>
-                            <input type="date" id="expiry_date" name="expiry_date" class="form-control" required>
+                            <input type="date" id="expiry_date" name="expiry_date" value="{{ old('expiry_date') }}"  class="form-control" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="national_id_front_avatar" class="form-label">License Front Picture</label>
-                            <input type="file" id="national_id_front_avatar" name="national_id_front_avatar" required>
+                            <input type="file" id="national_id_front_avatar" name="national_id_front_avatar" value="{{ old('national_id_front_avatar') }}"  required>
                         </div>
 
                         <div class="mb-3">
                             <label for="national_id_back_avatar" class="form-label">License Back Picture</label>
-                            <input type="file" id="national_id_back_avatar" name="national_id_back_avatar" required>
+                            <input type="file" id="national_id_back_avatar" name="national_id_back_avatar" value="{{ old('national_id_back_avatar') }}" required>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-50 m-2 float-end font-weight-light text-uppercase">
@@ -137,22 +137,22 @@
                         @method('PUT')
                         <div class="mb-3">
                             <label for="psv_badge_no" class="form-label">Badge no</label>
-                            <input type="text" id="psv_badge_no" name="psv_badge_no" class="form-control" required>
+                            <input type="text" id="psv_badge_no" name="psv_badge_no" value="{{ old('psv_badge_no') }}" class="form-control" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="issue_date" class="form-label">Issue Date</label>
-                            <input type="date" id="issue_date" name="issue_date" class="form-control" required>
+                            <input type="date" id="issue_date" name="issue_date" value="{{ old('issue_date') }}"  class="form-control" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="expiry_date" class="form-label">Expiry Date</label>
-                            <input type="date" id="expiry_date" name="expiry_date" class="form-control" required>
+                            <input type="date" id="expiry_date" name="expiry_date"  value="{{ old('expiry_date') }}" class="form-control" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="badge_copy" class="form-label">Copy</label>
-                            <input type="file" id="badge_copy" name="badge_copy" required>
+                            <input type="file" id="badge_copy" name="badge_copy" value="{{ old('badge_copy') }}"  required>
                         </div>
 
                         <button type="submit"
