@@ -20,6 +20,7 @@ class UsersTableSeeder extends Seeder
             'address' => 'Nairobi, Kenya',
             'avatar' => 'superadmin.png',
             'role' => 'admin'
+            
         ]);
 
         $admin->assignRole($admin->role);

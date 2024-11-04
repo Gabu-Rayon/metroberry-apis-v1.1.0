@@ -50,7 +50,7 @@
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="text"
                                     name="driving_license_no" autocomplete="off" placeholder="Driver License Number"
-                                    value="{{ $driver->driverLicense->driving_license_no }}" />
+                                    value="{{ $driver->driverLicense->driving_license_no ?? null }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
@@ -61,7 +61,7 @@
                         <!--Input Field Container Start-->
                         <div class="form-group form-control-margin">
                             <label class="label-title">Date of issue : <span class="text-primary">
-                                    {{ $driver->driverLicense->driving_license_date_of_issue }}</span></label>
+                                    {{ $driver->driverLicense->driving_license_date_of_issue ?? null }}</span></label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
                                     name="driving_license_date_of_issue" autocomplete="off"
@@ -73,7 +73,7 @@
                         <!--Input Field Container Start-->
                         <div class="form-group form-control-margin">
                             <label class="label-title">Expiry Date : <span
-                                    class="text-primary">{{ $driver->driverLicense->driving_license_date_of_expiry }}</span></label>
+                                    class="text-primary">{{ $driver->driverLicense->driving_license_date_of_expiry ?? null }}</span></label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
                                     name="driving_license_date_of_expiry" autocomplete="off"
@@ -81,73 +81,82 @@
                             </div>
                         </div>
                         <!--Input Field Container End-->
-                        
-                          <!-- Upload Front License -->
-                          <div class="form-group">
-                              <label class="width-100">
-                                  <div class="display-flex justify-content-between">
-                                      <span class="position-relative upload-btn">
-                                          <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
-                                              alt="Upload Icon" />
-                                          <input class="scan-prompt" type="file" accept="image/*"
-                                              name="license_front_avatar" id="national-id-front-input" />
-                                      </span>
-                                      <span class="text-uppercase">License FRONT</span>
-                                      <span class="delete-btn" id="national-id-front-delete">
-                                          <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}"
-                                              alt="Delete Icon" />
-                                      </span>
-                                  </div>
-                                  <div class="scan-your-card-prompt margin-top-5">
-                                      <div class="position-relative">
-                                          <div class="upload-picture-container">
-                                              <div class="upload-camera-container text-center">
-                                                  <span class="#">
-                                                      <img id="national-id-front-preview"
+
+                        <!-- Upload Front License -->
+                        <div class="form-group">
+                            <label class="width-100">
+                                <div class="display-flex justify-content-between">
+                                    <span class="position-relative upload-btn">
+                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                        <input class="scan-prompt" type="file" accept="image/*"
+                                            name="license_front_avatar" id="national-id-front-input" />
+                                    </span>
+                                    <span class="text-uppercase">License FRONT</span>
+                                    <span class="delete-btn" id="national-id-front-delete">
+                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                    </span>
+                                </div>
+                                <div class="scan-your-card-prompt margin-top-5">
+                                    <div class="position-relative">
+                                        <div class="upload-picture-container">
+                                            <div class="upload-camera-container text-center">
+                                                <span class="#">
+                                                    {{-- <img id="national-id-front-preview"
                                                           src="{{ $driver->driverLicense->driving_license_avatar_front
                                                               ? asset( $driver->driverLicense->driving_license_avatar_front)
                                                               : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                          alt="Lincense Front Avatar" />
-                                                  </span>
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </label>
-                          </div>
-                          <!-- Upload behind License -->
-                          <div class="form-group">
-                              <label class="width-100">
-                                  <div class="display-flex justify-content-between">
-                                      <span class="position-relative upload-btn">
-                                          <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
-                                              alt="Upload Icon" />
-                                          <input class="scan-prompt" type="file" accept="image/*"
-                                              name="license_back_avatar" id="national-id-back-input" />
-                                      </span>
-                                      <span class="text-uppercase">License BACK</span>
-                                      <span class="delete-btn" id="national-id-back-delete">
-                                          <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}"
-                                              alt="Delete Icon" />
-                                      </span>
-                                  </div>
-                                  <div class="scan-your-card-prompt margin-top-5">
-                                      <div class="position-relative">
-                                          <div class="upload-picture-container">
-                                              <div class="upload-camera-container text-center">
-                                                  <span class="#">
-                                                      <img id="national-id-back-preview"
-                                                          src="{{ $driver->driverLicense->driving_license_avatar_back
-                                                              ? asset($driver->driverLicense->driving_license_avatar_back)
-                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                          alt="License Back Avatar" />
-                                                  </span>
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </label>
-                          </div>
+                                                          alt="Lincense Front Avatar" /> --}}
+                                                    <img id="national-id-front-preview"
+                                                        src="{{ $driver->driverLicense && $driver->driverLicense->driving_license_avatar_front
+                                                            ? asset($driver->driverLicense->driving_license_avatar_front)
+                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        alt="License Front Avatar" />
+
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <!-- Upload behind License -->
+                        <div class="form-group">
+                            <label class="width-100">
+                                <div class="display-flex justify-content-between">
+                                    <span class="position-relative upload-btn">
+                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                        <input class="scan-prompt" type="file" accept="image/*"
+                                            name="license_back_avatar" id="national-id-back-input" />
+                                    </span>
+                                    <span class="text-uppercase">License BACK</span>
+                                    <span class="delete-btn" id="national-id-back-delete">
+                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                    </span>
+                                </div>
+                                <div class="scan-your-card-prompt margin-top-5">
+                                    <div class="position-relative">
+                                        <div class="upload-picture-container">
+                                            <div class="upload-camera-container text-center">
+                                                <span class="#">
+                                                    {{-- <img id="national-id-back-preview"
+                                                        src="{{ $driver->driverLicense->driving_license_avatar_back
+                                                            ? asset($driver->driverLicense->driving_license_avatar_back)
+                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        alt="License Back Avatar" /> --}}
+
+                                                    <img id="national-id-back-preview"
+                                                        src="{{ $driver->driverLicense && $driver->driverLicense->driving_license_avatar_back
+                                                            ? asset($driver->driverLicense->driving_license_avatar_back)
+                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        alt="License Back Avatar" />
+
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
 
                         <div class="text-center form-submit-button">
                             <button type="submit" class="btn btn-dark text-uppercase">

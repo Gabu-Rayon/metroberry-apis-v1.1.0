@@ -24,7 +24,11 @@ class PermissionsGroupSeeder extends Seeder
                 'manage settings',
             ],
             'dashboard' => [
-                'view dashboard',
+                'view admin dashboard',
+                'view organisation dashboard',
+                'view driver dashboard',
+                'view refueling station dashboard',
+                'view admin dashboard',
                 'edit profile',
                 'update profile',
                 'delete profile',
@@ -43,6 +47,7 @@ class PermissionsGroupSeeder extends Seeder
             ],
             'organisation' => [
                 'manage organisations',
+                'view organisation dashboard',
                 'view organisations',
                 'create organisation',
                 'edit organisation',
@@ -53,6 +58,7 @@ class PermissionsGroupSeeder extends Seeder
             ],
             'drivers' => [
                 'manage drivers',
+                'view driver dashboard',
                 'view drivers',
                 'create driver',
                 'edit driver',

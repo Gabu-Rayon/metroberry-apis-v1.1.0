@@ -8,7 +8,7 @@
 
     @php
         $driver = Auth::user()->driver;
-        Log::info('Driver: ' . url($driver->national_id_front_avatar));
+        //Log::info('Driver: ' . url($driver->national_id_front_avatar));
     @endphp
 
     <div class="row h-100">

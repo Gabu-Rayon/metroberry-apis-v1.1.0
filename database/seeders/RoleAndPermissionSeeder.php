@@ -10,7 +10,10 @@ use Spatie\Permission\PermissionRegistrar;
 class PermissionsByActions
 {
     public const DASHBOARD_MANAGEMENT_PERMISSIONS = [
-        'view dashboard',
+        'view admin dashboard',
+        'view organisation dashboard',
+        'view driver dashboard',
+        'view refueling station dashboard',
         'manage users',
     ];
 
@@ -47,6 +50,7 @@ class PermissionsByActions
         'export organisations',
         'import organisations',
         'show organisation',
+        'view organisation dashboard',
     ];
 
     public const DRIVER_MANAGEMENT_PERMISSIONS = [
@@ -62,6 +66,7 @@ class PermissionsByActions
         'delete driver',
         'export drivers',
         'import drivers',
+        'view driver dashboard',
     ];
 
     public const DRIVER_LICENSE_MANAGEMENT_PERMISSIONS = [
@@ -232,6 +237,7 @@ class PermissionsByActions
 
     public const FUELLING_STATIONS_MANAGEMENT_PERMISSIONS = [
         'manage fuelling stations',
+        'view refueling station dashboard',
         'view fuelling stations',
         'show fuelling station',
         'create fuelling station',
@@ -358,7 +364,7 @@ Permissions::$admin_permissions = array_merge(
 );
 
 Permissions::$organisation_permissions = [
-    'view dashboard',
+    'view organisation dashboard',
     'manage users',
     'view profile',
     'edit profile',
@@ -409,6 +415,7 @@ Permissions::$customer_permissions = [
 ];
 
 Permissions::$driver_permissions = [
+    'view driver dashboard',
     'view profile',
     'edit profile',
     'delete profile',
@@ -427,7 +434,7 @@ Permissions::$driver_permissions = [
 ];
 
 Permissions::$refueling_station_permissions = [
-    'view dashboard',
+    'view refueling station dashboard',
     'view profile',
     'edit profile',
     'delete profile',

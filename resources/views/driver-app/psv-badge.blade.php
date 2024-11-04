@@ -63,7 +63,7 @@
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
                                     name="psv_badge_date_of_issue" autocomplete="off"
-                                    value="{{ $driver->psvBadge->psv_badge_date_of_issue }}" />
+                                    value="{{ $driver->psvBadge->psv_badge_date_of_issue ?? null }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
@@ -78,7 +78,7 @@
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
                                     name="psv_badge_date_of_expiry" autocomplete="off"
-                                    value="{{ $driver->psvBadge->psv_badge_date_of_expiry }}" />
+                                    value="{{ $driver->psvBadge->psv_badge_date_of_expiry  ?? null }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
