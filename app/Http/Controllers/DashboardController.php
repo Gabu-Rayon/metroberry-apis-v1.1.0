@@ -41,6 +41,14 @@ class DashboardController extends Controller
             return redirect()->route('refueling.station.dashboard');
         }
 
+        if ($user->role == 'driver') {
+            return redirect()->route('driver.dashboard');
+        }
+
+        if ($user->role == 'customer') {
+            return redirect()->route('customer.index.page');
+        }
+
 
         $activeVehicles = Vehicle::where('status', 'active')->get();
         $inactiveVehicles = Vehicle::where('status', 'inactive')->get();
