@@ -12,11 +12,12 @@
         <div class="col-xs-12 col-sm-12">
             <!--Page Title & Icons Start-->
             <div class="header-icons-container text-center">
-                <a href="{{ route('customer.index.page') }}">
-                    <span class="float-left">
-                        <img src="{{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
-                    </span>
-                </a>
+                <a href="{{ url()->previous() }}">
+    <span class="float-left">
+        <img src="{{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
+    </span>
+</a>
+
                 <span>Trips History</span>
                 <a href="#">
                     <span class="float-right menu-open closed">
