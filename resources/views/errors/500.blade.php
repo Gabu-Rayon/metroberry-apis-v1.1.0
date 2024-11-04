@@ -29,7 +29,7 @@
                     <footer class="text-center text-black">
                         <div class="">
                             <div class="copy">© 2024 <a class="text-capitalize" href="https://metroberry.co.ke/"
-                                                        target="_blank">MetroBerry</a>.</div>
+                                                        target="_blank">Metroberry Tours & Travel</a>.</div>
                             <div class="credit">Designed &amp; developed by: <a href="https://yourapps.co.ke/"
                                                                                 target="_blank">Your Apps</a></div>
                         </div>
