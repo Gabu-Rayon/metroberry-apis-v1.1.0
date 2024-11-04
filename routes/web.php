@@ -60,6 +60,11 @@ Route::get('dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
     ->middleware('auth', 'can:view dashboard');
 
+    Route::get('login', function(){
+        return redirect()->route('welcome.page');
+    })
+    ->name('login');
+
 // Organisation Dashboard
 
 Route::get('organisation/dashboard', [OrganisationController::class, 'dashboard'])
