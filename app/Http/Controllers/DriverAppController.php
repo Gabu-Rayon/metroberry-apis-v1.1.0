@@ -229,14 +229,22 @@ class DriverAppController extends Controller
         $frontIdDirectory = '/home/kknuicdz/portal_public_html/uploads/front-page-ids';
         $backIdDirectory = '/home/kknuicdz/portal_public_html/uploads/back-page-ids';
 
-        // Ensure the directories exist
-        if (!is_dir($frontIdDirectory)) {
-            mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
+        if (app()->environment('local')) {
+            $frontIdDirectory = public_path('uploads/front-page-ids');
+            $backIdDirectory = public_path('uploads/back-page-ids');
+        } else {
+            $frontIdDirectory = '/home/kknuicdz/portal_public_html/uploads/front-page-ids';
+            $backIdDirectory = '/home/kknuicdz/portal_public_html/uploads/back-page-ids';
+            if (!is_dir($frontIdDirectory)) {
+                mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
+            }
+    
+            if (!is_dir($backIdDirectory)) {
+                mkdir($backIdDirectory, 0755, true); // Create directory if it doesn't exist
+            }
         }
 
-        if (!is_dir($backIdDirectory)) {
-            mkdir($backIdDirectory, 0755, true); // Create directory if it doesn't exist
-        }
+        // Ensure the directories exist
 
         // Upload front and back images
         $national_id_front_avatar = $request->file('national_id_front_avatar');
@@ -368,16 +376,21 @@ class DriverAppController extends Controller
         $frontLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/front-license-pics';
         $backLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/back-license-pics';
 
-        // Ensure the directories exist
-        if (!is_dir($frontLicenseDirectory)) {
-            mkdir($frontLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+        if (app()->environment('local')) {
+            $frontLicenseDirectory = public_path('uploads/front-license-pics');
+            $backLicenseDirectory = public_path('uploads/back-license-pics');
+        } else {
+            $frontLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/front-license-pics';
+            $backLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/back-license-pics';
+            if (!is_dir($frontLicenseDirectory)) {
+                mkdir($frontLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+            }
+    
+            if (!is_dir($backLicenseDirectory)) {
+                mkdir($backLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+            }
         }
 
-        if (!is_dir($backLicenseDirectory)) {
-            mkdir($backLicenseDirectory, 0755, true); // Create directory if it doesn't exist
-        }
-
-        // Upload front license image
         $license_front_avatar = $request->file('license_front_avatar');
         $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();
         $license_front_avatar->move($frontLicenseDirectory, $frontFileName);
@@ -687,10 +700,16 @@ class DriverAppController extends Controller
         // Define the directory for storing PSV badge images
         $psvBadgeDirectory = '/home/kknuicdz/portal_public_html/uploads/psvbadge-avatars';
 
-        // Ensure the directory exists
-        if (!is_dir($psvBadgeDirectory)) {
-            mkdir($psvBadgeDirectory, 0755, true); // Create directory if it doesn't exist
+        if (app()->environment('local')) {
+            $psvBadgeDirectory = public_path('uploads/psvbadge-avatars');
+        } else {
+            $psvBadgeDirectory = '/home/kknuicdz/portal_public_html/uploads/psvbadge-avatars';
+            if (!is_dir($psvBadgeDirectory)) {
+                mkdir($psvBadgeDirectory, 0755, true); // Create directory if it doesn't exist
+            }
         }
+
+        // Ensure the directory exists
 
         // Handle the file upload
         $badge_copy = $request->file('badge_copy');
