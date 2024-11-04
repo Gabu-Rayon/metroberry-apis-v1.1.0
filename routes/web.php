@@ -58,7 +58,7 @@ require __DIR__ . '/insurance_company_routes.php';
 
 Route::get('dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
-    ->middleware('auth', 'can:view admin dashboard');
+    ->middleware('auth');
 
     Route::get('login', function(){
         return redirect()->route('welcome.page');
