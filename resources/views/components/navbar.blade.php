@@ -28,7 +28,7 @@
                 <div class="dropdown-menu w-75">
                     <div class="d-flex align-items-center gap-3 border-bottom pb-3">
                         <div class="user_img">
-                            <img src="{{ url( \Auth::user()->avatar) }}" alt="User Avatar">
+                            <img src="{{ url('\Auth::user()->avatar') }}" alt="User Avatar">
                         </div>
                         <div>
                             <p class="mb-0 fw-bold fs-16">

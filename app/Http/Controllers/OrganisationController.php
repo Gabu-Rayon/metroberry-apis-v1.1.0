@@ -252,7 +252,13 @@ class OrganisationController extends Controller
             Log::info($generatedPassword);
 
             // Define the base path for uploads
-            $baseUploadPath = '/home/kknuicdz/portal_public_html/uploads';
+            $baseUploadPath = '';
+
+            if (app()->environment('local')) {
+                $baseUploadPath = public_path('uploads');
+            } else {
+                $baseUploadPath = '/home/kknuicdz/portal_public_html/uploads';
+            }
 
             // Store logo in the public folder
             if ($request->hasFile('logo')) {
