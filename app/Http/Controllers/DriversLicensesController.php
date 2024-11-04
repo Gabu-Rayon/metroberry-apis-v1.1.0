@@ -155,8 +155,8 @@ class DriversLicensesController extends Controller
             'driving_license_no' => $licenseNumber,
             'driving_license_date_of_issue' => $data['issue_date'],
             'driving_license_date_of_expiry' => $data['expiry_date'],
-            'driving_license_avatar_front' => $frontLicensePath,
-            'driving_license_avatar_back' => $backLicensePath,
+            'driving_license_avatar_front' => $frontLicenseFile,
+            'driving_license_avatar_back' => $backLicenseFile,
         ]);
 
         DB::commit();
@@ -326,8 +326,8 @@ class DriversLicensesController extends Controller
         $license->update([
             'driving_license_date_of_issue' => $data['driving_license_date_of_issue'],
             'driving_license_date_of_expiry' => $data['driving_license_date_of_expiry'],
-            'driving_license_avatar_front' => $frontLicensePath,
-            'driving_license_avatar_back' => $backLicensePath,
+            'driving_license_avatar_front' => $frontLicenseFile,
+            'driving_license_avatar_back' => $backLicenseFile,
             'verified' => false
         ]);
 

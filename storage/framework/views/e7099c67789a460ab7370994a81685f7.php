@@ -75,11 +75,11 @@
                             <div class="mb-3">
                                 <label for="national_id_front_avatar" class="form-label">National ID Front Picture</label>
                                 <input type="file" id="national_id_front_avatar" name="national_id_front_avatar"
-                                    required>
+                                    value="<?php echo e(old('national_id_front_avatar')); ?>"  required>
                             </div>
                             <div class="mb-3">
                                 <label for="national_id_back_avatar" class="form-label">National ID Back Picture</label>
-                                <input type="file" id="national_id_back_avatar" name="national_id_back_avatar" required>
+                                <input type="file" id="national_id_back_avatar" name="national_id_back_avatar"  value="<?php echo e(old('national_id_back_avatar')); ?>"  required>
                             </div>
                             <button type="submit" class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
                         </form>
@@ -114,23 +114,23 @@
                             <div class="mb-3">
                                 <label for="driving_license_no" class="form-label">License No.</label>
                                 <input type="text" id="driving_license_no" name="driving_license_no" class="form-control"
-                                    required>
+                                    required value="<?php echo e(old('driving_license_no')); ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="issue_date" class="form-label">Issue Date</label>
-                                <input type="date" id="issue_date" name="issue_date" class="form-control" required>
+                                <input type="date" id="issue_date" name="issue_date" class="form-control"  value="<?php echo e(old('issue_date')); ?>"  required>
                             </div>
                             <div class="mb-3">
                                 <label for="expiry_date" class="form-label">Expiry Date</label>
-                                <input type="date" id="expiry_date" name="expiry_date" class="form-control" required>
+                                <input type="date" id="expiry_date" name="expiry_date" class="form-control" value="<?php echo e(old('expiry_date')); ?>"  required>
                             </div>
                             <div class="mb-3">
                                 <label for="license_front_avatar" class="form-label">License Front Picture</label>
-                                <input type="file" id="license_front_avatar" name="license_front_avatar" required>
+                                <input type="file" id="license_front_avatar" name="license_front_avatar" value="<?php echo e(old('license_front_avatar')); ?>"  required>
                             </div>
                             <div class="mb-3">
                                 <label for="license_back_avatar" class="form-label">License Back Picture</label>
-                                <input type="file" id="license_back_avatar" name="license_back_avatar" required>
+                                <input type="file" id="license_back_avatar" name="license_back_avatar" value="<?php echo e(old('license_back_avatar')); ?>" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
                         </form>
@@ -159,22 +159,22 @@
                             <?php echo csrf_field(); ?>
                             <div class="mb-3">
                                 <label for="psv_badge_no" class="form-label">Badge No.</label>
-                                <input type="text" id="psv_badge_no" name="psv_badge_no" class="form-control"
+                                <input type="text" id="psv_badge_no" name="psv_badge_no" value="<?php echo e(old('psv_badge_no')); ?>"   class="form-control"
                                     required>
                             </div>
                             <div class="mb-3">
                                 <label for="psv_issue_date" class="form-label">Issue Date</label>
-                                <input type="date" id="psv_issue_date" name="psv_issue_date" class="form-control"
+                                <input type="date" id="psv_issue_date" name="psv_issue_date" value="<?php echo e(old('psv_issue_date')); ?>"   class="form-control"
                                     required>
                             </div>
                             <div class="mb-3">
                                 <label for="psv_expiry_date" class="form-label">Expiry Date</label>
-                                <input type="date" id="psv_expiry_date" name="psv_expiry_date" class="form-control"
+                                <input type="date" id="psv_expiry_date" name="psv_expiry_date"  value="<?php echo e(old('psv_expiry_date')); ?>"   class="form-control"
                                     required>
                             </div>
                             <div class="mb-3">
                                 <label for="badge_copy" class="form-label">Copy</label>
-                                <input type="file" id="badge_copy" name="badge_copy" required>
+                                <input type="file" id="badge_copy" name="badge_copy"  value="<?php echo e(old('badge_copy')); ?>" required>
                             </div>
                             <button type="submit"
                                 class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>

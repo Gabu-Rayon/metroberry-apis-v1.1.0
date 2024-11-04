@@ -60,9 +60,9 @@ Route::get('dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
     ->middleware('auth', 'can:view admin dashboard');
 
-    Route::get('login', function(){
-        return redirect()->route('welcome.page');
-    })
+Route::get('login', function () {
+    return redirect()->route('welcome.page');
+})
     ->name('login');
 
 // Organisation Dashboard
@@ -701,15 +701,6 @@ Route::post('route/location/store', [RouteLocationsController::class, 'store'])
     ->name('route.location.store')
     ->middleware('auth', 'can:create route location');
 
-// Delete Route Location
-Route::get('route/location/{id}/delete', [RouteLocationsController::class, 'delete'])
-    ->name('route.location.delete')
-    ->middleware('auth', 'can:delete route location');
-
-Route::delete('route/location/{id}/delete', [RouteLocationsController::class, 'destroy'])
-    ->name('route.location.destroy')
-    ->middleware('auth', 'can:delete route location');
-
 Route::post('route/locations/get/all', [RouteLocationsController::class, 'getAllRouteWayPoints'])
     ->name('route.location.waypoints')
     ->middleware('auth');
@@ -721,6 +712,27 @@ Route::get('route/location/export', [RouteLocationsController::class, 'export'])
 Route::get('route/location/import', [RouteLocationsController::class, 'import'])
     ->name('route.location.import')
     ->middleware('auth', 'can:import route locations');
+
+
+
+//  Routes Location edit and deletion 
+
+Route::get('route/location/{id}/edit', [RouteLocationsController::class, 'locationEdit'])
+    ->name('route.location.waypoint.edit')
+    ->middleware('auth', 'can:edit route location');
+
+Route::put('route/location/{id}/update', [RouteLocationsController::class, 'locationUpdate'])
+    ->name('route.location.waypoint.update')
+    ->middleware('auth', 'can:edit route location');
+
+// Delete Route Location
+Route::get('route/location/{id}/delete', [RouteLocationsController::class, 'delete'])
+    ->name('route.location.delete')
+    ->middleware('auth', 'can:delete route location');
+
+Route::delete('route/location/{id}/delete', [RouteLocationsController::class, 'destroy'])
+    ->name('route.location.destroy')
+    ->middleware('auth', 'can:delete route location');
 
 
 /**
@@ -754,11 +766,11 @@ Route::get('trip/{id}/destroy', [TripController::class, 'destroy'])
 Route::get('trips/scheduled', [TripController::class, 'tripScheduled'])
     ->name('trip.scheduled')
     ->middleware('auth', 'can:view trips');
-    
+
 Route::get('trips/assigned', [TripController::class, 'tripAssigned'])
     ->name('trip.assigned')
     ->middleware('auth', 'can:view trips');
-    
+
 Route::put('trips/scheduled', [TripController::class, 'tripScheduledStore'])
     ->name('trip.scheduled')
     ->middleware('auth', 'can:view trips');
@@ -1800,10 +1812,10 @@ Route::get('/settings/site', [SettingsController::class, 'siteSetting'])
 Route::any('/settings/site/update', [SettingsController::class, 'siteSettingUpdate'])
     ->name('settings.site.update')
     ->middleware('auth', 'can:manage bank accounts');
-    
-    Route::get('get-vehicle/{id}', function ($id) {
+
+Route::get('get-vehicle/{id}', function ($id) {
     $vehicle = Vehicle::with(['assignedTrips.customer.user', 'assignedTrips.customer.organisation.user', 'assignedTrips.route.route_locations'])
-                      ->findOrFail($id);
+        ->findOrFail($id);
 
     // Iterate over the scheduled trips and calculate pickup and drop-off locations
     $vehicle->assignedTrips->each(function ($trip) {

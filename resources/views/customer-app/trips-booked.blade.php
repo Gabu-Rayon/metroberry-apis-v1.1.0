@@ -24,10 +24,10 @@
             <!--Page Title & Icons Start-->
             <div class="header-icons-container text-center">
                 <a href="{{ url()->previous() }}">
-    <span class="float-left">
-        <img src="{{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
-    </span>
-</a>
+                    <span class="float-left">
+                        <img src="{{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
+                    </span>
+                </a>
 
                 <span class="title"> Trips | Booked</span>
 

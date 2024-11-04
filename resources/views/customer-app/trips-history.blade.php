@@ -95,7 +95,7 @@
         <!--Terms And Conditions Agreement Container End-->
 
         <!--Main Menu Start-->
-        @include('components.driver-mobile-app.main-menu')
+         @include('components.customer-mobile-app.main-menu')
         <!--Main Menu End-->
     </div>
     <!-- Optional JavaScript -->

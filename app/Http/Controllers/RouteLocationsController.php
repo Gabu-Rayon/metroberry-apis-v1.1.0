@@ -192,13 +192,34 @@ class RouteLocationsController extends Controller
 
     public function delete($id)
     {
-        $route = RouteLocations::find($id);
-        return view('route.locations.delete', compact('route'));
+        $routelocation = RouteLocations::find($id);
+        return view('route.locations.delete', compact('routelocation'));
     }
+    
     public function destroy(string $id)
     {
-        //
+        try {
+            // Retrieve the specific route location by ID
+            $routelocation = RouteLocations::findOrFail($id);
+
+            // Attempt to delete the route location
+            $routelocation->delete();
+
+            // Log the successful deletion
+            Log::info("Route location deleted successfully. ID: {$id}");
+
+            // Redirect with a success message
+            return redirect()->route('route.location.index')->with('success', 'Location deleted successfully.');
+
+        } catch (\Exception $e) {
+            // Log the error message
+            Log::error("Failed to delete route location. ID: {$id}, Error: {$e->getMessage()}");
+
+            // Redirect back with an error message
+            return redirect()->back()->with('error', 'An error occurred while deleting the location.');
+        }
     }
+
 
     public function getAllRouteWaypoints(Request $request)
     {
@@ -221,4 +242,48 @@ class RouteLocationsController extends Controller
     {
         return Excel::download(new RouteLocationsExport, 'route-locations.xlsx');
     }
+
+    /**
+     * 
+     * Code for updating and  deleting the  the route location waypoints
+     * 
+     */
+    public function locationEdit($id)
+    {
+        $routelocation = RouteLocations::findOrFail($id);
+        return view('route.locations.edit', compact('routelocation'));
+    }
+
+    
+    public function locationUpdate(Request $request, $id)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'route_location_waypoint_name' => 'required|string|max:255',
+        ]);
+
+        try {
+            // Retrieve the specific route location by ID
+            $routelocation = RouteLocations::findOrFail($id);
+
+            // Update the specific fields in the database
+            $routelocation->update([
+                'name' => $request->route_location_waypoint_name,
+            ]);
+
+            // Log successful update
+            Log::info("Route location updated successfully. ID: {$id}, Name: {$routelocation->name}");
+
+            // Redirect with a success message
+            return redirect()->route('route.location.index')->with('success', 'Location updated successfully.');
+
+        } catch (\Exception $e) {
+            // Log the error message
+            Log::error("Failed to update route location. ID: {$id}, Error: {$e->getMessage()}");
+
+            // Redirect back with an error message
+            return redirect()->back()->with('error', 'An error occurred while updating the location.')->withInput();
+        }
+    }
+    
 }
