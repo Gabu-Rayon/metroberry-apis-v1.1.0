@@ -268,7 +268,7 @@ class OrganisationController extends Controller
                 $logoPath = 'company-logos/' . $logoFileName; // Store the relative path
                 $logoFile->move("{$baseUploadPath}/company-logos", $logoFileName); // Move the file to the public directory
             }
-
+            
             // Store organization certificate in the public folder
             if ($request->hasFile('organisation_certificate')) {
                 $certificateFile = $request->file('organisation_certificate');
@@ -320,8 +320,6 @@ class OrganisationController extends Controller
             return redirect()->back()->with('error', 'An error occurred while creating organisation')->withInput();
         }
     }
-
-
 
 
     /**

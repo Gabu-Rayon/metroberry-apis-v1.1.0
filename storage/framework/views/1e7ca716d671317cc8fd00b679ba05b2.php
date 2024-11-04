@@ -1,4 +1,6 @@
-<?php $__env->startSection('title', 'Register Account | Customer'); ?>
+
+
+<?php $__env->startSection('title', 'Register Account | Driver'); ?>
 <?php $__env->startSection('content'); ?>
 
 
@@ -27,23 +29,24 @@
                 </div>
 
                 <!--Sign Up Container Start-->
-                <?php if(session('success')): ?>
-                    <div id="success-message" class="alert alert-success" style="display: none;">
-                        <?php echo e(session('success')); ?>
+                 <?php if(session('success')): ?>
+                        <div id="success-message" class="alert alert-success">
+                            <?php echo e(session('success')); ?>
 
-                    </div>
-                <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
 
-                <?php if(session('error')): ?>
-                    <div id="error-message" class="alert alert-danger" style="display: none;">
-                        <?php echo e(session('error')); ?>
+                    <?php if(session('error')): ?>
+                        <div id="error-message" class="alert alert-danger">
+                            <?php echo e(session('error')); ?>
 
-                    </div>
-                <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 <div class="sign-up-form-container text-center">
-                    <!--Page Title & Icons End-->
+                    <!--Page Title & Icons End-->                  
 
-                    <form class="width-100"method="POST" action="<?php echo e(route('auth.customer.register')); ?>">
+
+                    <form class="width-100"method="POST" action="<?php echo e(route('driver.signup')); ?>">
                         <?php echo csrf_field(); ?>
 
                         <!--Sign Up Input Field Start-->
@@ -78,10 +81,22 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <input class="form-control" id="phone-input" type="text" name="phone" autocomplete="on"
-                                    data-intl-tel-input-id="0" placeholder="(254) 70 0000 000">
+                                    data-intl-tel-input-id="0" placeholder="(254) 70 0000 000" value="<?php echo e(old('phone')); ?>">
                             </div>
                         </div>
                         
+
+                        <!--Sign Up Input Field Start-->
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span><i class="fa fa-id-card" aria-hidden="true"></i></span>
+                                </div>
+                                <input class="form-control" type="number" autocomplete="on" name="national_id_no"
+                                    placeholder="National Id" value ="<?php echo e(old('national_id_no')); ?>">
+                            </div>
+                        </div>
+                        <!--Sign Up Input Field End-->
 
                         <!--Sign Up Input Field Start-->
                         <div class="form-group">
@@ -130,7 +145,7 @@
                                     </span>
                                 </div>
                                 <span class="car-info-wrap display-block">
-                                    <select name="organisation" class="custom-select font-weight-light car-info"
+                                    <select name="organisation_id" class="custom-select font-weight-light car-info"
                                         id="organisation" required>
                                         <option value="" readonly>Select Organisation</option>
                                         <?php $__currentLoopData = $organisations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $organisation): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -149,8 +164,8 @@
                         </div>
                     </form>
                     <div class="text-center sms-rate-text">
-                        <a href="<?php echo e(route('users.sign.in.page')); ?>" class="regular-link">Already have an account? Sign in
-                        </a>
+                        <a href="<?php echo e(route('users.sign.in.page')); ?>" class="regular-link">Already have an account ? Sign
+                            in</a>
                     </div>
                 </div>
             </div>
@@ -160,4 +175,4 @@
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.mobile-app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/chris-droid/Desktop/metro/metroberry-apis-v1.1.0/resources/views/customer-app/register.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.mobile-app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\metroberry-apis-v1.1.0\resources\views/driver-app/signup.blade.php ENDPATH**/ ?>

@@ -81,7 +81,7 @@ class AuthenticatedSessionController extends Controller
                 case 'driver':
                     return redirect()->route('driver.dashboard');
                 default:
-                    return redirect()->route('dashboard');
+                    return redirect()->route('welcome.page');
             }
         } catch (Exception $e) {
             return back()->with('error', $e->getMessage());

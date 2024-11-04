@@ -124,7 +124,7 @@ class DriverAppController extends Controller
         // Log driver information for debugging
         Log::info('Driver Information:', ['driver' => $driver]);
 
-        // Fetch completed trips for the driver
+        // Fetch All assigned trips for the driver of not return null 
         $trips = Trip::where('driver_id', $driver->id)
             ->where('status', 'assigned')
             ->get();

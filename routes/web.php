@@ -58,7 +58,7 @@ require __DIR__ . '/insurance_company_routes.php';
 
 Route::get('dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
-    ->middleware('auth', 'can:view dashboard');
+    ->middleware('auth', 'can:view admin dashboard');
 
     Route::get('login', function(){
         return redirect()->route('welcome.page');
@@ -69,13 +69,13 @@ Route::get('dashboard', [DashboardController::class, 'index'])
 
 Route::get('organisation/dashboard', [OrganisationController::class, 'dashboard'])
     ->name('organisation.dashboard')
-    ->middleware('auth', 'can:view dashboard');
+    ->middleware('auth', 'can:view organisation dashboard');
 
 // Refuelling Station Dashboard
 
 Route::get('refueling/station/dashboard', [RefuellingStationController::class, 'dashboard'])
     ->name('refueling.station.dashboard')
-    ->middleware('auth', 'can:view dashboard');
+    ->middleware('auth', 'can:view refueling station dashboard');
 
 
 
@@ -873,19 +873,19 @@ Route::get('incomes/import', [IncomeController::class, 'import'])
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])
         ->name('profile.show')
-        ->middleware('can:view dashboard');
+        ->middleware('can:view admin dashboard');
 
     Route::get('/profile/edit', [ProfileController::class, 'edit'])
         ->name('profile.edit')
-        ->middleware('can:view dashboard');
+        ->middleware('can:view admin dashboard');
 
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->name('profile.update')
-        ->middleware('can:view dashboard');
+        ->middleware('can:view admin dashboard');
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy')
-        ->middleware('can:view dashboard');
+        ->middleware('can:view admin dashboard');
 });
 
 

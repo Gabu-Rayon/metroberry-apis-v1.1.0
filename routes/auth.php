@@ -25,12 +25,12 @@ Route::middleware('guest')->group(function () {
     // Step 4 Auth Check
     Route::post('/users/sign/in/store', [AuthenticatedSessionController::class, 'loginstore'])->name('auth.users.sign.in');
 
-
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
         ->name('password.reset');
