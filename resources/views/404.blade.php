@@ -19,7 +19,7 @@
                             <p><b>403 - Forbidden:</b> You don t have permission to access on the server </p>
                         </div>
                         <div>
-                            <a class="btn btn-success mt-3" href="{{ route('welcome.page') }}"">
+                            <a class="btn btn-success mt-3" href="{{ route('sign.up.options.page') }}"">
                                 <i class="typcn typcn-arrow-back-outline mr-1"></i>
                                 Back
                             </a>

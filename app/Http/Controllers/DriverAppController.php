@@ -376,20 +376,20 @@ class DriverAppController extends Controller
         $frontLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/front-license-pics';
         $backLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/back-license-pics';
 
-        if (app()->environment('local')) {
-            $frontLicenseDirectory = public_path('uploads/front-license-pics');
-            $backLicenseDirectory = public_path('uploads/back-license-pics');
-        } else {
-            $frontLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/front-license-pics';
-            $backLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/back-license-pics';
-            if (!is_dir($frontLicenseDirectory)) {
-                mkdir($frontLicenseDirectory, 0755, true); // Create directory if it doesn't exist
-            }
+        // if (app()->environment('local')) {
+        //     $frontLicenseDirectory = public_path('uploads/front-license-pics');
+        //     $backLicenseDirectory = public_path('uploads/back-license-pics');
+        // } else {
+        //     $frontLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/front-license-pics';
+        //     $backLicenseDirectory = '/home/kknuicdz/portal_public_html/uploads/back-license-pics';
+        //     if (!is_dir($frontLicenseDirectory)) {
+        //         mkdir($frontLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+        //     }
     
-            if (!is_dir($backLicenseDirectory)) {
-                mkdir($backLicenseDirectory, 0755, true); // Create directory if it doesn't exist
-            }
-        }
+        //     if (!is_dir($backLicenseDirectory)) {
+        //         mkdir($backLicenseDirectory, 0755, true); // Create directory if it doesn't exist
+        //     }
+        // }
 
         $license_front_avatar = $request->file('license_front_avatar');
         $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();

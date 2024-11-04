@@ -19,7 +19,7 @@
                             Sorry i looked everywhere and still came up empty handed</p>
                     </div>
                     <div>
-                        <a class="btn btn-success mt-3" href="{{ route('welcome.page') }}">
+                        <a class="btn btn-success mt-3" href="{{ route('sign.up.options.page') }}">
                             <i class="typcn typcn-arrow-back-outline mr-1"></i>
                             Home
                         </a>
