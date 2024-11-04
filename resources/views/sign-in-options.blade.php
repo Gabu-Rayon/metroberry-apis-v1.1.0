@@ -33,6 +33,10 @@
             <div class="have-an-account text-center">
                 <a href="{{ route('users.sign.in.page') }}" class="regular-link">Already have an account ? Sign in</a>
             </div>
+
+            <div class="have-an-account text-center">
+                <a href="{{ route('password.request') }}" class="regular-link">Forgot Password?</a>
+            </div>
         </div>
     </div>
 @endsection

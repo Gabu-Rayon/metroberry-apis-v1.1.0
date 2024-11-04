@@ -92,6 +92,10 @@
                         <a href="{{ route('sign.up.options.page') }}" class="regular-link">Don't have an account ? Sign
                             up</a>
                     </div>
+
+                    <div class="have-an-account text-center mt-3">
+                        <a href="{{ route('password.request') }}" class="regular-link">Forgot Password?</a>
+                    </div>
                 </div>
                 <!--Sign Up Container Start-->
 
