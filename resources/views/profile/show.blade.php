@@ -66,16 +66,16 @@
                                                                     </td>
                                                                 </tr>
 
-                                                                 @if (Auth::user()->role == 'organisation' && Auth::user()->organisation)
-                                                                <tr>
-                                                                    <th class="white">
-                                                                        <i class="fas fa-building"></i>
-                                                                    </th>
-                                                                    <td class="white text-start">
-                                                                        {{ Auth::user()->organisation->organisation_code }}
-                                                                    </td>
-                                                                </tr>
-                                                            @endif
+                                                                @if (Auth::user()->role == 'organisation' && Auth::user()->organisation)
+                                                                    <tr>
+                                                                        <th class="white">
+                                                                            <i class="fas fa-building"></i>
+                                                                        </th>
+                                                                        <td class="white text-start">
+                                                                            {{ Auth::user()->organisation->organisation_code }}
+                                                                        </td>
+                                                                    </tr>
+                                                                @endif
 
                                                             </tbody>
                                                         </table>

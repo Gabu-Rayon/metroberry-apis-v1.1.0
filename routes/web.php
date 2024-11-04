@@ -885,19 +885,19 @@ Route::get('incomes/import', [IncomeController::class, 'import'])
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])
         ->name('profile.show')
-        ->middleware('can:view admin dashboard');
+        ->middleware('can:view dashboard');
 
     Route::get('/profile/edit', [ProfileController::class, 'edit'])
         ->name('profile.edit')
-        ->middleware('can:view admin dashboard');
+        ->middleware('can:view dashboard');
 
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->name('profile.update')
-        ->middleware('can:view admin dashboard');
+        ->middleware('can:view dashboard');
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy')
-        ->middleware('can:view admin dashboard');
+        ->middleware('can:view dashboard');
 });
 
 
