@@ -82,11 +82,6 @@
                             <button type="submit" class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
                         </form>
                     </div>
-                @else
-                    <div id="verified-message"
-                        class="request-notification-container map-notification offline-notification map-notification-warning">
-                        National ID is valid
-                    </div>
                 @endif
 
                 @if ($driver->driverLicense)
@@ -95,11 +90,6 @@
                             class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your license has not been verified.
                             <div class="font-weight-light">Contact your administrator</div>
-                        </div>
-                    @else
-                        <div id="verified-message"
-                            class="request-notification-container map-notification offline-notification map-notification-warning">
-                            Your license has been verified.
                         </div>
                     @endif
                 @else
@@ -141,12 +131,7 @@
                             class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your PSV Badge has not been verified.
                             <div class="font-weight-light">Contact your administrator</div>
-                        </div>
-                    @else
-                        <div id="verified-message"
-                            class="request-notification-container map-notification offline-notification map-notification-warning">
-                            Your PSV Badge has been verified.
-                        </div>
+                        </div>                        
                     @endif
                 @else
                     <div class="request-notification-container map-notification meters-left-450 map-notification-warning">
@@ -276,4 +261,60 @@
     <!--Terms And Conditions Agreement Container End-->
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    <script src="{{ asset('mobile-app-assets/js/jquery-3.4.1.js') }}"></script>
+
+    <script>
+    const divHtml = '<div id="verified-message" class="request-notification-container map-notification offline-notification map-notification-warning">National ID is valid</div>';
+    const frontAvatar = '{{ $driver->national_id_front_avatar }}';
+    const backAvatar = '{{ $driver->national_id_behind_avatar }}';
+    const licenseVerified = "{{ $driver->driverLicense ? ($driver->driverLicense->verified ? 'true' : 'false') : 'false' }}";
+    const psvBadgeVerified = "{{ $driver->psvBadge ? ($driver->psvBadge->verified ? 'true' : 'false') : 'false' }}";
+    const parent = document.querySelector('.change-request-status');
+    const assignedTripsDiv = document.querySelector('.request-notification-container.map-notification.meters-left-450.map-notification-warning');
+
+    const licenseHtml = '<div id="verified-message" class="request-notification-container map-notification offline-notification map-notification-warning">Your license has been verified.</div>';
+    const psvBadgeHtml = '<div id="verified-message"class="request-notification-container map-notification offline-notification map-notification-warning">Your PSV Badge has been verified.</div>';
+
+    $(document).ready(function() {
+        if (frontAvatar && backAvatar) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = divHtml;
+
+            const verifiedMessageNode = tempDiv.firstChild;
+            parent.insertBefore(verifiedMessageNode, assignedTripsDiv);
+
+            setTimeout(() => {
+                verifiedMessageNode.remove();
+            }, 5000);
+        }
+
+
+        if (licenseVerified === 'true') {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = licenseHtml;
+
+            const verifiedMessageNode = tempDiv.firstChild;
+            parent.insertBefore(verifiedMessageNode, assignedTripsDiv);
+
+            setTimeout(() => {
+                verifiedMessageNode.remove();
+            }, 5000);
+        }
+
+        if (psvBadgeVerified === 'true') {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = psvBadgeHtml;
+
+            const verifiedMessageNode = tempDiv.firstChild;
+            parent.insertBefore(verifiedMessageNode, assignedTripsDiv);
+
+            setTimeout(() => {
+                verifiedMessageNode.remove();
+            }, 5000);
+        }
+    });
+</script>
+
+
 @endsection
