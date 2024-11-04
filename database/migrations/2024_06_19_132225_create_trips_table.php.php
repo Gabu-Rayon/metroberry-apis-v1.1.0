@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('vehicle_id')->nullable();
+            $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('route_id');
             $table->time('pick_up_time');
             $table->time('drop_off_time')->nullable();
@@ -37,6 +38,7 @@ return new class extends Migration {
 
             // Define foreign key constraints
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('set null');
             $table->foreign('route_id')->references('id')->on('routes')->onDelete('cascade');
             $table->foreign('billing_rate_id')->references('id')->on('billing_rates')->onDelete('set null');

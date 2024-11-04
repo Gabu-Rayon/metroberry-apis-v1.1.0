@@ -1,10 +1,10 @@
-@extends ('layouts.app')
 
-@section ('title', '403 - Forbidden')
 
-@section('content')
+<?php $__env->startSection('title', '403 - Forbidden'); ?>
 
-    @include ('components.preloader')
+<?php $__env->startSection('content'); ?>
+
+    <?php echo $__env->make('components.preloader', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
     <div class="container-fluid ">
         <div class="d-flex align-items-center justify-content-center text-center h-100vh">
@@ -19,7 +19,7 @@
                             Looks like someone doesn't want you to view this page.</p>
                     </div>
                     <div>
-                        <a class="btn btn-success mt-3" href="{{ route('welcome.page') }}">
+                        <a class="btn btn-success mt-3" href="<?php echo e(route('welcome.page')); ?>">
                             <i class="typcn typcn-arrow-back-outline mr-1"></i>
                             Home
                         </a>
@@ -40,4 +40,6 @@
         </div>
     </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\metroberry-apis-v1.1.0\resources\views/errors/403.blade.php ENDPATH**/ ?>

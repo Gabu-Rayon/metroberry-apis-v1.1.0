@@ -23,7 +23,8 @@
             <li class="nav-item dropdown user_profile me-2">
                 <a class="dropdown-toggle user_profile_item border rounded-circle d-flex justify-content-center align-items-center overflow-hidden"
                     href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img class="img-fluid" src="{{ asset(\Auth::user()->avatar) }}" alt="User Avatar">
+                    {{-- <img class="img-fluid" src="{{ asset(\Auth::user()->avatar) }}" alt="User Avatar"> --}}
+                      <img class="img-fluid" src="{{ Auth::user()->avatar }}" alt="User Avatar">
                 </a>
                 <div class="dropdown-menu w-75">
                     <div class="d-flex align-items-center gap-3 border-bottom pb-3">
