@@ -18,17 +18,6 @@
       0 => 'ConsoleTVs\\Charts\\ChartsServiceProvider',
     ),
   ),
-  'intervention/image-laravel' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Intervention\\Image\\Laravel\\ServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'Image' => 'Intervention\\Image\\Laravel\\Facades\\Image',
-    ),
-  ),
   'laravel/breeze' => 
   array (
     'providers' => 

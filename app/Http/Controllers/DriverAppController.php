@@ -143,7 +143,6 @@ class DriverAppController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
 
-   
     public function iddocs(Request $request, $id)
     {
         try {
@@ -219,10 +218,8 @@ class DriverAppController extends Controller
      * 
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
-     * 
-     * 
      */
-
+  
 
     public function license(Request $request)
     {

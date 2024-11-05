@@ -39,6 +39,17 @@
 
                 <!--Driver's License Fields Container Start-->
                 <div class="all-container all-container-with-classes">
+                    @if (session('success'))
+                        <div id="success-message" class="alert alert-success" style="display: none;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div id="error-message" class="alert alert-danger" style="display: none;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                     <form class="width-100" action="{{ route('psvbadge.document.update', $driver->id) }}" method="POST"
                         enctype="multipart/form-data">
                         @csrf
@@ -78,7 +89,7 @@
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
                                     name="psv_badge_date_of_expiry" autocomplete="off"
-                                    value="{{ $driver->psvBadge->psv_badge_date_of_expiry  ?? null }}" />
+                                    value="{{ $driver->psvBadge->psv_badge_date_of_expiry ?? null }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
@@ -87,38 +98,36 @@
                         <!--Input Field Container End-->
 
                         <!--Upload Front Start-->
-                        <div class="display-flex justify-content-between">
-                            <span class="position-relative upload-btn">
-                                <img src=" {{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
-                                <input class="scan-prompt" type="file" accept="image/*"
-                                    name="badge_copy" />
-                            </span>
-                            <span class="text-uppercase">Psv Badge : </span>
-                            <span class="delete-btn">
-                                <img src=" {{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
-                            </span>
-                        </div>
-                        <div class="scan-your-card-prompt margin-top-5">
-                            <div class="position-relative">
-                                <div class="upload-picture-container">
-                                    <div class="upload-camera-container text-center">
-                                        <span class="#">
-                                            {{-- Fallback to a default image if psv_badge_avatar is not set --}}
-                                            @php
-                                                $psvBadgeAvatar =
-                                                    $driver->psvBadge->psv_badge_avatar ?? 'default-placeholder.png';
-                                            @endphp
-                                            <img id="national-id-back-preview"
-                                                src="{{ $psvBadgeAvatar !== 'default-placeholder.png'
-                                                    ? asset($psvBadgeAvatar)
-                                                    : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                alt="PSV badge Copy" class="img-fluid" />
-                                        </span>
+                        <div class="form-group">
+                            <label class="width-100">
+                                <div class="display-flex justify-content-between">
+                                    <span class="position-relative upload-btn">
+                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                        <input class="scan-prompt" type="file" accept="image/*" name="badge_copy"
+                                            value="{{ old('badge_copy') }}" required id="national-id-back-input" />
+                                    </span>
+                                    <span class="text-uppercase">PSV Badge Copy</span>
+                                    <span class="delete-btn" id="national-id-back-delete">
+                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                    </span>
+                                </div>
+                                <div class="scan-your-card-prompt margin-top-5">
+                                    <div class="position-relative">
+                                        <div class="upload-picture-container">
+                                            <div class="upload-camera-container text-center">
+                                                <span class="#">
+                                                    <img id="national-id-back-preview"
+                                                        src="{{ $driver->psvBadge && $driver->psvBadge->psv_badge_avatar
+                                                            ? asset($driver->psvBadge->psv_badge_avatar)
+                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        alt="PSV Badge Avatar" />
 
-
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </label>
                         </div>
                         <!--Upload Front End-->
 

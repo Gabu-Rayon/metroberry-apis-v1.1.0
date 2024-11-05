@@ -35,7 +35,6 @@
 
             <!--All Notifications & Status Container Start-->
 
-
             <div class="change-request-status">
 
 
@@ -70,15 +69,76 @@
                         <form action="{{ route('driver.personal-documents', $driver->id) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
-                            <div class="mb-3">
-                                <label for="national_id_front_avatar" class="form-label">National ID Front Picture</label>
-                                <input type="file" id="national_id_front_avatar" name="national_id_front_avatar"
-                                    value="{{ old('national_id_front_avatar') }}"  required>
+                            <!-- Upload Front national ID -->
+                            <div class="form-group">
+                                <label class="width-100">
+                                    <div class="display-flex justify-content-between">
+                                        <span class="position-relative upload-btn">
+                                            <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
+                                                alt="Upload Icon" />
+                                            <input class="scan-prompt" type="file" accept="image/*"
+                                                name="national_id_front_avatar" id="national-id-front-input"
+                                                value="{{ old('national_id_front_avatar') }}" required />
+                                        </span>
+                                        <span class="text-uppercase">National ID FRONT</span>
+                                        <span class="delete-btn" id="national-id-front-delete">
+                                            <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}"
+                                                alt="Delete Icon" />
+                                        </span>
+                                    </div>
+                                    <div class="scan-your-card-prompt margin-top-5">
+                                        <div class="position-relative">
+                                            <div class="upload-picture-container">
+                                                <div class="upload-camera-container text-center">
+                                                    <span class="#">
+                                                        <img id="national-id-front-preview"
+                                                            src="{{ $driver->national_id_front_avatar
+                                                                ? asset($driver->national_id_front_avatar)
+                                                                : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                            alt="National ID Front" />
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
-                            <div class="mb-3">
-                                <label for="national_id_back_avatar" class="form-label">National ID Back Picture</label>
-                                <input type="file" id="national_id_back_avatar" name="national_id_back_avatar"  value="{{ old('national_id_back_avatar') }}"  required>
+
+                            <!-- Upload behind national ID -->
+                            <div class="form-group">
+                                <label class="width-100">
+                                    <div class="display-flex justify-content-between">
+                                        <span class="position-relative upload-btn">
+                                            <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
+                                                alt="Upload Icon" />
+                                            <input class="scan-prompt" type="file" accept="image/*"
+                                                name="national_id_back_avatar" id="national-id-back-input"
+                                                value="{{ old('national_id_back_avatar') }}" required />
+                                        </span>
+                                        <span class="text-uppercase">National ID BACK</span>
+                                        <span class="delete-btn" id="national-id-back-delete">
+                                            <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}"
+                                                alt="Delete Icon" />
+                                        </span>
+                                    </div>
+                                    <div class="scan-your-card-prompt margin-top-5">
+                                        <div class="position-relative">
+                                            <div class="upload-picture-container">
+                                                <div class="upload-camera-container text-center">
+                                                    <span class="#">
+                                                        <img id="national-id-back-preview"
+                                                            src="{{ $driver->national_id_behind_avatar
+                                                                ? asset($driver->national_id_behind_avatar)
+                                                                : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                            alt="National ID Back" />
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
+
                             <button type="submit" class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
                         </form>
                     </div>
@@ -106,21 +166,84 @@
                             </div>
                             <div class="mb-3">
                                 <label for="issue_date" class="form-label">Issue Date</label>
-                                <input type="date" id="issue_date" name="issue_date" class="form-control"  value="{{ old('issue_date') }}"  required>
+                                <input type="date" id="issue_date" name="issue_date" class="form-control"
+                                    value="{{ old('issue_date') }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="expiry_date" class="form-label">Expiry Date</label>
-                                <input type="date" id="expiry_date" name="expiry_date" class="form-control" value="{{ old('expiry_date') }}"  required>
+                                <input type="date" id="expiry_date" name="expiry_date" class="form-control"
+                                    value="{{ old('expiry_date') }}" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="license_front_avatar" class="form-label">License Front Picture</label>
-                                <input type="file" id="license_front_avatar" name="license_front_avatar" value="{{ old('license_front_avatar') }}"  required>
+                            <!-- Upload Front License -->
+                            <div class="form-group">
+                                <label class="width-100">
+                                    <div class="display-flex justify-content-between">
+                                        <span class="position-relative upload-btn">
+                                            <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
+                                                alt="Upload Icon" />
+                                            <input class="scan-prompt" type="file" accept="image/*"
+                                                name="license_front_avatar" id="national-id-front-input" />
+                                        </span>
+                                        <span class="text-uppercase">License FRONT</span>
+                                        <span class="delete-btn" id="national-id-front-delete">
+                                            <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}"
+                                                alt="Delete Icon" />
+                                        </span>
+                                    </div>
+                                    <div class="scan-your-card-prompt margin-top-5">
+                                        <div class="position-relative">
+                                            <div class="upload-picture-container">
+                                                <div class="upload-camera-container text-center">
+                                                    <span class="#">
+                                                        <img id="national-id-front-preview"
+                                                            src="{{ $driver->driverLicense && $driver->driverLicense->driving_license_avatar_front
+                                                                ? asset($driver->driverLicense->driving_license_avatar_front)
+                                                                : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                            alt="License Front Avatar" />
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
-                            <div class="mb-3">
-                                <label for="license_back_avatar" class="form-label">License Back Picture</label>
-                                <input type="file" id="license_back_avatar" name="license_back_avatar" value="{{ old('license_back_avatar') }}" required>
+                            <!-- Upload behind License -->
+
+                            <div class="form-group">
+                                <label class="width-100">
+                                    <div class="display-flex justify-content-between">
+                                        <span class="position-relative upload-btn">
+                                            <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
+                                                alt="Upload Icon" />
+                                            <input class="scan-prompt" type="file" accept="image/*"
+                                                name="license_back_avatar" id="national-id-back-input" />
+                                        </span>
+                                        <span class="text-uppercase">License BACK</span>
+                                        <span class="delete-btn" id="national-id-back-delete">
+                                            <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}"
+                                                alt="Delete Icon" />
+                                        </span>
+                                    </div>
+                                    <div class="scan-your-card-prompt margin-top-5">
+                                        <div class="position-relative">
+                                            <div class="upload-picture-container">
+                                                <div class="upload-camera-container text-center">
+                                                    <span class="#">
+                                                        <img id="national-id-back-preview"
+                                                            src="{{ $driver->driverLicense && $driver->driverLicense->driving_license_avatar_back
+                                                                ? asset($driver->driverLicense->driving_license_avatar_back)
+                                                                : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                            alt="License Back Avatar" />
+
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
-                            <button type="submit" class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
+                            <button type="submit"
+                                class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
                         </form>
                     </div>
                 @endif
@@ -131,34 +254,71 @@
                             class="request-notification-container map-notification offline-notification map-notification-warning">
                             Your PSV Badge has not been verified.
                             <div class="font-weight-light">Contact your administrator</div>
-                        </div>                        
+                        </div>
                     @endif
                 @else
                     <div class="request-notification-container map-notification meters-left-450 map-notification-warning">
                         <span class="font-weight-dark m-3 my-3">
                             Kindly upload your PSV Badge
                         </span>
-                        <form action="{{ route('driver.psvbadge.create') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('driver.psvbadge.create') }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             <div class="mb-3">
                                 <label for="psv_badge_no" class="form-label">Badge No.</label>
-                                <input type="text" id="psv_badge_no" name="psv_badge_no" value="{{ old('psv_badge_no') }}"   class="form-control"
-                                    required>
+                                <input type="text" id="psv_badge_no" name="psv_badge_no"
+                                    value="{{ old('psv_badge_no') }}" class="form-control" required>
                             </div>
                             <div class="mb-3">
                                 <label for="psv_issue_date" class="form-label">Issue Date</label>
-                                <input type="date" id="psv_issue_date" name="psv_issue_date" value="{{ old('psv_issue_date') }}"   class="form-control"
-                                    required>
+                                <input type="date" id="psv_issue_date" name="psv_issue_date"
+                                    value="{{ old('psv_issue_date') }}" class="form-control" required>
                             </div>
                             <div class="mb-3">
                                 <label for="psv_expiry_date" class="form-label">Expiry Date</label>
-                                <input type="date" id="psv_expiry_date" name="psv_expiry_date"  value="{{ old('psv_expiry_date') }}"   class="form-control"
-                                    required>
+                                <input type="date" id="psv_expiry_date" name="psv_expiry_date"
+                                    value="{{ old('psv_expiry_date') }}" class="form-control" required>
                             </div>
-                            <div class="mb-3">
+                            {{-- <div class="mb-3">
                                 <label for="badge_copy" class="form-label">Copy</label>
-                                <input type="file" id="badge_copy" name="badge_copy"  value="{{ old('badge_copy') }}" required>
+                                <input type="file" id="badge_copy" name="badge_copy" value="{{ old('badge_copy') }}"
+                                    required>
+                            </div> --}}
+                            <!--Upload Front Start-->
+                            <div class="form-group">
+                                <label class="width-100">
+                                    <div class="display-flex justify-content-between">
+                                        <span class="position-relative upload-btn">
+                                            <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}"
+                                                alt="Upload Icon" />
+                                            <input class="scan-prompt" type="file" accept="image/*" name="badge_copy"
+                                                value="{{ old('badge_copy') }}" required id="national-id-back-input" />
+                                        </span>
+                                        <span class="text-uppercase">PSV Badge Copy</span>
+                                        <span class="delete-btn" id="national-id-back-delete">
+                                            <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}"
+                                                alt="Delete Icon" />
+                                        </span>
+                                    </div>
+                                    <div class="scan-your-card-prompt margin-top-5">
+                                        <div class="position-relative">
+                                            <div class="upload-picture-container">
+                                                <div class="upload-camera-container text-center">
+                                                    <span class="#">
+                                                        <img id="national-id-back-preview"
+                                                            src="{{ $driver->psvBadge && $driver->psvBadge->psv_badge_avatar
+                                                                ? asset($driver->psvBadge->psv_badge_avatar)
+                                                                : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                            alt="PSV Badge Avatar" />
+
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
+                            <!--Upload Front End-->
                             <button type="submit"
                                 class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
                         </form>
@@ -265,56 +425,91 @@
     <script src="{{ asset('mobile-app-assets/js/jquery-3.4.1.js') }}"></script>
 
     <script>
-    const divHtml = '<div id="verified-message" class="request-notification-container map-notification offline-notification map-notification-warning">National ID is valid</div>';
-    const frontAvatar = '{{ $driver->national_id_front_avatar }}';
-    const backAvatar = '{{ $driver->national_id_behind_avatar }}';
-    const licenseVerified = "{{ $driver->driverLicense ? ($driver->driverLicense->verified ? 'true' : 'false') : 'false' }}";
-    const psvBadgeVerified = "{{ $driver->psvBadge ? ($driver->psvBadge->verified ? 'true' : 'false') : 'false' }}";
-    const parent = document.querySelector('.change-request-status');
-    const assignedTripsDiv = document.querySelector('.request-notification-container.map-notification.meters-left-450.map-notification-warning');
+        const divHtml =
+            '<div id="verified-message" class="request-notification-container map-notification offline-notification map-notification-warning">National ID is valid</div>';
+        const frontAvatar = '{{ $driver->national_id_front_avatar }}';
+        const backAvatar = '{{ $driver->national_id_behind_avatar }}';
+        const licenseVerified =
+            "{{ $driver->driverLicense ? ($driver->driverLicense->verified ? 'true' : 'false') : 'false' }}";
+        const psvBadgeVerified = "{{ $driver->psvBadge ? ($driver->psvBadge->verified ? 'true' : 'false') : 'false' }}";
+        const parent = document.querySelector('.change-request-status');
+        const assignedTripsDiv = document.querySelector(
+            '.request-notification-container.map-notification.meters-left-450.map-notification-warning');
 
-    const licenseHtml = '<div id="verified-message" class="request-notification-container map-notification offline-notification map-notification-warning">Your license has been verified.</div>';
-    const psvBadgeHtml = '<div id="verified-message"class="request-notification-container map-notification offline-notification map-notification-warning">Your PSV Badge has been verified.</div>';
+        const licenseHtml =
+            '<div id="verified-message" class="request-notification-container map-notification offline-notification map-notification-warning">Your license has been verified.</div>';
+        const psvBadgeHtml =
+            '<div id="verified-message"class="request-notification-container map-notification offline-notification map-notification-warning">Your PSV Badge has been verified.</div>';
 
-    $(document).ready(function() {
-        if (frontAvatar && backAvatar) {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = divHtml;
+        $(document).ready(function() {
+            if (frontAvatar && backAvatar) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = divHtml;
 
-            const verifiedMessageNode = tempDiv.firstChild;
-            parent.insertBefore(verifiedMessageNode, assignedTripsDiv);
+                const verifiedMessageNode = tempDiv.firstChild;
+                parent.insertBefore(verifiedMessageNode, assignedTripsDiv);
 
-            setTimeout(() => {
-                verifiedMessageNode.remove();
-            }, 5000);
-        }
+                setTimeout(() => {
+                    verifiedMessageNode.remove();
+                }, 5000);
+            }
 
 
-        if (licenseVerified === 'true') {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = licenseHtml;
+            if (licenseVerified === 'true') {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = licenseHtml;
 
-            const verifiedMessageNode = tempDiv.firstChild;
-            parent.insertBefore(verifiedMessageNode, assignedTripsDiv);
+                const verifiedMessageNode = tempDiv.firstChild;
+                parent.insertBefore(verifiedMessageNode, assignedTripsDiv);
 
-            setTimeout(() => {
-                verifiedMessageNode.remove();
-            }, 5000);
-        }
+                setTimeout(() => {
+                    verifiedMessageNode.remove();
+                }, 5000);
+            }
 
-        if (psvBadgeVerified === 'true') {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = psvBadgeHtml;
+            if (psvBadgeVerified === 'true') {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = psvBadgeHtml;
 
-            const verifiedMessageNode = tempDiv.firstChild;
-            parent.insertBefore(verifiedMessageNode, assignedTripsDiv);
+                const verifiedMessageNode = tempDiv.firstChild;
+                parent.insertBefore(verifiedMessageNode, assignedTripsDiv);
 
-            setTimeout(() => {
-                verifiedMessageNode.remove();
-            }, 5000);
-        }
-    });
-</script>
+                setTimeout(() => {
+                    verifiedMessageNode.remove();
+                }, 5000);
+            }
+        });
+
+        document.getElementById('id-upload-form').addEventListener('submit', function(e) {
+            const frontInput = document.getElementById('national-id-front-input').files[0];
+            const backInput = document.getElementById('national-id-back-input').files[0];
+
+            // Ensure both files are selected
+            if (!frontInput || !backInput) {
+                alert('Please upload both front and back images of your ID.');
+                e.preventDefault();
+                return;
+            }
+
+            // Check file types
+            if (frontInput.type.split('/')[0] !== 'image' || backInput.type.split('/')[0] !== 'image') {
+                alert('Please upload valid image files.');
+                e.preventDefault();
+                return;
+            }
+
+            // Check file sizes
+            const maxSize = 2 * 1024 * 1024; // 2 MB limit
+            if (frontInput.size > maxSize || backInput.size > maxSize) {
+                alert('Each file should be less than 2MB.');
+                e.preventDefault();
+                return;
+            }
+
+            // Additional custom checks can be added here
+        });
+    </script>
+
 
 
 @endsection
