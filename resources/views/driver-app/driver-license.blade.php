@@ -39,6 +39,17 @@
 
                 <!--Driver's License Fields Container Start-->
                 <div class="all-container all-container-with-classes">
+                    @if (session('success'))
+                        <div id="success-message" class="alert alert-success" style="display: none;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div id="error-message" class="alert alert-danger" style="display: none;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                     <form class="width-100" action="{{ route('driver.license.document.update', $driver->id) }}"
                         method="POST" enctype="multipart/form-data">
                         @csrf

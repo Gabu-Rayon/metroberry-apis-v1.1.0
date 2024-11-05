@@ -143,67 +143,6 @@ class DriverAppController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
 
-    // public function iddocs(Request $request, $id)
-    // {
-    //     try {
-    //         $data = $request->all();
-
-    //         // Validate the request data
-    //         $validator = Validator::make($data, [
-    //             'national_id_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-    //             'national_id_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-    //         ]);
-
-    //         if ($validator->fails()) {
-    //             Log::error('VALIDATION ERROR');
-    //             Log::error($validator->errors()->all());
-
-    //             return back()->with('error', $validator->errors()->first())->withInput();
-    //         }
-
-    //         // Find the driver by ID
-    //         $driver = Driver::findOrFail($id);
-
-    //         // Define the directories for the ID uploads
-    //         $frontIdDirectory = public_path('uploads/front-page-ids');
-    //         $backIdDirectory = public_path('uploads/back-page-ids');
-
-    //         // Ensure the directories exist
-    //         if (!is_dir($frontIdDirectory)) {
-    //             mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
-    //         }
-
-    //         if (!is_dir($backIdDirectory)) {
-    //             mkdir($backIdDirectory, 0755, true); // Create directory if it doesn't exist
-    //         }
-
-    //         // Upload front and back images
-    //         $national_id_front_avatar = $request->file('national_id_front_avatar');
-    //         $national_id_back_avatar = $request->file('national_id_back_avatar');
-
-    //         // Create file names
-    //         $frontFileName = "{$driver->email}-national-id-front." . $national_id_front_avatar->getClientOriginalExtension();
-    //         $backFileName = "{$driver->email}-national-id-back." . $national_id_back_avatar->getClientOriginalExtension();
-
-    //         // Move the uploaded files to the public directories
-    //         $national_id_front_avatar->move($frontIdDirectory, $frontFileName);
-    //         $national_id_back_avatar->move($backIdDirectory, $backFileName);
-
-    //         // Update driver details with the relative paths
-    //         $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontFileName;
-    //         $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backFileName;
-    //         $driver->save();
-
-    //         return redirect()->route('driver.dashboard')->with('success', 'Driver personal documents uploaded successfully.');
-    //     } catch (Exception $e) {
-    //         Log::error('UPLOAD DRIVER PERSONAL DOCUMENTS ERROR');
-    //         Log::error($e->getMessage());
-
-    //         return back()->with('error', 'Something went wrong.')->withInput();
-    //     }
-    // }
-
-
     public function iddocs(Request $request, $id)
 {
     try {
@@ -280,74 +219,7 @@ class DriverAppController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    // public function license(Request $request)
-    // {
-    //     try {
-    //         $data = $request->all();
-
-    //         // Validate the incoming request data
-    //         $validator = Validator::make($data, [
-    //             'driving_license_no' => 'required|string|max:255|unique:drivers_licenses',
-    //             'issue_date' => 'required|date',
-    //             'expiry_date' => 'required|date|after:issue_date',
-    //             'license_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-    //             'license_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-    //         ]);
-
-    //         if ($validator->fails()) {
-    //             Log::error('VALIDATION ERROR');
-    //             Log::error($validator->errors()->all());
-
-    //             return back()->with('error', $validator->errors()->first())->withInput();
-    //         }
-
-    //         DB::beginTransaction();
-
-    //         // Define directories for license uploads
-    //         $frontLicenseDirectory = public_path('uploads/front-license-pics');
-    //         $backLicenseDirectory = public_path('uploads/back-license-pics');
-
-    //         // Ensure the directories exist
-    //         if (!is_dir($frontLicenseDirectory)) {
-    //             mkdir($frontLicenseDirectory, 0755, true); // Create directory if it doesn't exist
-    //         }
-
-    //         if (!is_dir($backLicenseDirectory)) {
-    //             mkdir($backLicenseDirectory, 0755, true); // Create directory if it doesn't exist
-    //         }
-
-    //         // Upload front license image
-    //         $license_front_avatar = $request->file('license_front_avatar');
-    //         $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();
-    //         $license_front_avatar->move($frontLicenseDirectory, $frontFileName);
-
-    //         // Upload back license image
-    //         $license_back_avatar = $request->file('license_back_avatar');
-    //         $backFileName = auth()->user()->driver->email . '-back-license.' . $license_back_avatar->getClientOriginalExtension();
-    //         $license_back_avatar->move($backLicenseDirectory, $backFileName);
-
-    //         // Create a new driver license record with the stored file paths
-    //         DriversLicenses::create([
-    //             'driver_id' => auth()->user()->driver->id,
-    //             'driving_license_no' => $data['driving_license_no'],
-    //             'driving_license_date_of_issue' => $data['issue_date'],
-    //             'driving_license_date_of_expiry' => $data['expiry_date'],
-    //             'driving_license_avatar_front' => 'uploads/front-license-pics/' . $frontFileName,
-    //             'driving_license_avatar_back' => 'uploads/back-license-pics/' . $backFileName,
-    //         ]);
-
-    //         DB::commit();
-
-    //         return redirect()->route('driver.dashboard')->with('success', 'Driver license uploaded successfully.');
-    //     } catch (Exception $e) {
-    //         DB::rollBack();
-    //         Log::error('UPLOAD DRIVER LICENSE ERROR');
-    //         Log::error($e);
-
-    //         return back()->with('error', 'Something went wrong.')->withInput();
-    //     }
-    // }
-
+  
 
     public function license(Request $request)
 {

@@ -60,12 +60,12 @@
       $(document).ready(function() {
           // Show success message and fade out after 2 seconds
           if ($('#success-message').length) {
-              $('#success-message').fadeIn().delay(2000).fadeOut();
+              $('#success-message').fadeIn().delay(10000).fadeOut();
           }
 
           // Show error message and fade out after 2 seconds
           if ($('#error-message').length) {
-              $('#error-message').fadeIn().delay(2000).fadeOut();
+              $('#error-message').fadeIn().delay(10000).fadeOut();
           }
       });
   </script>
