@@ -300,12 +300,12 @@ Route::get('driver/import/store', [DriverController::class, 'import'])
  * Drivers Licenses Routes
  */
 
-// View Licenses
+// View  Driver License
 Route::get('driver/license', [DriversLicensesController::class, 'index'])
     ->name('driver.license')
     ->middleware('auth', 'can:view driver licenses');
 
-// Create License
+// Create Driver License
 Route::get('driver/license/create', [DriversLicensesController::class, 'create'])
     ->name('driver.license.create')
     ->middleware('auth', 'can:create driver license');
