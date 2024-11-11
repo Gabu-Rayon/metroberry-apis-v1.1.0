@@ -78,14 +78,16 @@
                                             <th class="text-center" title="Date">Date</th>
                                             <th class="text-center" title="Pick Up">Pick Up</th>
                                             <th class="text-center" title="Drop Off">Drop Off</th>
-                                            <th class="text-center" title="Assign" width="150">Assign</th>
+
+                                            <!-- Conditionally display "Assign" column if filteredTrips are present -->
+                                            @if (isset($filteredTrips) && $filteredTrips->isNotEmpty())
+                                                <th class="text-center" title="Assign" width="150">Assign</th>
+                                            @endif
                                         </tr>
                                     </thead>
                                     <tbody id="scheduledTripsContainer">
-                                        {{-- @foreach ($scheduledTrips as $trip) --}}
+                                        {{-- Check if filteredTrips exist, else fallback to scheduledTrips --}}
                                         @foreach ($filteredTrips ?? $scheduledTrips as $trip)
-                                            <!-- Display either filtered or all trips -->
-
                                             <tr>
                                                 <td>{{ $trip->customer->user->name }}</td>
                                                 <td>
@@ -139,24 +141,32 @@
                                                     @endphp
                                                     {{ $location }}
                                                 </td>
-                                                <td class="text-center">
-                                                    <input class="form-check-input trip-checkbox" type="checkbox"
-                                                        role="switch" id="{{ $trip->id }}" name="trip_ids[]"
-                                                        value="{{ $trip->id }}">
-                                                </td>
+
+                                                <!-- Conditionally display "Assign" checkbox if filteredTrips are present -->
+                                                @if (isset($filteredTrips) && $filteredTrips->isNotEmpty())
+                                                    <td class="text-center">
+                                                        <input class="form-check-input trip-checkbox" type="checkbox"
+                                                            role="switch" id="{{ $trip->id }}" name="trip_ids[]"
+                                                            value="{{ $trip->id }}">
+                                                    </td>
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
                                             <td colspan="9"></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-success" id="assign-driver"
-                                                    type="button">Assign Vehicle</button>
-                                            </td>
+                                            <!-- Conditionally display the button only if filteredTrips are present -->
+                                            @if (isset($filteredTrips) && $filteredTrips->isNotEmpty())
+                                                <td>
+                                                    <button class="btn btn-sm btn-success" id="assign-driver"
+                                                        type="button">Assign Vehicle</button>
+                                                </td>
+                                            @endif
                                         </tr>
                                     </tfoot>
                                 </table>
+
                             </div>
                         </div>
                     </div>
@@ -257,7 +267,7 @@
 
         document.getElementById('assign-driver').addEventListener('click', function() {
             if (selectedTrips.length === 0) {
-                alert('Please select at least one trip to assign a vehicle.');
+                alert('Please Filter First the Trips to assign a vehicle.');
             } else {
                 new bootstrap.Modal(document.getElementById('assign-driver-modal')).show();
             }
@@ -305,8 +315,6 @@
                 tbody.appendChild(row);
             });
         }
-
-
 
         ///Javascript  to assgign driver and vehicle
         document.getElementById('assign-driver').addEventListener('click', function() {
