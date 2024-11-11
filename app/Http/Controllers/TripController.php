@@ -435,7 +435,8 @@ class TripController extends Controller
                 $trip->save();
             }
 
-            return redirect()->back()->with('success', 'Trips Scheduled Successfully');
+          return redirect()->route('trip.scheduled')->with('success', 'Trips Scheduled Successfully');
+
         } catch (Exception $e) {
             Log::error('Error storing scheduled trips: ' . $e->getMessage());
             return back()->with('error', 'Something went wrong');
@@ -982,7 +983,10 @@ class TripController extends Controller
 
         // Get all routes to display in the filter dropdown
         $givenRoutes = Routes::all();
-         $vehicles = Vehicle::where('status', 'active');
+        $vehicles = Vehicle::where('status', 'active')
+            ->whereHas('driver', function ($query) {
+                $query->where('status', 'active');
+            })->get();
   
         // Return the filtered data for DataTables
         // return DataTables::of($filteredTrips)
@@ -995,7 +999,6 @@ class TripController extends Controller
         // Return the view with the filtered trips and the given routes for filtering
         return view('trips.scheduled', compact('filteredTrips', 'givenRoutes','vehicles'));
     }
-
 
     public function getRouteLocations(Request $request)
     {

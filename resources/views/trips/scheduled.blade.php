@@ -214,8 +214,8 @@
 
 
     <!-- JavaScript Section -->
-    <!-- JavaScript Section -->
     <script>
+        ///Javascript  to filter the route 
         document.getElementById('filter-route').addEventListener('change', function() {
             const routeId = this.value;
             const locationSelect = document.getElementById('filter-route-location-for-pickup');
@@ -262,7 +262,7 @@
                 new bootstrap.Modal(document.getElementById('assign-driver-modal')).show();
             }
         });
-
+        ///Javascript  to filter the route locations for the pick up 
         document.getElementById('filter-route-location-for-pickup').addEventListener('change', function() {
             const routeId = document.getElementById('filter-route').value;
             const initialPickupLocationId = this.value;
@@ -306,7 +306,9 @@
             });
         }
 
-        // Code for handling assign driver modal and displaying selected trips
+
+
+        ///Javascript  to assgign driver and vehicle
         document.getElementById('assign-driver').addEventListener('click', function() {
             const selectedTrips = [];
             const checkboxes = document.querySelectorAll('.trip-checkbox:checked');
@@ -315,7 +317,7 @@
                 const tripId = checkbox.value;
                 const tripRow = checkbox.closest('tr');
                 const customerName = tripRow.cells[0].innerText;
-                const companyName = tripRow.cells[1].innerText;
+                const companyName = tripRow.cells[1].innerText; // Added company name
                 const driverName = tripRow.cells[2].innerText || 'TBD';
                 const vehicleNumber = tripRow.cells[3].innerText || 'TBD';
                 const routeName = tripRow.cells[4].innerText;
@@ -342,47 +344,118 @@
             tripsList.innerHTML = '';
 
             if (selectedTrips.length > 0) {
+                // Create a string of selected trip IDs for the hidden input
                 const tripIds = selectedTrips.map(trip => trip.tripId).join(',');
-                document.getElementById('trip_ids').value = tripIds;
+                document.getElementById('trip_ids').value =
+                    tripIds; // Update the hidden input with selected trip IDs
 
                 selectedTrips.forEach(trip => {
                     const listItem = document.createElement('li');
                     listItem.classList.add('row');
-                    listItem.innerHTML = `
-                    <div class="col-md-3">
-                        <div class="pt-1 pb-1 form-group">
-                            <div class="font-black">Customer</div>
-                            <div class="form-control">${trip.customerName}</div>
+                    listItem.innerHTML +=
+                        `
+                <div class="col-md-3">
+                    <div class="pt-1 pb-1 form-group">
+                        <div class="font-black">Customer</div>
+                        <div class="form-control">
+                            ${trip.customerName}
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="pt-1 pb-1 form-group">
-                            <div class="font-black">Company</div>
-                            <div class="form-control">${trip.companyName}</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="font-black">Company</div>
+                    <div class="pt-1 pb-1 form-group">
+                        <div class="form-control">
+                            ${trip.companyName}
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="pt-1 pb-1 form-group">
-                            <div class="font-black">Pick Up</div>
-                            <div class="form-control">${trip.pickupLocation}</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="font-black">Pick Up</div>
+                    <div class="pt-1 pb-1 form-group">
+                        <div class="form-control">
+                            ${trip.pickupLocation}
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="pt-1 pb-1 form-group">
-                            <div class="font-black">To</div>
-                            <div class="form-control">${trip.dropoffLocation}</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="font-black">To</div>
+                    <div class="pt-1 pb-1 form-group">
+                        <div class="form-control">
+                            ${trip.dropoffLocation}
                         </div>
                     </div>
+                </div>
                 `;
                     tripsList.appendChild(listItem);
                 });
 
-                const assignDriverModal = new bootstrap.Modal(document.getElementById('assign-driver-modal'));
+                // Show the modal
+                var assignDriverModal = new bootstrap.Modal(document.getElementById('assign-driver-modal'));
                 assignDriverModal.show();
             } else {
                 alert('Please select at least one trip to assign a driver.');
             }
         });
+
+
+        const vehicleSelect = document.getElementById('vehicle');
+        const scheduledTripsDiv = document.getElementById('scheduled-trips-div');
+        vehicleSelect.addEventListener('click', e => {
+            fetch(`/get-vehicle/${e.target.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    const {
+                        assigned_trips
+                    } = data;
+
+                    scheduledTripsDiv.innerHTML = '';
+
+
+                    if (assigned_trips.length > 0) {
+                        assigned_trips.forEach(trip => {
+                            const tripDiv = document.createElement('div');
+                            tripDiv.classList.add('form-control');
+                            console.log('TRIP');
+                            console.log(trip);
+
+                            tripDiv.innerHTML =
+                                `
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="pt-1 pb-1 form-group">
+                                                <div class="font-black text-muted">Customer</div>
+                                                <div class="form-control" id="vehicle-trip-customer">${trip.customer.user.name}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="pt-1 pb-1 form-group">
+                                                <div class="font-black text-muted">Company</div>
+                                                <div class="form-control" id="vehicle-trip-company">${trip.customer.customer_organisation_code}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="pt-1 pb-1 form-group">
+                                                <div class="font-black text-muted">From</div>
+                                                <div class="form-control" id="vehicle-trip-from">${trip.pick_up_location_name}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="pt-1 pb-1 form-group">
+                                                <div class="font-black text-muted">To</div>
+                                                <div class="form-control" id="vehicle-trip-to">${trip.drop_off_location_name}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `;
+                            scheduledTripsDiv.appendChild(tripDiv);
+                        });
+                    } else {
+                        scheduledTripsDiv.innerHTML = 'No scheduled trips for this vehicle';
+                    }
+
+                });
+        })
     </script>
 
 @endsection
