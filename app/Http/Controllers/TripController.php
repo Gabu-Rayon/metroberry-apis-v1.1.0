@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Income;
+use App\Models\RouteLocations;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Trip;
@@ -24,33 +25,13 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\View;
+use Yajra\DataTables\DataTables;
 
 class TripController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    //     public function index(){
-    //         $scheduledTrips = Trip::with(['customer.user', 'vehicle.driver.user', 'vehicle', 'route'])
-    //             ->where('status', 'scheduled')
-    //             ->orderBy('pick_up_time')
-    //             ->get()
-    //             ->groupBy(function ($trip) {
-    //                 return $trip->customer->user->organisation->name;
-    //             });
-
-    //         $scheduledTrips = $scheduledTrips->groupBy(function ($trip) {
-    //             return $trip->customer->organization;
-    //         });
-
-    //         Log::info('SCHEDULED TRIPS');
-    //         Log::info($scheduledTrips);
-
-    //         return view('trips.scheduled', compact('scheduledTrips'));
-    // }
-
-
-
     public function index()
     {
         try {
@@ -127,47 +108,6 @@ class TripController extends Controller
      * Store a newly created resource in storage.
      *
      */
-
-
-
-    // public function store(Request $request)
-    // {
-    //     try {
-    //         $data = $request->validate([
-    //             'customer_id' => 'required|exists:customers,id',
-    //             'vehicle_id' => 'required|exists:vehicles,id',
-    //             'driver_id' => 'required|exists:drivers,id',
-    //             'preferred_route_id' => 'required|exists:routes,id',
-    //             'pick_up_time' => 'required|date_format:H:i',
-    //             'drop_off_or_pick_up_date' => 'required|date',
-    //             'pick_up_location' => 'required|in:Home,Office',
-    //             'mileage_gps' => 'required|numeric',
-    //             'mileage_can' => 'required|numeric',
-    //             'engine_hours_gps' => 'required|numeric',
-    //             'engine_hours_can' => 'required|numeric',
-    //             'can_distance_till_service' => 'required|numeric',
-    //             'average_fuel_consumption_litre_per_km' => 'required|numeric',
-    //             'average_fuel_consumption_litre_per_hour' => 'required|numeric',
-    //             'average_fuel_consumption_kg_per_km' => 'required|numeric',
-    //         ]);
-
-    //         $trip = Trip::create($data);
-
-    //         return response()->json([
-    //             'message' => 'Trip created successfully',
-    //             'trip' => $trip
-    //         ], 201);
-    //     } catch (Exception $e) {
-    //         Log::error('ERROR CREATING TRIP');
-    //         Log::error($e);
-    //         return response()->json([
-    //             'message' => 'An error occurred while creating trip',
-    //             'error' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
-
 
     public function store(Request $request)
     {
@@ -501,8 +441,9 @@ class TripController extends Controller
             return back()->with('error', 'Something went wrong');
         }
     }
-    
-    public function tripAssigned() {
+
+    public function tripAssigned()
+    {
         try {
             $assignedTrips = null;
             $organisations = Organisation::all();
@@ -547,13 +488,8 @@ class TripController extends Controller
             Log::error('Error fetching scheduled trips: ' . $e->getMessage());
             return back()->with('error', 'An error occurred while fetching the scheduled trips. Please try again.');
         }
-        
+
     }
-
-
-
-
-
 
     public function tripCompleted(Request $request)
     {
@@ -639,9 +575,6 @@ class TripController extends Controller
         }
     }
 
-
-
-
     public function tripBilled()
     {
         try {
@@ -685,11 +618,6 @@ class TripController extends Controller
             return back()->with('error', 'An error occurred while fetching the billed trips. Please try again.');
         }
     }
-
-
-
-
-
 
     public function completeTripForm($id)
     {
@@ -825,12 +753,6 @@ class TripController extends Controller
         }
     }
 
-
-
-
-
-
-
     public function details($id)
     {
         $trip = Trip::with(['customer', 'vehicle'])->findOrFail($id);
@@ -947,8 +869,6 @@ class TripController extends Controller
             'rate_by_car_class' => $billingRate->rate_by_car_class,
         ]);
     }
-
-
     public function tripPaymentCheckOut($id)
     {
         try {
@@ -1018,4 +938,72 @@ class TripController extends Controller
         $pdf = $pdf->loadView('invoices.invoice', compact('data'));
         return $pdf->stream('invoice.pdf');
     }
+
+
+
+    public function filterScheduledTrips(Request $request)
+    {
+        // Get the input values from the request
+        $routeId = $request->input('filter_route');
+        $initialPickupLocationId = $request->input('filter_route_location_for_pickup');
+        $pickupTime = Carbon::parse($request->input('filter_time'));
+        $tripDate = Carbon::parse($request->input('filter_date'));
+
+        // Define the time range for pickup (from selected time to end of the day)
+        $startTime = $pickupTime->copy();
+        $endTime = $pickupTime->copy()->endOfDay();
+
+        // Log input data for debugging purposes
+        Log::info('Data from the Form Filter the trips : ');
+        Log::info($request);
+
+        // Build the query to fetch trips based on the provided criteria
+        $query = Trip::where('route_id', $routeId)
+            ->whereDate('trip_date', $tripDate) // Filter by trip date
+            ->whereBetween('pick_up_time', [$startTime->toTimeString(), $endTime->toTimeString()]) // Filter by pick up time
+            ->with(['customer', 'driver', 'vehicle', 'route']); // Eager load relationships
+
+        // If a specific pickup location is selected, filter trips based on the route locations
+        if (!is_null($initialPickupLocationId)) {
+            $query->whereHas('route.route_locations', function ($query) use ($initialPickupLocationId) {
+                // Ensure that the pickup location is the selected location or any subsequent location
+                $query->where('id', '>=', $initialPickupLocationId);
+            });
+        }
+
+        // Log the raw query for debugging purposes
+        Log::info('Filtered Trips Query:', ['query' => $query->toSql(), 'bindings' => $query->getBindings()]);
+
+        // Execute the query and get the filtered trips
+        $filteredTrips = $query->get();
+
+        // Log the filtered trips data
+        Log::info('Filtered Trips:', ['filteredTrips' => $filteredTrips]);
+
+        // Get all routes to display in the filter dropdown
+        $givenRoutes = Routes::all();
+         $vehicles = Vehicle::where('status', 'active');
+  
+        // Return the filtered data for DataTables
+        // return DataTables::of($filteredTrips)
+        //     ->addColumn('action', function ($trip) {
+        //         // Add an action button for each trip
+        //         return '<button class="btn btn-primary assign-vehicle" data-trip-id="' . $trip->id . '">Assign Vehicle</button>';
+        //     })
+        //     ->make(true); // Make the data ready for DataTables      
+
+        // Return the view with the filtered trips and the given routes for filtering
+        return view('trips.scheduled', compact('filteredTrips', 'givenRoutes','vehicles'));
+    }
+
+
+    public function getRouteLocations(Request $request)
+    {
+        $routeId = $request->route_id;
+        $routeLocations = RouteLocations::where('route_id', $routeId)->get();
+
+        return response()->json($routeLocations);
+    }
+
+
 }

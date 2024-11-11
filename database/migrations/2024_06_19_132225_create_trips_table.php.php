@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->decimal('distance', 8, 2)->nullable();
             $table->integer('number_of_passengers')->nullable();
             $table->date('trip_date');
-            $table->enum('status', ['scheduled', 'completed', 'cancelled', 'billed', 'paid', 'partially paid'])->default('scheduled');
+            $table->enum('status', ['scheduled','assigned','completed', 'cancelled', 'billed', 'paid', 'partially paid'])->default('scheduled');
             $table->decimal('vehicle_mileage', 8, 2)->nullable();
             $table->integer('engine_hours')->nullable();
             $table->decimal('fuel_consumed', 8, 2)->nullable();
