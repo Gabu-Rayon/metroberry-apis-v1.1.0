@@ -962,6 +962,7 @@ class TripController extends Controller
         $query = Trip::where('route_id', $routeId)
             ->whereDate('trip_date', $tripDate) // Filter by trip date
             ->whereBetween('pick_up_time', [$startTime->toTimeString(), $endTime->toTimeString()]) // Filter by pick up time
+            ->where('status', 'scheduled') // Filter by status
             ->with(['customer', 'driver', 'vehicle', 'route']); // Eager load relationships
 
         // If a specific pickup location is selected, filter trips based on the route locations
