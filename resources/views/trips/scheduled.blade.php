@@ -18,7 +18,10 @@
                             <div class="mb-4 card">
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-0 fs-17 fw-semi-bold">Scheduled Trips</h6>
+                                        <h6 class="mb-0 fs-17 fw-semi-bold">
+                                            <a href="{{ route('trip.scheduled') }}">Scheduled Trips</a>
+                                        </h6>
+
                                         @can('schedule trip')
                                             <a class="btn btn-success btn-sm" href="javascript:void(0);"
                                                 onclick="axiosModal('/trip/create')">
