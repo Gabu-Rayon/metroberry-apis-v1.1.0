@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\VehicleImport;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Driver;
@@ -12,9 +13,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Gate;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Validator;
 
 
 
@@ -1053,6 +1055,45 @@ class VehicleController extends Controller
             Log::error('VEHICLE DRIVER ERROR');
             Log::error($e);
             return redirect()->back()->with('error', 'An error occurred');
+        }
+    }
+
+    public function importFile()
+    {
+        return view('vehicle.importVehicle');
+    }
+
+
+    public function import(Request $request)
+    {
+        // Validation rules
+        $rules = [
+            'file' => 'required|mimes:csv,txt,xlsx',
+        ];
+
+        // Validate the request
+        $validator = Validator::make($request->all(), $rules);
+
+        // If validation fails, redirect back with error message
+        if ($validator->fails()) {
+            return redirect()->back()->with('error', $validator->errors()->first());
+        }
+
+        try {
+            // Import the file using the DriverImport class
+            Excel::import(new VehicleImport, $request->file('file'));
+
+            // Log the import action
+            Log::info('Data from Driver CSV File being Imported: ', ['file' => $request->file('file')]);
+
+            // Redirect back with success message
+            return redirect()->back()->with('success', 'Records imported successfully.');
+        } catch (Exception $e) {
+            // Log the error
+            Log::error('Error importing Drivers: ' . $e->getMessage());
+
+            // Redirect back with error message
+            return redirect()->back()->with('error', 'An error occurred while importing the Driver records.');
         }
     }
 }

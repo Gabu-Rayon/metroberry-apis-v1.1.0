@@ -35,6 +35,15 @@
     max-width: 100%;
   }
 }
+/* Styles for smaller and rounded checkbox */
+.small-rounded-checkbox {
+    width: 15px;           
+    height: 15px;        
+    border-radius: 50%;    
+    accent-color: #007bff; 
+    cursor: pointer;       
+}
+
 .chat-area-bottom .form-control {
   padding: 10px 50px 10px 20px;
 }

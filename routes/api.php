@@ -104,3 +104,7 @@ Route::post('invoice', [TripInvoiceController::class, 'store'])->middleware(['au
 Route::put('invoices/{invoice}', [TripInvoiceController::class, 'update'])->middleware(['auth:sanctum', 'can:edit invoice']);
 Route::delete('invoices/{invoice}', [TripInvoiceController::class, 'destroy'])->middleware(['auth:sanctum', 'can:delete invoice']);
 Route::get('invoices/{invoice}', [TripInvoiceController::class, 'show'])->middleware(['auth:sanctum', 'can:show invoice']);
+
+
+
+Route::get('/routes/{route}/locations', [RouteController::class, 'getRouteLocations']);

@@ -293,7 +293,7 @@ Route::get('driver/import', [DriverController::class, 'importFile'])
     ->name('driver.import')
     ->middleware('auth', 'can:import drivers');
 
-Route::get('driver/import/store', [DriverController::class, 'import'])
+Route::post('driver/import/store', [DriverController::class, 'import'])
     ->name('driver.import.store')
     ->middleware('auth', 'can:import drivers');
 /**
@@ -763,7 +763,7 @@ Route::get('trip/{id}/destroy', [TripController::class, 'destroy'])
     ->name('trip.destroy')
     ->middleware('auth', 'can:delete trip');
 
-Route::get('trips/scheduled', [TripController::class, 'tripScheduled'])
+Route::any('trips/scheduled', [TripController::class, 'tripScheduled'])
     ->name('trip.scheduled')
     ->middleware('auth', 'can:view trips');
 
@@ -1725,8 +1725,6 @@ Route::get('billed/trip/{id}/download/invoice', [TripPaymentController::class, '
     ->name('billed.trip.download.invoice.receipt')
     ->middleware('auth', 'can:bill trip');
 
-
-
 /***
  *
  * Settings Routes
@@ -1843,3 +1841,8 @@ Route::get('get-vehicle/{id}', function ($id) {
     return response()->json($vehicle);
 
 });
+
+
+
+Route::post('/trip/scheduled/filter', [TripController::class, 'filterScheduledTrips'])->name('trip.scheduled.filter');
+Route::get('/trip/route-locations', [TripController::class, 'getRouteLocations'])->name('trip.route.locations');
