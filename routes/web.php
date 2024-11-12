@@ -893,7 +893,7 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->name('profile.update')
-        ->middleware('can:update profile');
+        ->middleware('can:edit profile');
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy')
