@@ -98,6 +98,7 @@ class CustomerAppController extends Controller
                 'regex:/[@$!%*#?&]/'
             ],
             'organisation' => 'required|exists:organisations,id',
+            'address' => 'required',
         ], [
             'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
         ]);

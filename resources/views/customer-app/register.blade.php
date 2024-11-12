@@ -119,7 +119,18 @@
                             </div>
                         </div>
                         <!--Sign Up Input Field End-->
-
+                             <!--Sign Up Input Field Start-->
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span><img src="{{ asset('mobile-app-assets/icons/envelope.svg') }}"
+                                            alt="Envelope Icon"></span>
+                                </div>
+                                <input class="form-control" type="text" autocomplete="on" name="address"
+                                    placeholder="Home Address i.e Benkey estate" value ="{{ old('address') }}">
+                            </div>
+                        </div>
+                        <!--Sign Up Input Field End-->
 
                         <!--Pickup organisations Field Start-->
                         <div class="form-group">

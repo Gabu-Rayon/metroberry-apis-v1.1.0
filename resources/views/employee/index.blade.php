@@ -269,8 +269,8 @@
                                         <i class="text-danger">*</i>
                                     </label>
                                     <div class="col-sm-8">
-                                        <input name="address" class="form-control" type="text" placeholder="Address"
-                                            id="address" required value="{{ old('address') }}" />
+                                        <input name="address" class="form-control" type="text" placeholder="Home Address i.e Benkey estate"
+                                            required value="{{ old('address') }}" />
                                     </div>
                                 </div>
 
