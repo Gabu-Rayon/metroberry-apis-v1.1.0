@@ -678,8 +678,12 @@ Route::get('route/export', [RouteController::class, 'export'])
     ->name('route.export')
     ->middleware('auth', 'can:export routes');
 
-Route::get('route/import', [RouteController::class, 'import'])
+Route::get('route/import', [RouteController::class, 'importFile'])
     ->name('route.import')
+    ->middleware('auth', 'can:import routes');
+
+Route::post('route/import/store', [RouteController::class, 'import'])
+    ->name('route.import.store')
     ->middleware('auth', 'can:import routes');
 
 /**
@@ -709,10 +713,14 @@ Route::get('route/location/export', [RouteLocationsController::class, 'export'])
     ->name('route.location.export')
     ->middleware('auth', 'can:export route locations');
 
-Route::get('route/location/import', [RouteLocationsController::class, 'import'])
-    ->name('route.location.import')
-    ->middleware('auth', 'can:import route locations');
 
+Route::get('route/location/import', [RouteLocationsController::class, 'importFile'])
+    ->name('route.location.import')
+    ->middleware('auth', 'can:create route location');
+
+Route::post('route/location/import/store', [RouteLocationsController::class, 'import'])
+    ->name('route.location.import.store')
+    ->middleware('auth', 'can:create route location');
 
 
 //  Routes Location edit and deletion 

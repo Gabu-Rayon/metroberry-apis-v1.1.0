@@ -30,7 +30,8 @@
                                                 @endif
                                                 <span class='m-1'></span>
                                                 @if (Auth::user()->can('import routes'))
-                                                    <a class="btn btn-success btn-sm" href="{{ route('route.import') }}"
+                                                    <a class="btn btn-success btn-sm" href="javascript:void(0);"
+                                                        onclick="axiosModal('route/import')"
                                                         title="Import From csv excel file">
                                                         <i class="fa-solid fa-file-arrow-up"></i>&nbsp; Import
                                                     </a>
@@ -107,7 +108,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
                     <div class="overlay"></div>
                     @include('components.footer')

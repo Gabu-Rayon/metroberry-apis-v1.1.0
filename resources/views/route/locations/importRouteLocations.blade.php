@@ -1,10 +1,10 @@
-<form action="{{ route('route.import.store') }}" method="POST" class="needs-validation modal-content"
+<form action="{{ route('route.location.import.store') }}" method="POST" class="needs-validation modal-content"
     enctype="multipart/form-data">
     @csrf
     @METHOD('POST')
     <div class="card-header my-3 p-2 border-bottom">
         <h2 class="text-danger text-center">This Functionality is Under development !</h2>
-        <h4>Import Routes' CSV file</h4>
+        <h4>Import Route Locations' CSV file</h4>
 
     </div>
     <div class="modal-body">

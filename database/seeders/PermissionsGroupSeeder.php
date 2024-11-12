@@ -151,6 +151,8 @@ class PermissionsGroupSeeder extends Seeder
                 'edit route location',
                 'delete route location',
                 'update route location',
+                'import route locations',
+                'export route locations'
             ],
             'trip' => [
                 'view trip',

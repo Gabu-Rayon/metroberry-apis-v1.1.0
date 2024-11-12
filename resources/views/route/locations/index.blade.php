@@ -34,11 +34,10 @@
                                                 @endif
                                                 <span class='m-1'></span>
                                                 @if (Auth::user()->can('import route locations'))
-                                                    <a class="btn btn-success btn-sm"
-                                                        href="{{ route('route.location.import') }}"
+                                                    <a class="btn btn-success btn-sm" href="javascript:void(0);"
+                                                        onclick="axiosModal('{{ route('route.location.import') }}')"
                                                         title="Import From csv excel file">
-                                                        <i class="fa-solid fa-file-arrow-up"></i>&nbsp;
-                                                        Import
+                                                        <i class="fa-solid fa-file-arrow-up"></i>&nbsp; Import
                                                     </a>
                                                 @endif
                                                 <span class="m-1"></span>
