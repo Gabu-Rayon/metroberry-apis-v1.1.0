@@ -34,6 +34,12 @@
                                 </button>
                             </form>
                         </div>
+                       <div class="text-center p-6">
+                        <a class="btn btn-success mt-3 " href="{{ route('sign.up.options.page') }}">
+                            <i class="typcn typcn-arrow-back-outline mr-1"></i>
+                            Home
+                        </a>
+                    </div>
 
                         <x-auth-session-status class="mb-4" :status="session('status')" />
 
