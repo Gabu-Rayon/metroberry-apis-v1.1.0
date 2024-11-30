@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
         $adminData = [
             'name' => 'MetroBerry Admin',
             'email' => 'admin@metroberry.co.ke',
-            'password' => bcrypt('123456'),
+            'password' => bcrypt('N#NFI+gnwWC['),
             'phone' => '0708373982',
             'address' => 'Nairobi, Kenya',
             'role' => 'admin',
