@@ -124,7 +124,9 @@ class PSVBadgeController extends Controller
 
             PSVBadge::create([
                 'driver_id' => $data['driver'],
+                
                 'psv_badge_no' => $badgeNumber,
+                
                 'psv_badge_date_of_issue' => $data['issue_date'],
                 'psv_badge_date_of_expiry' => $data['expiry_date'],
                 'psv_badge_avatar' => $badgePath,
