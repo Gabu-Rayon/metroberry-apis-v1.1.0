@@ -26,6 +26,7 @@ class ImageDimensions implements Rule
     public function passes($attribute, $value)
     {
         if (!$this->otherImage) {
+            
             return true;
         }
 

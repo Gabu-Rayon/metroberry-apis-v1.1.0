@@ -204,6 +204,7 @@ class DriverController extends Controller
         }
 
         // Handle back ID upload
+        
         if ($request->hasFile('back_page_id')) {
             $backIdFile = $request->file('back_page_id');
             $backIdExtension = $backIdFile->getClientOriginalExtension();
@@ -211,6 +212,7 @@ class DriverController extends Controller
             $backIdPath = 'uploads/back-page-ids/' . $backIdFileName;
             $backIdFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($backIdPath), $backIdFileName);
         }
+        
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
