@@ -459,7 +459,7 @@ class CustomerAppController extends Controller
 //     $customer->national_id_no = $request->input('national_id_no');
 
     //     // Base path for uploads
-//     $baseUploadPath = 'public_html_metroberry_app/uploads';
+//     $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
 
     //     // Handle profile picture upload
 //     if ($request->hasFile('profile_picture')) {
@@ -557,7 +557,7 @@ class CustomerAppController extends Controller
 
 
         // Base path for uploads
-        $baseUploadPath = 'public_html_metroberry_app';
+        $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app';
 
         // Function to create directory if it doesn't exist
         $createDirIfNotExists = function ($path) {
@@ -825,7 +825,7 @@ class CustomerAppController extends Controller
         if ($request->hasFile('profile_picture')) {
             // Check if the old profile picture exists and delete it if necessary
             if ($customer->user->avatar) {
-                $oldProfilePath = 'public_html_metroberry_app/' . $customer->user->avatar;
+                $oldProfilePath = '/home/kknuicdz/public_html_metroberry_app/' . $customer->user->avatar;
                 if (file_exists($oldProfilePath)) {
                     unlink($oldProfilePath); // Delete the old profile picture
                 }
@@ -836,7 +836,7 @@ class CustomerAppController extends Controller
             $directory = 'uploads/user-avatars/' . $user->id . '/';
 
             // Ensure the directory exists
-            $fullDirectoryPath = 'public_html_metroberry_app/' . $directory;
+            $fullDirectoryPath = '/home/kknuicdz/public_html_metroberry_app/' . $directory;
             if (!is_dir($fullDirectoryPath)) {
                 mkdir($fullDirectoryPath, 0755, true); // Create directory if it doesn't exist
             }

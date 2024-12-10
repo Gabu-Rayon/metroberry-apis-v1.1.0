@@ -117,7 +117,7 @@ class PSVBadgeController extends Controller
                 $badgeExtension = $badgeFile->getClientOriginalExtension();
                 $badgeFileName = "{$badgeNumber}-back-id.{$badgeExtension}";
                 // Store the avatar directly in the specified directory
-                $badgeFilePath = 'public_html_metroberry_app/uploads/psvbadge-avatars';
+                $badgeFilePath = '/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars';
                 $badgeFile->move($badgeFilePath, $badgeFileName);
                 $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName;
             }
@@ -265,8 +265,8 @@ class PSVBadgeController extends Controller
             // Handle new avatar upload
             if ($request->hasFile('psv_badge_avatar')) {
                 // Delete old avatar if exists
-                if ($badgePath && file_exists('public_html_metroberry_app/' . $badgePath)) {
-                    unlink('public_html_metroberry_app/' . $badgePath);
+                if ($badgePath && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $badgePath)) {
+                    unlink('/home/kknuicdz/public_html_metroberry_app/' . $badgePath);
                 }
 
                 $badgeFile = $request->file('psv_badge_avatar');
@@ -274,7 +274,7 @@ class PSVBadgeController extends Controller
                 $badgeFileName = "{$badgeNumber}-back-id.{$badgeExtension}";
 
                 // Define the path in the specified directory
-                $publicPath = 'public_html_metroberry_app/uploads/psvbadge-avatars';
+                $publicPath = '/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars';
                 // Create the directory if it doesn't exist
                 if (!file_exists($publicPath)) {
                     mkdir($publicPath, 0755, true);
@@ -364,7 +364,7 @@ class PSVBadgeController extends Controller
             DB::beginTransaction();
 
             // Get the avatar path and delete the file if it exists
-            $avatarPath = 'public_html_metroberry_app/' . $psvbadge->psv_badge_avatar;
+            $avatarPath = '/home/kknuicdz/public_html_metroberry_app/' . $psvbadge->psv_badge_avatar;
             if (file_exists($avatarPath)) {
                 unlink($avatarPath); // Delete the file
             }

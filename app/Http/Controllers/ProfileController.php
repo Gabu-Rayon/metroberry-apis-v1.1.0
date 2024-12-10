@@ -132,8 +132,8 @@ class ProfileController extends Controller
                 }
             }
 
-            // Define the path to the public_html_metroberry_app directory
-            $avatarDirectory = 'public_html_metroberry_app/avatars'; // Adjust the path as necessary
+            // Define the path to the /home/kknuicdz/public_html_metroberry_app directory
+            $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/avatars'; // Adjust the path as necessary
 
             // Create the directory if it doesn't exist
             if (!file_exists($avatarDirectory)) {
