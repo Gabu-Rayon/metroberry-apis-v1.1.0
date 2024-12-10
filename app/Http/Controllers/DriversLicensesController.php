@@ -134,7 +134,7 @@ class DriversLicensesController extends Controller
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
                 $frontLicenseFileName = "{$licenseNumber}-front-id.{$frontLicenseExtension}";
                 // Move the file to the specified directory
-                $frontLicensePath = 'uploads/front-license-pics/' . $frontLicenseFileName;
+                $frontLicensePath = '/home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics/' . $frontLicenseFileName;
                 $frontLicenseFile->move('/home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName);
             }
 
@@ -144,7 +144,7 @@ class DriversLicensesController extends Controller
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
                 $backLicenseFileName = "{$licenseNumber}-back-id.{$backLicenseExtension}";
                 // Move the file to the specified directory
-                $backLicensePath = 'uploads/back-license-pics/' . $backLicenseFileName;
+                $backLicensePath = '/home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics/' . $backLicenseFileName;
                 $backLicenseFile->move('/home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName);
             }
 
@@ -155,8 +155,8 @@ class DriversLicensesController extends Controller
                 'driving_license_no' => $licenseNumber,
                 'driving_license_date_of_issue' => $data['issue_date'],
                 'driving_license_date_of_expiry' => $data['expiry_date'],
-                'driving_license_avatar_front' => $frontLicenseFile,
-                'driving_license_avatar_back' => $backLicenseFile,
+                'driving_license_avatar_front' => $frontLicensePath,
+                'driving_license_avatar_back' => $backLicensePath,
             ]);
 
             DB::commit();
@@ -326,8 +326,8 @@ class DriversLicensesController extends Controller
             $license->update([
                 'driving_license_date_of_issue' => $data['driving_license_date_of_issue'],
                 'driving_license_date_of_expiry' => $data['driving_license_date_of_expiry'],
-                'driving_license_avatar_front' => $frontLicenseFile,
-                'driving_license_avatar_back' => $backLicenseFile,
+                'driving_license_avatar_front' => $frontLicensePath,
+                'driving_license_avatar_back' => $backLicensePath,
                 'verified' => false
             ]);
 
@@ -344,7 +344,6 @@ class DriversLicensesController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
-
 
 
     public function delete($id)
@@ -408,11 +407,6 @@ class DriversLicensesController extends Controller
             // Find the license by ID
             $license = DriversLicenses::findOrFail($id);
             $driver = $license->driver;
-
-            // Check if the license is found
-            if (!$license) {
-                return redirect()->back()->with('error', 'License not found');
-            }
 
             // Start a database transaction
             DB::beginTransaction();
