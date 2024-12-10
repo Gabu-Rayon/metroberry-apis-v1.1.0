@@ -51,7 +51,7 @@ class DriverController extends Controller
     }
 
     // public function store(Request $request) {
-        
+
     //     try {
 
 
@@ -157,114 +157,115 @@ class DriverController extends Controller
     //     }
     // }
 
-    public function store(Request $request) {
-    try {
-        $data = $request->all();
+    public function store(Request $request)
+    {
+        try {
+            $data = $request->all();
 
-        $validator = Validator::make($data, [
-            'name' => 'required|string',
-            'phone' => 'required|string',
-            'organisation' => 'required|string',
-            'email' => 'required|email|unique:users,email',
-            'address' => 'nullable|string',
-            'national_id' => 'required|string',
-            'front_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
-            'back_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
-            'password' => 'required|string',
-            'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp,jfif',
-        ]);
+            $validator = Validator::make($data, [
+                'name' => 'required|string',
+                'phone' => 'required|string',
+                'organisation' => 'required|string',
+                'email' => 'required|email|unique:users,email',
+                'address' => 'nullable|string',
+                'national_id' => 'required|string',
+                'front_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
+                'back_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
+                'password' => 'required|string',
+                'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp,jfif',
+            ]);
 
-        if ($validator->fails()) {
-            Log::error('VALIDATION ERROR');
-            Log::error($validator->errors());
-            return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+            if ($validator->fails()) {
+                Log::error('VALIDATION ERROR');
+                Log::error($validator->errors());
+                return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+            }
+
+            DB::beginTransaction();
+
+            $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
+
+            if (!$organisation) {
+                return redirect()->back()->with('error', 'Organisation not found')->withInput();
+            }
+
+            $frontIdPath = null;
+            $backIdPath = null;
+            $avatarPath = null;
+            $email = $data['email'];
+            $generatedPassword = $data['password'];
+
+            // Handle front ID upload
+            if ($request->hasFile('front_page_id')) {
+                $frontIdFile = $request->file('front_page_id');
+                $frontIdExtension = $frontIdFile->getClientOriginalExtension();
+                $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+                $frontIdPath = 'uploads/front-page-ids/' . $frontIdFileName;
+                $frontIdFile->move('public_html_metroberry_app/' . dirname($frontIdPath), $frontIdFileName);
+            }
+
+            // Handle back ID upload
+
+            if ($request->hasFile('back_page_id')) {
+                $backIdFile = $request->file('back_page_id');
+                $backIdExtension = $backIdFile->getClientOriginalExtension();
+                $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+                $backIdPath = 'uploads/back-page-ids/' . $backIdFileName;
+                $backIdFile->move('public_html_metroberry_app/' . dirname($backIdPath), $backIdFileName);
+            }
+
+
+            // Handle avatar upload
+            if ($request->hasFile('avatar')) {
+                $avatarFile = $request->file('avatar');
+                $avatarExtension = $avatarFile->getClientOriginalExtension();
+                $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+                $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
+                $avatarFile->move('public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
+            }
+
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => bcrypt($data['password']),
+                'phone' => $data['phone'],
+                'address' => $data['address'],
+                'avatar' => $avatarPath,
+                'created_by' => Auth::user()->id,
+                'role' => 'driver',
+            ]);
+
+            $user->assignRole('driver');
+
+            Driver::create([
+                'created_by' => Auth::user()->id,
+                'user_id' => $user->id,
+                'organisation_id' => $organisation->id,
+                'national_id_no' => $data['national_id'],
+                'national_id_front_avatar' => $frontIdPath,
+                'national_id_behind_avatar' => $backIdPath,
+            ]);
+
+            DB::commit();
+
+            // Send email with the plain password
+            Mail::send('mail-view.driver-welcome-mail', [
+                'driver' => $user->name,
+                'email' => $user->email,
+                'password' => $generatedPassword
+            ], function ($message) use ($user) {
+                $message->to($user->email)
+                    ->subject('Your Account Created');
+            });
+
+            return redirect()->route('driver')->with('success', 'Driver created successfully');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('CREATE DRIVER ERROR');
+            Log::error($e);
+            return redirect()->back()->with('error', 'An error occurred')->withInput();
         }
-
-        DB::beginTransaction();
-
-        $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
-
-        if (!$organisation) {
-            return redirect()->back()->with('error', 'Organisation not found')->withInput();
-        }
-
-        $frontIdPath = null;
-        $backIdPath = null;
-        $avatarPath = null;
-        $email = $data['email'];
-        $generatedPassword = $data['password'];
-
-        // Handle front ID upload
-        if ($request->hasFile('front_page_id')) {
-            $frontIdFile = $request->file('front_page_id');
-            $frontIdExtension = $frontIdFile->getClientOriginalExtension();
-            $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
-            $frontIdPath = 'uploads/front-page-ids/' . $frontIdFileName;
-            $frontIdFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($frontIdPath), $frontIdFileName);
-        }
-
-        // Handle back ID upload
-        
-        if ($request->hasFile('back_page_id')) {
-            $backIdFile = $request->file('back_page_id');
-            $backIdExtension = $backIdFile->getClientOriginalExtension();
-            $backIdFileName = "{$email}-back-id.{$backIdExtension}";
-            $backIdPath = 'uploads/back-page-ids/' . $backIdFileName;
-            $backIdFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($backIdPath), $backIdFileName);
-        }
-        
-
-        // Handle avatar upload
-        if ($request->hasFile('avatar')) {
-            $avatarFile = $request->file('avatar');
-            $avatarExtension = $avatarFile->getClientOriginalExtension();
-            $avatarFileName = "{$email}-avatar.{$avatarExtension}";
-            $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
-            $avatarFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
-        }
-
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-            'phone' => $data['phone'],
-            'address' => $data['address'],
-            'avatar' => $avatarPath,
-            'created_by' => Auth::user()->id,
-            'role' => 'driver',
-        ]);
-
-        $user->assignRole('driver');
-
-        Driver::create([
-            'created_by' => Auth::user()->id,
-            'user_id' => $user->id,
-            'organisation_id' => $organisation->id,
-            'national_id_no' => $data['national_id'],
-            'national_id_front_avatar' => $frontIdPath,
-            'national_id_behind_avatar' => $backIdPath,
-        ]);
-
-        DB::commit();
-
-        // Send email with the plain password
-        Mail::send('mail-view.driver-welcome-mail', [
-            'driver' => $user->name,
-            'email' => $user->email,
-            'password' => $generatedPassword
-        ], function ($message) use ($user) {
-            $message->to($user->email)
-                ->subject('Your Account Created');
-        });
-
-        return redirect()->route('driver')->with('success', 'Driver created successfully');
-    } catch (Exception $e) {
-        DB::rollBack();
-        Log::error('CREATE DRIVER ERROR');
-        Log::error($e);
-        return redirect()->back()->with('error', 'An error occurred')->withInput();
     }
-}
 
 
     /**
@@ -274,7 +275,7 @@ class DriverController extends Controller
     {
         try {
             $driver = Driver::with('vehicle')->findOrFail($id);
-    
+
             return response()->json([
                 'driver' => $driver
             ], 200);
@@ -287,7 +288,7 @@ class DriverController extends Controller
             ], 500);
         }
     }
-    
+
 
     public function create()
     {
@@ -442,7 +443,7 @@ class DriverController extends Controller
     //             $backIdFile->move($backIdDirectory, $backIdFileName);
     //             $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
     //         }
-            
+
     //         $driver->save();
     //         $user->save();
 
@@ -458,154 +459,154 @@ class DriverController extends Controller
     // }
 
     public function update(Request $request, $id)
-{
-    try {
-        $driver = Driver::find($id);
-        $user = User::find($driver->user_id);
-        $data = $request->all();
-        $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
+    {
+        try {
+            $driver = Driver::find($id);
+            $user = User::find($driver->user_id);
+            $data = $request->all();
+            $organisation = Organisation::where('organisation_code', $data['organisation'])->first();
 
-        if (!$driver) {
-            return redirect()->back()->with('error', 'Driver not found');
-        }
+            if (!$driver) {
+                return redirect()->back()->with('error', 'Driver not found');
+            }
 
-        if (!$user) {
-            return redirect()->back()->with('error', 'User not found');
-        }
+            if (!$user) {
+                return redirect()->back()->with('error', 'User not found');
+            }
 
-        if (!$organisation) {
-            return redirect()->back()->with('error', 'Organisation not found');
-        }
+            if (!$organisation) {
+                return redirect()->back()->with('error', 'Organisation not found');
+            }
 
-        $validator = Validator::make($data, [
-            'name' => 'required|string',
-            'phone' => 'required|string',
-            'organisation' => 'required|string',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'address' => 'nullable|string',
-            'national_id_no' => 'required|string',
-            'front_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
-            'back_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
-            'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
-        ]);
+            $validator = Validator::make($data, [
+                'name' => 'required|string',
+                'phone' => 'required|string',
+                'organisation' => 'required|string',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'address' => 'nullable|string',
+                'national_id_no' => 'required|string',
+                'front_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+                'back_page_id' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+                'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+            ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->with('error', $validator->errors()->first())->withInput();
-        }
+            if ($validator->fails()) {
+                return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+            }
 
-        Log::info('UPDATE DRIVER');
-        Log::info($data);
+            Log::info('UPDATE DRIVER');
+            Log::info($data);
 
-        Log::info('DRIVER');
-        Log::info($driver);
+            Log::info('DRIVER');
+            Log::info($driver);
 
-        DB::beginTransaction();
+            DB::beginTransaction();
 
-        $user->name = $data['name'];
-        $user->email = $data['email'];
-        $user->phone = $data['phone'];
-        $user->address = $data['address'];
-        $driver->national_id_no = $data['national_id_no'];
+            $user->name = $data['name'];
+            $user->email = $data['email'];
+            $user->phone = $data['phone'];
+            $user->address = $data['address'];
+            $driver->national_id_no = $data['national_id_no'];
 
-        $email = $data['email'];
-        $avatarPath = null;
-        $frontIdPath = null;
-        $backIdPath = null;
+            $email = $data['email'];
+            $avatarPath = null;
+            $frontIdPath = null;
+            $backIdPath = null;
 
-        // Update avatar if a new file is uploaded
-        if ($request->hasFile('avatar')) {
-            // Check if the user already has an avatar and delete it
-            if ($user->avatar) {
-                $oldAvatarPath = '/home/kknuicdz/public_html_metroberry_app/' . $user->avatar;
-                if (file_exists($oldAvatarPath)) {
-                    unlink($oldAvatarPath); // Delete the old avatar
+            // Update avatar if a new file is uploaded
+            if ($request->hasFile('avatar')) {
+                // Check if the user already has an avatar and delete it
+                if ($user->avatar) {
+                    $oldAvatarPath = 'public_html_metroberry_app/' . $user->avatar;
+                    if (file_exists($oldAvatarPath)) {
+                        unlink($oldAvatarPath); // Delete the old avatar
+                    }
                 }
-            }
 
-            $avatarFile = $request->file('avatar');
-            $avatarExtension = $avatarFile->getClientOriginalExtension();
-            $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+                $avatarFile = $request->file('avatar');
+                $avatarExtension = $avatarFile->getClientOriginalExtension();
+                $avatarFileName = "{$email}-avatar.{$avatarExtension}";
 
-            // Define the directory for the avatar
-            $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars';
+                // Define the directory for the avatar
+                $avatarDirectory = 'public_html_metroberry_app/uploads/user-avatars';
 
-            // Ensure the directory exists
-            if (!is_dir($avatarDirectory)) {
-                mkdir($avatarDirectory, 0755, true); // Create directory if it doesn't exist
-            }
-
-            // Move the file to the uploads/user-avatars directory
-            $avatarFile->move($avatarDirectory, $avatarFileName);
-            $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
-        }
-
-        // Update front ID if a new file is uploaded
-        if ($request->hasFile('front_page_id')) {
-            // Check if the driver already has a front ID and delete it
-            if ($driver->national_id_front_avatar) {
-                $oldFrontIdPath = '/home/kknuicdz/public_html_metroberry_app/' . $driver->national_id_front_avatar;
-                if (file_exists($oldFrontIdPath)) {
-                    unlink($oldFrontIdPath); // Delete the old front ID
+                // Ensure the directory exists
+                if (!is_dir($avatarDirectory)) {
+                    mkdir($avatarDirectory, 0755, true); // Create directory if it doesn't exist
                 }
+
+                // Move the file to the uploads/user-avatars directory
+                $avatarFile->move($avatarDirectory, $avatarFileName);
+                $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
             }
 
-            $frontIdFile = $request->file('front_page_id');
-            $frontIdExtension = $frontIdFile->getClientOriginalExtension();
-            $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
-
-            // Define the directory for the front ID
-            $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids';
-
-            // Ensure the directory exists
-            if (!is_dir($frontIdDirectory)) {
-                mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
-            }
-
-            // Move the file to the uploads/front-page-ids directory
-            $frontIdFile->move($frontIdDirectory, $frontIdFileName);
-            $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
-        }
-
-        // Update back ID if a new file is uploaded
-        if ($request->hasFile('back_page_id')) {
-            // Check if the driver already has a back ID and delete it
-            if ($driver->national_id_behind_avatar) {
-                $oldBackIdPath = '/home/kknuicdz/public_html_metroberry_app/' . $driver->national_id_behind_avatar;
-                if (file_exists($oldBackIdPath)) {
-                    unlink($oldBackIdPath); // Delete the old back ID
+            // Update front ID if a new file is uploaded
+            if ($request->hasFile('front_page_id')) {
+                // Check if the driver already has a front ID and delete it
+                if ($driver->national_id_front_avatar) {
+                    $oldFrontIdPath = 'public_html_metroberry_app/' . $driver->national_id_front_avatar;
+                    if (file_exists($oldFrontIdPath)) {
+                        unlink($oldFrontIdPath); // Delete the old front ID
+                    }
                 }
+
+                $frontIdFile = $request->file('front_page_id');
+                $frontIdExtension = $frontIdFile->getClientOriginalExtension();
+                $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+
+                // Define the directory for the front ID
+                $frontIdDirectory = 'public_html_metroberry_app/uploads/front-page-ids';
+
+                // Ensure the directory exists
+                if (!is_dir($frontIdDirectory)) {
+                    mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
+                }
+
+                // Move the file to the uploads/front-page-ids directory
+                $frontIdFile->move($frontIdDirectory, $frontIdFileName);
+                $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
             }
 
-            $backIdFile = $request->file('back_page_id');
-            $backIdExtension = $backIdFile->getClientOriginalExtension();
-            $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+            // Update back ID if a new file is uploaded
+            if ($request->hasFile('back_page_id')) {
+                // Check if the driver already has a back ID and delete it
+                if ($driver->national_id_behind_avatar) {
+                    $oldBackIdPath = 'public_html_metroberry_app/' . $driver->national_id_behind_avatar;
+                    if (file_exists($oldBackIdPath)) {
+                        unlink($oldBackIdPath); // Delete the old back ID
+                    }
+                }
 
-            // Define the directory for the back ID
-            $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids';
+                $backIdFile = $request->file('back_page_id');
+                $backIdExtension = $backIdFile->getClientOriginalExtension();
+                $backIdFileName = "{$email}-back-id.{$backIdExtension}";
 
-            // Ensure the directory exists
-            if (!is_dir($backIdDirectory)) {
-                mkdir($backIdDirectory, 0755, true); // Create directory if it doesn't exist
+                // Define the directory for the back ID
+                $backIdDirectory = 'public_html_metroberry_app/uploads/back-page-ids';
+
+                // Ensure the directory exists
+                if (!is_dir($backIdDirectory)) {
+                    mkdir($backIdDirectory, 0755, true); // Create directory if it doesn't exist
+                }
+
+                // Move the file to the uploads/back-page-ids directory
+                $backIdFile->move($backIdDirectory, $backIdFileName);
+                $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
             }
 
-            // Move the file to the uploads/back-page-ids directory
-            $backIdFile->move($backIdDirectory, $backIdFileName);
-            $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
+            $driver->save();
+            $user->save();
+
+            DB::commit();
+
+            return redirect()->route('driver')->with('success', 'Driver updated successfully');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('UPDATE DRIVER ERROR');
+            Log::error($e);
+            return redirect()->back()->with('error', 'An error occurred');
         }
-
-        $driver->save();
-        $user->save();
-
-        DB::commit();
-
-        return redirect()->route('driver')->with('success', 'Driver updated successfully');
-    } catch (Exception $e) {
-        DB::rollBack();
-        Log::error('UPDATE DRIVER ERROR');
-        Log::error($e);
-        return redirect()->back()->with('error', 'An error occurred');
     }
-}
 
 
     public function assignVehicleForm($id)

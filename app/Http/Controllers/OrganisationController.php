@@ -69,12 +69,12 @@ class OrganisationController extends Controller
             $cancelledTripsCount,
             $billedTripsCount,
         ])->options([
-            'backgroundColor' => ['#198754', '#0d6efd', '#dc3545', '#ffc107'],
-            'scales' => [
-                'y' => ['display' => false],
-                'x' => ['display' => false],
-            ],
-        ]);
+                    'backgroundColor' => ['#198754', '#0d6efd', '#dc3545', '#ffc107'],
+                    'scales' => [
+                        'y' => ['display' => false],
+                        'x' => ['display' => false],
+                    ],
+                ]);
 
         $today = Carbon::today()->toDateString();
 
@@ -257,7 +257,7 @@ class OrganisationController extends Controller
             if (app()->environment('local')) {
                 $baseUploadPath = public_path('uploads');
             } else {
-                $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
+                $baseUploadPath = 'public_html_metroberry_app/uploads';
             }
 
             // Store logo in the public folder
@@ -268,7 +268,7 @@ class OrganisationController extends Controller
                 $logoPath = 'company-logos/' . $logoFileName; // Store the relative path
                 $logoFile->move("{$baseUploadPath}/company-logos", $logoFileName); // Move the file to the public directory
             }
-            
+
             // Store organization certificate in the public folder
             if ($request->hasFile('organisation_certificate')) {
                 $certificateFile = $request->file('organisation_certificate');
@@ -325,8 +325,9 @@ class OrganisationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)    {
-        
+    public function show(string $id)
+    {
+
         Log::info('Fetching Organisation');
         $organisation = Organisation::where('id', $id)->first();
         Log::info('Organisation Fetched');
@@ -346,7 +347,7 @@ class OrganisationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    
+
     // public function update(Request $request, string $id)
     // {
     //     try {
@@ -451,7 +452,7 @@ class OrganisationController extends Controller
             $certificatePath = $organisation->certificate_of_organisation; // Keep the existing certificate path if not updated
 
             // Define the base path for uploads
-            $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
+            $baseUploadPath = 'public_html_metroberry_app/uploads';
 
             // Store logo in the public folder
             if ($request->hasFile('logo')) {
@@ -574,7 +575,7 @@ class OrganisationController extends Controller
             DB::beginTransaction();
 
             // Define file paths
-            $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
+            $baseUploadPath = 'public_html_metroberry_app/uploads';
             $certificatePath = "{$baseUploadPath}/organisation-certificates/{$user->email}-certificate.pdf"; // Adjust according to your naming convention
             $logoPath = "{$baseUploadPath}/company-logos/{$user->email}-avatar." . pathinfo($organisation->certificate_of_organisation, PATHINFO_EXTENSION); // Get the correct extension or naming convention
 

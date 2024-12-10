@@ -205,7 +205,7 @@ class MaintenanceServicePaymentController extends Controller
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
 
                 // Move the uploaded file to the specified path
-                $file->move('/home/kknuicdz/public_html_metroberry_app/maintenance_service_payment_receipts', $fileName);
+                $file->move('public_html_metroberry_app/maintenance_service_payment_receipts', $fileName);
                 // Store the relative path to the database
                 $maintenanceServicePayment->payment_receipt = 'maintenance_service_payment_receipts/' . $fileName;
             }
