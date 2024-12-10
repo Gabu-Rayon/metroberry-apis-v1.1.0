@@ -351,7 +351,7 @@ class TripPaymentController extends Controller
                 $file = $request->file('payment_receipt');
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
                 // Move the uploaded file to the specified path
-                $filePath = '/home/kknuicdz/portal_public_html/payment_receipts';
+                $filePath = '/home/kknuicdz/public_html_metroberry_app/payment_receipts';
                 // Create the directory if it doesn't exist
                 if (!file_exists($filePath)) {
                     mkdir($filePath, 0755, true);
@@ -406,7 +406,7 @@ class TripPaymentController extends Controller
             $totalAmount = $payments->sum('amount');
             $balance = $trip->total_price - $totalAmount;
 
-            $invoiceNumber  = $this->generateInvoiceNumber();
+            $invoiceNumber = $this->generateInvoiceNumber();
 
             // Fetch customer details
             $customer = $trip->customer;

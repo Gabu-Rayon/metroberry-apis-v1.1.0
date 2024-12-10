@@ -130,7 +130,7 @@ class NTSAInspectionCertificateController extends Controller
             $avatarFileName = "{$certNo}-inspection-certificate.{$avatarExtension}";
 
             // Define the path where the avatar will be stored
-            $baseUploadPath = '/home/kknuicdz/portal_public_html/uploads';
+            $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
             $avatarPath = "{$baseUploadPath}/ntsa-insp-cert-copies/{$avatarFileName}";
 
             // Create the directory if it doesn't exist
@@ -298,7 +298,7 @@ class NTSAInspectionCertificateController extends Controller
                 $avatarFileName = "{$certNo}-avatar.{$avatarExtension}";
 
                 // Define the path for the new avatar
-                $baseUploadPath = '/home/kknuicdz/portal_public_html/uploads';
+                $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
                 $avatarPath = "{$baseUploadPath}/ntsa-insp-cert-copies/{$avatarFileName}";
 
                 // Create the directory if it doesn't exist
@@ -465,7 +465,7 @@ class NTSAInspectionCertificateController extends Controller
             $certificate->vehicle->save();
 
             // Define the path to the avatar
-            $avatarPath = '/home/kknuicdz/portal_public_html/' . $certificate->ntsa_inspection_certificate_avatar;
+            $avatarPath = '/home/kknuicdz/public_html_metroberry_app/' . $certificate->ntsa_inspection_certificate_avatar;
 
             // Delete the associated image from the specified directory
             if (File::exists($avatarPath)) {
@@ -492,13 +492,14 @@ class NTSAInspectionCertificateController extends Controller
     {
         return Excel::download(new NTSAInspectionCertificateExport, 'ntsa-inspection-certificates.xlsx');
     }
-    public function renew ($id)
+    public function renew($id)
     {
         $certificate = NTSAInspectionCertificate::findOrFail($id);
         return view('vehicle.inspection-certificates.renew', compact('certificate'));
     }
 
-    public function renewPost($id) {
+    public function renewPost($id)
+    {
         try {
             $certificate = NTSAInspectionCertificate::findOrFail($id);
 
