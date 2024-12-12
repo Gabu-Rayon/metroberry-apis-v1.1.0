@@ -26,6 +26,8 @@
                 @else
                     <span>Vehicle Assigned Status</span>
                 @endif
+              <i class="font-italic text-muted">When assigned a registered vehicle, details will appear here!<br> Regsitration Closed For Now !</i>
+               
                 <a href="#">
                     <span class="float-right menu-open closed">
                         <img src="{{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon" />
