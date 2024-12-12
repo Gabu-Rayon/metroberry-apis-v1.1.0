@@ -26,7 +26,7 @@
                 @else
                     <span>Vehicle Assigned Status</span>
                 @endif
-              <a href="#">
+                <a href="#">
                     <span class="float-right menu-open closed">
                         <img src="{{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon" />
                     </span>
@@ -34,9 +34,10 @@
             </div>
             <br><br>
             <!--Page Title & Icons End-->
- <i class="font-italic text-muted">When assigned a registered vehicle, details will appear here!<br> Regsitration Closed For Now !</i>
-               
-               
+            <i class="font-italic text-muted text-center">When assigned a registered vehicle, <br>details will appear
+                here!<br> Registration Closed For Now !</i>
+
+
             <div class="rest-container">
                 <div class="address-title"></div>
 
@@ -170,7 +171,7 @@
                         <div class="text-center car-registration-container">
                             <h4>
                                 Please Upload Car Registration<br />
-                                 speed govenor Below
+                                speed govenor Below
                             </h4>
                         </div>
                         <!-- Upload Front License -->
