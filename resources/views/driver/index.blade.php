@@ -157,7 +157,7 @@
                                                                         <span class='m-1'></span>
                                                                         <a href="javascript:void(0);"
                                                                             class="btn btn-sm btn-danger"
-                                                                            onclick="deleteDriver({{ $driver->id }})"
+                                                                            onclick="axiosModal('driver/{{ $driver->id }}/delete')"
                                                                             title="Delete Driver">
                                                                             <i class="fas fa-trash"></i>
                                                                         </a>

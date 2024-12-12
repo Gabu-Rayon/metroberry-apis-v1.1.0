@@ -260,8 +260,13 @@ Route::post('driver/{id}/vehicle/assign', [DriverController::class, 'assignVehic
     ->name('driver.vehicle.assign')
     ->middleware('auth', 'can:assign vehicle');
 
+// Delete Driver modal form 
+Route::get('driver/{id}/delete', [DriverController::class, 'delete'])
+    ->name('driver.delete')
+    ->middleware('auth', 'can:delete driver');
+
 // Delete Driver
-Route::post('driver/{id}/delete', [DriverController::class, 'destroy'])
+Route::delete('driver/{id}/destroy', [DriverController::class, 'destroy'])
     ->name('driver.destroy')
     ->middleware('auth', 'can:delete driver');
 

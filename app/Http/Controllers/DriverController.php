@@ -18,6 +18,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\File;
 
 class DriverController extends Controller
 {
@@ -665,66 +666,6 @@ class DriverController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     * 
-     */
-    public function destroy($id)
-    {
-        try {
-            // Find the driver by ID
-            $driver = Driver::find($id);
-            if (!$driver) {
-                return redirect()->back()->with('error', 'Driver not found');
-            }
-
-            // Find the associated user
-            $user = User::find($driver->user_id);
-            if (!$user) {
-                return redirect()->back()->with('error', 'User not found');
-            }
-
-            // Begin the transaction
-            DB::beginTransaction();
-
-            // Delete associated files if they exist
-            if ($user->avatar) {
-                $oldAvatarPath = public_path($user->avatar);
-                if (file_exists($oldAvatarPath)) {
-                    unlink($oldAvatarPath); // Delete the old avatar file
-                }
-            }
-
-            if ($driver->national_id_front_avatar) {
-                $oldFrontIdPath = public_path($driver->national_id_front_avatar);
-                if (file_exists($oldFrontIdPath)) {
-                    unlink($oldFrontIdPath); // Delete the old front ID file
-                }
-            }
-
-            if ($driver->national_id_behind_avatar) {
-                $oldBackIdPath = public_path($driver->national_id_behind_avatar);
-                if (file_exists($oldBackIdPath)) {
-                    unlink($oldBackIdPath); // Delete the old back ID file
-                }
-            }
-
-            // Delete the driver and user records
-            $driver->delete();
-            $user->delete();
-
-            // Commit the transaction
-            DB::commit();
-
-            return redirect()->route('driver')->with('success', 'Driver deleted successfully');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('DELETE DRIVER ERROR: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred');
-        }
-    }
-
-
     public function driverPerformance()
     {
         $drivers = Driver::with('user', 'vehicle')->get();
@@ -908,6 +849,75 @@ class DriverController extends Controller
 
             // Redirect back with error message
             return redirect()->back()->with('error', 'An error occurred while importing the Driver records.');
+        }
+    }
+
+
+
+
+
+    public function delete($id)
+    {
+        $driver = Driver::findOrFail($id);
+
+        $user = User::find($driver->user_id);
+        return view('driver.delete', compact('driver', 'user'));
+    }
+
+    // Remove the specified resource from storage
+    /**
+     * Remove the specified resource from storage.
+     */
+       public function destroy(string $id)
+    {
+        try {
+            $driver = Driver::find($id);
+
+            if (!$driver) {
+                return redirect()->back()->with('error', 'driver not found');
+            }
+
+            $user = User::find($driver->user_id);
+
+            if (!$user) {
+                return redirect()->back()->with('error', 'User not found');
+            }
+
+            // Delete associated files
+            if ($user->avatar) {
+                $oldAvatarPath = '/home/kknuicdz/public_html_metroberry_app/' . $user->avatar;
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath); // Delete the old avatar
+                }
+            }
+
+            if ($driver->national_id_front_avatar) {
+                $oldFrontIdPath = '/home/kknuicdz/public_html_metroberry_app/' . $driver->national_id_front_avatar;
+                if (file_exists($oldFrontIdPath)) {
+                    unlink($oldFrontIdPath); // Delete the old front ID
+                }
+            }
+
+            if ($driver->national_id_behind_avatar) {
+                $oldBackIdPath = '/home/kknuicdz/public_html_metroberry_app/' . $driver->national_id_behind_avatar;
+                if (file_exists($oldBackIdPath)) {
+                    unlink($oldBackIdPath); // Delete the old back ID
+                }
+            }
+
+            DB::beginTransaction();
+
+            $driver->delete();
+            $user->delete();
+
+            DB::commit();
+
+            return redirect()->route('driver')->with('success', 'driver details deleted successfully!');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info('DELETE driver ERROR');
+            Log::info($e);
+            return redirect()->back()->with('error', 'An error occurred while deleting driver');
         }
     }
 }

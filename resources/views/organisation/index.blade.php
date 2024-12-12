@@ -131,7 +131,7 @@
                                                                 @if (\Auth::user()->can('delete organisation'))
                                                                     <a href="javascript:void(0);"
                                                                         class="btn btn-sm btn-danger"
-                                                                        onclick="deleteOrganisation('{{ $organisation->id }}')">
+                                                                        onclick="axiosModal('organisation/{{ $organisation->id }}/delete')">
                                                                         <i class="fas fa-trash"></i>
                                                                     </a>
                                                                 @endif
