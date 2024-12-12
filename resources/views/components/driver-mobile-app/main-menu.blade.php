@@ -49,7 +49,7 @@
                 <span class="menu-item-icon menu-light">
                     <img src="{{ asset('') }}mobile-app-assets/icons/my-wallet-light.svg" alt="Wallet Icon" />
                 </span>
-                <span class="menu-item-title">My Wallet</span>
+                <span class="menu-item-title">My Wallet <small class="text-danger"><i>coming soon</i></small> </span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
             <a class="menu-item" href="{{ route('driver.registration.page') }}">
@@ -71,7 +71,7 @@
                 <span class="menu-item-icon menu-light">
                     <img src="{{ asset('mobile-app-assets/icons/notification-light.svg') }}" alt="Notification Icon" />
                 </span>
-                <span class="menu-item-title">Notifications</span>
+                <span class="menu-item-title">Notifications <small class="text-danger"><i>coming soon</i></small></span>
                 <span class="notification-num">3</span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
@@ -119,7 +119,7 @@
                 <span class="menu-item-icon menu-light support">
                     <img src="{{ asset('mobile-app-assets/icons/support-light.svg') }}" alt="Support Lighter Icon" />
                 </span>
-                <span class="menu-item-title">Online Support</span>
+                <span class="menu-item-title">Online Support <small class="text-danger"><i>coming soon</i></small> </span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
             {{-- <a href="#" class="menu-item margin-top-auto">

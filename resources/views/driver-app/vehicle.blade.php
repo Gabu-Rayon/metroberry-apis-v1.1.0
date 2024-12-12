@@ -34,6 +34,7 @@
             </div>
             <br><br>
             <!--Page Title & Icons End-->
+            
             <i class="font-italic text-info text-muted text-center ">When assigned a registered vehicle, <br>details will appear
                 here!<br> Registration Closed For Now !</i>
 
