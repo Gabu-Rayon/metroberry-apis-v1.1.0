@@ -113,55 +113,6 @@ class RoleController extends Controller
     }
 
 
-
-
-    // public function store(Request $request)
-    // {
-    //     try {
-    //         // Validate the request data
-    //         $data = $request->validate([
-    //             'name' => 'required|string|unique:roles,name',
-    //             'permissions' => 'required|array',
-    //         ]);
-
-    //       Log::info('data from the form of creating new Role  with Permissions : ');
-   //        Log::info($data);
-
-
-    //         // Start a database transaction
-    //         DB::beginTransaction();
-
-    //         // Create a new role with guard_name set to 'web'
-    //         $role = Role::create([
-    //             'name' => $data['name'],
-    //             'guard_name' => 'web',
-    //         ]);
-
-    //         // Process permissions
-    //         $permissionIds = [];
-    //         foreach ($data['permissions'] as $permissionId) {
-    //             $permission = Permission::find($permissionId);
-    //             if ($permission) {
-    //                 $permissionIds[] = $permission->id;
-    //             }
-    //         }
-
-    //         // Attach permissions to the role
-    //         $role->syncPermissions($permissionIds);
-
-    //         // Commit the transaction
-    //         DB::commit();
-
-    //         return redirect()->route('roles.index')->with('success', 'Role created successfully');
-    //     } catch (Exception $e) {
-    //         // Rollback the transaction if something goes wrong
-    //         DB::rollBack();
-    //         Log::error('Error creating role: ' . $e->getMessage());
-    //         return redirect()->back()->with('error', 'An error occurred while creating the role. Please try again.')->withInput();
-    //     }
-    // }
-
-
     /**
      * Display the specified resource.
      */

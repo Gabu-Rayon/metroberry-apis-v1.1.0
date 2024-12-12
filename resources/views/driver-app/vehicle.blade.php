@@ -39,11 +39,12 @@
 
                 <!--Driver's License Fields Container Start-->
                 <div class="all-container all-container-with-classes">
-                    <form class="width-100" action="{{ route('driver.license.document.update', $driver->id) }}"
+                    <form class="width-100" action="{{ route('driver.vehicle.details.update', $driver->id) }}"
                         method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
 
+                        @csrf
+
+                        @method('PUT')
 
                         <div class="form-group">
                             <label class="width-100">
@@ -117,21 +118,14 @@
                             <label class="width-100">
                                 <span class="label-title">Car Registration Number</span>
                                 <input class="form-control text-input font-weight-light" type="text" autocomplete="off"
-                                    name="car-registration-num" value="{{ $driver->vehicle->plate_number ?? null }}" />
+                                    name="car_registration_num" value="{{ $driver->vehicle->plate_number ?? null }}" />
                             </label>
                         </div>
                         <div class="form-group">
                             <label class="width-100">
                                 <span class="label-title">Fuel Type</span>
                                 <input class="form-control text-input font-weight-light" type="text" autocomplete="off"
-                                    name="car-registration-num" value="{{ $driver->vehicle->fuel_type ?? null }}" />
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label class="width-100">
-                                <span class="label-title">Fuel Type</span>
-                                <input class="form-control text-input font-weight-light" type="text" autocomplete="off"
-                                    name="car-registration-num" value="{{ $driver->vehicle->fuel_type ?? null }}" />
+                                    name="car_fuel_type" value="{{ $driver->vehicle->fuel_type ?? null }}" />
                             </label>
                         </div>
                         <div class="form-group">
@@ -142,7 +136,7 @@
                                 <div class="input-group-prepend">
                                     <span class="far fa-calendar-alt"></span>
                                 </div>
-                                <input class="form-control" type="text" name="date"
+                                <input class="form-control" type="date" name="date_of_manufacture"
                                     value="{{ $driver->vehicle->year ?? null }}" />
                             </div>
                         </div>
@@ -153,7 +147,7 @@
                             <div class="input-group light-field">
                                 <div class="input-group-prepend">
                                 </div>
-                                <input class="form-control" type="text" name="date"
+                                <input class="form-control" type="text" name="manufacture_make"
                                     value="{{ $driver->vehicle->make ?? null }}" />
                             </div>
                         </div>
@@ -164,7 +158,7 @@
                             <div class="input-group light-field">
                                 <div class="input-group-prepend">
                                 </div>
-                                <input class="form-control" type="text" name="date"
+                                <input class="form-control" type="text" name="car_engine_size"
                                     value="{{ $driver->vehicle->engine_size ?? null }}" />
                             </div>
                         </div>
@@ -173,7 +167,7 @@
                         <div class="text-center car-registration-container">
                             <h4>
                                 Please Upload Car Registration<br />
-                                Certificate Below
+                                 speed govenor Below
                             </h4>
                         </div>
                         <!-- Upload Front License -->
@@ -183,7 +177,7 @@
                                     <span class="position-relative upload-btn">
                                         <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
                                         <input class="scan-prompt" type="file" accept="image/*"
-                                            name="license_front_avatar" id="national-id-front-input" />
+                                            name="speed_govenor_front_avatar" id="national-id-front-input" />
                                     </span>
                                     <span class="text-uppercase">FRONT</span>
                                     <span class="delete-btn" id="national-id-front-delete">
@@ -217,7 +211,7 @@
                                     <span class="position-relative upload-btn">
                                         <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
                                         <input class="scan-prompt" type="file" accept="image/*"
-                                            name="license_back_avatar" id="national-id-back-input" />
+                                            name="speed_govenor_back_avatar" id="national-id-back-input" />
                                     </span>
                                     <span class="text-uppercase">BACK</span>
                                     <span class="delete-btn" id="national-id-back-delete">

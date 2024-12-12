@@ -15,37 +15,7 @@ class LanguageController extends Controller
 {
     public function changeLanquage($lang)
     {
-        // $user = Auth::user();
-        // $user->lang = $lang;
-        // $user->save();
-        // if ($user->lang == 'ar' || $user->lang == 'he') {
-        //     $value = 'on';
-        // } else {
-        //     $value = 'off';
-        // }
-        // if ($user->type == 'super admin') {
-        //     DB::insert(
-        //         'insert into settings (`value`, `name`,`created_by`) values (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
-        //         [
-        //             $value,
-        //             'SITE_RTL',
-        //             Auth::user()->creatorId(),
-        //         ]
-        //     );
-        // } else {
-        //     DB::insert(
-        //         'insert into settings (`value`, `name`,`created_by`) values (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
-        //         [
-        //             $value,
-        //             'SITE_RTL',
-        //             Auth::user()->creatorId(),
-        //         ]
-        //     );
-        // }
-
-        // return redirect()->back()->with('success', __('Language change successfully.'));
-
-
+      
         if (array_key_exists($lang, config('app.languages'))) {
             Session::put('applocale', $lang);
         }

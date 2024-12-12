@@ -833,4 +833,75 @@ class DriverAppController extends Controller
         }
     }
 
+    public function updateVehicleDetails(Request $request, $driverVehicleDetails)
+    {
+        $user = Auth::user();
+        $driver = $user->driver;
+
+        // Validate the request data
+        $validated = $request->validate([
+            'speed_govenor_front_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'speed_govenor_back_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'vehicle_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'organisation_id' => 'required|exists:organisations,id',
+            'vehicle_class_id' => 'required|exists:vehicle_classes,id',
+            'car_registration_num' => 'required|string|max:255',
+            'car_fuel_type' => 'nullable|string|max:255',
+            'date_of_manufacture' => 'nullable|date',
+            'manufacture_make' => 'nullable|string|max:255',
+            'car_engine_size' => 'nullable|string|max:255',
+        ]);
+
+        $vehicle = $driver->vehicle;
+
+        if (!$vehicle) {
+            return redirect()->back()->with('error', 'Vehicle not found! Contact Admin for registration instructions.');
+        }
+
+        // Define the base storage path
+        $basePath = '/home/kknuicdz/public_html_metroberry_app/';
+
+        // Handle file upload for the vehicle avatar
+        if ($request->hasFile('vehicle_avatar')) {
+            $vehicleAvatarFile = $request->file('vehicle_avatar');
+            $vehicleAvatarFileName = "vehicle_{$vehicle->id}." . $vehicleAvatarFile->getClientOriginalExtension();
+            $vehicleAvatarPath = $vehicleAvatarFile->move($basePath . 'vehicle-avatars', $vehicleAvatarFileName);
+
+            $vehicle->update(['avatar' => $vehicleAvatarPath]);
+        }
+
+        // Handle file upload for the vehicle certificate (front)
+        if ($request->hasFile('license_front_avatar')) {
+            $certificateFrontFile = $request->file('license_front_avatar');
+            $certificateFrontFileName = "vehicle_certificate_front_{$vehicle->id}." . $certificateFrontFile->getClientOriginalExtension();
+            $certificateFrontPath = $certificateFrontFile->move($basePath . 'vehicle-certificates', $certificateFrontFileName);
+
+            $vehicle->update(['license_front_avatar' => $certificateFrontPath]);
+        }
+
+        // Handle file upload for the vehicle certificate (back)
+        if ($request->hasFile('license_back_avatar')) {
+            $certificateBackFile = $request->file('license_back_avatar');
+            $certificateBackFileName = "vehicle_certificate_back_{$vehicle->id}." . $certificateBackFile->getClientOriginalExtension();
+            $certificateBackPath = $certificateBackFile->move($basePath . 'vehicle-certificates', $certificateBackFileName);
+
+            $vehicle->update(['license_back_avatar' => $certificateBackPath]);
+        }
+
+        // Update the other vehicle details in the database
+        $vehicle->update([
+            'organisation_id' => $request->organisation_id,
+            'vehicle_class_id' => $request->vehicle_class_id,
+            'plate_number' => $request->input('car_registration_num'),
+            'fuel_type' => $request->input('car_fuel_type'),
+            'year' => $request->input('date_of_manufacture'),
+            'make' => $request->input('manufacture_make'),
+            'engine_size' => $request->input('car_engine_size'),
+        ]);
+
+        return redirect()->route('driver.dashboard')->with('success', 'Vehicle details updated successfully.');
+    }
+
+
+
 }

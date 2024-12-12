@@ -56,3 +56,9 @@ Route::put('driver/trip-completed/show/{id}', [DriverAppController::class, 'trip
 
 //Driver update profile avatar 
 Route::post('driver/update-profile-picture', [DriverAppController::class, 'updateProfilePicture'])->name('driver.updateProfilePicture')->middleware('auth');
+
+
+// driver.vehicle.details.update
+
+Route::put('driver/update-vehicle-details/{id}', [DriverAppController::class, 'updateVehicleDetails'])->name('driver.vehicle.details.update')->middleware('auth');
+
