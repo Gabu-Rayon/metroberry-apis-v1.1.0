@@ -537,7 +537,7 @@ class DriverAppController extends Controller
                 'psv_badge_no' => 'nullable|string|max:255',
                 'psv_badge_date_of_issue' => 'nullable|date',
                 'psv_badge_date_of_expiry' => 'nullable|date|after:psv_badge_date_of_issue',
-                'badge_copy' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'badge_copy' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             if ($validator->fails()) {
