@@ -202,7 +202,7 @@ class DriverAppController extends Controller
             $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backFileName;
             $driver->save();
 
-            return redirect()->route('driver.dashboard')->with('success', 'Driver personal documents uploaded successfully.');
+            return redirect()->route('driver.registration.page')->with('success', 'Driver personal documents uploaded successfully.');
         } catch (Exception $e) {
             Log::error('UPLOAD DRIVER PERSONAL DOCUMENTS ERROR');
             Log::error($e->getMessage());
@@ -367,7 +367,7 @@ class DriverAppController extends Controller
 
             DB::commit();
 
-            return redirect()->route('driver.dashboard')->with('success', 'Driver license updated successfully.');
+            return redirect()->route('driver.registration.page')->with('success', 'Driver license updated successfully.');
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('UPDATE DRIVER LICENSE ERROR');
@@ -523,7 +523,7 @@ class DriverAppController extends Controller
 
             DB::commit();
 
-            return redirect()->route('driver.dashboard')->with('success', 'Driver PSV badge updated successfully.');
+            return redirect()->route('driver.registration.page')->with('success', 'Driver PSV badge updated successfully.');
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('UPDATE DRIVER PSV BADGE ERROR');
@@ -824,7 +824,7 @@ class DriverAppController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('driver.dashboard')->with('success', 'PSV badge updated successfully');
+            return redirect()->route('driver.registration.page')->with('success', 'PSV badge updated successfully');
 
         } catch (Exception $e) {
             DB::rollBack();

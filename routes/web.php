@@ -911,13 +911,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy')
         ->middleware('can:delete profile');
+        
 });
 
 
 /***
+ * 
+ * 
  * User Interfaces
  *
+ * 
  */
+
 Route::get('/admin/user', [UserController::class, 'index'])
     ->name('user.index')
     ->middleware('auth', 'can:view user');
