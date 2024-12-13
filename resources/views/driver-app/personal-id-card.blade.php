@@ -63,7 +63,7 @@
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="text" name="national_id_no"
                                     autocomplete="off" placeholder="Driver License Number"
-                                    value="{{ $driver->national_id_no  ?? null }}" />
+                                    value="{{ $driver->national_id_no}}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
@@ -149,7 +149,6 @@
                 <!--Driver's License Fields Container End-->
             </div>
         </div>
-
         <!--Terms And Conditions Agreement Container Start-->
         <div class="text-center col-xs-12 col-sm-12 sms-rate-text font-roboto flex-end margin-bottom-30">
             <div class="container-sms-rate-text width-100 font-11">
