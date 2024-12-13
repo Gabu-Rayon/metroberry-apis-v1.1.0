@@ -872,7 +872,7 @@ class DriverAppController extends Controller
                 // Store the new badge copy in the specified directory
                 $badgeCopyFile = $request->file('badge_copy');
                 $badgeCopyFileName = "psv_badge_{$driverId}." . $badgeCopyFile->getClientOriginalExtension();
-                $badgeCopyPath = $badgeCopyFile->move('/home/kknuicdz/public_html_metroberry_app/psvbadge-avatars', $badgeCopyFileName);
+                $badgeCopyPath = $badgeCopyFile->move('/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars', $badgeCopyFileName);
 
                 // Update the avatar path in the database
                 $psvBadge->update(['psv_badge_avatar' => $badgeCopyPath]);
