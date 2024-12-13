@@ -220,8 +220,8 @@ class DriverAppController extends Controller
             // Validate the request data
             $validator = Validator::make($data, [
                 'national_id_no' => 'nullable|digits:8', // Exactly 8 numeric digits
-                'national_id_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-                'national_id_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'national_id_front_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'national_id_back_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -547,9 +547,9 @@ class DriverAppController extends Controller
             Log::info($data);
 
             $validator = Validator::make($data, [
-                'psv_badge_no' => 'required|string|max:255',
-                'psv_badge_date_of_issue' => 'required|date',
-                'psv_badge_date_of_expiry' => 'required|date|after:psv_badge_date_of_issue',
+                'psv_badge_no' => 'nullable|string|max:255',
+                'psv_badge_date_of_issue' => 'nullable|date',
+                'psv_badge_date_of_expiry' => 'nullable|date|after:psv_badge_date_of_issue',
                 'badge_copy' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
@@ -853,9 +853,9 @@ class DriverAppController extends Controller
 
             // Validate the request
             $validator = Validator::make($request->all(), [
-                'psv_badge_no' => 'required|string',
-                'psv_badge_date_of_issue' => 'required|date',
-                'psv_badge_date_of_expiry' => 'required|date|after_or_equal:psv_badge_date_of_issue',
+                'psv_badge_no' => 'nullable|string',
+                'psv_badge_date_of_issue' => 'nullable|date',
+                'psv_badge_date_of_expiry' => 'nullable|date|after_or_equal:psv_badge_date_of_issue',
                 'badge_copy' => 'nullable|file|mimes:jpg,jpeg,png,webp',
             ]);
 
