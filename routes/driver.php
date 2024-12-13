@@ -38,7 +38,7 @@ Route::get('driver/license-document', [DriverAppController::class, 'driverLicens
 Route::put('driver/license-document/{id}', [DriverAppController::class, 'updateLicense'])->name('driver.license.document.update')->middleware('auth');
 
 Route::get('driver/personal-id-card-documents', [DriverAppController::class, 'personalIdCardDocument'])->name('personal.id.card.document')->middleware('auth');
-Route::put('driver/personal-id-card-document/{id}', [DriverAppController::class, 'iddocs'])->name('personal.id.card.document.update')->middleware('auth');
+Route::put('driver/personal-id-card-document/{id}', [DriverAppController::class, 'iddocsUpdate'])->name('personal.id.card.document.update')->middleware('auth');
 
 
 
@@ -61,4 +61,3 @@ Route::post('driver/update-profile-picture', [DriverAppController::class, 'updat
 // driver.vehicle.details.update
 
 Route::put('driver/update-vehicle-details/{id}', [DriverAppController::class, 'updateVehicleDetails'])->name('driver.vehicle.details.update')->middleware('auth');
-

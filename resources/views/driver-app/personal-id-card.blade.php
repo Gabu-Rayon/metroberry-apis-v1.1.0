@@ -55,8 +55,10 @@
                 <div class="all-container all-container-with-classes">
                     <form class="width-100" action="{{ route('personal.id.card.document.update', $driver->id) }}"
                         method="POST" enctype="multipart/form-data">
+
                         @csrf
                         @method('PUT')
+
                         <!--Input Field Container Start-->
                         <div class="form-group form-control-margin">
                             <label class="label-title">Personal ID</label>
