@@ -217,7 +217,6 @@ class DriverAppController extends Controller
         try {
             $data = $request->all();
 
-            // Validate the request data
             $validator = Validator::make($data, [
                 'national_id_no' => 'nullable|digits:8', // Exactly 8 numeric digits
                 'national_id_front_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
@@ -225,62 +224,50 @@ class DriverAppController extends Controller
             ]);
 
             if ($validator->fails()) {
-                Log::error('VALIDATION ERROR');
-                Log::error($validator->errors()->all());
-
                 return back()->with('error', $validator->errors()->first())->withInput();
             }
 
-            // Find the driver by ID
             $driver = Driver::findOrFail($id);
 
-            // Define the directories for the ID uploads
-            $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids';
-            $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids';
+            $frontIdDirectory = app()->environment('local')
+                ? public_path('uploads/front-page-ids')
+                : '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids';
 
-            if (app()->environment('local')) {
-                $frontIdDirectory = public_path('uploads/front-page-ids');
-                $backIdDirectory = public_path('uploads/back-page-ids');
-            } else {
-                $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids';
-                $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids';
-                // Create directories if they don't exist
-                if (!is_dir($frontIdDirectory)) {
-                    mkdir($frontIdDirectory, 0755, true);
-                }
+            $backIdDirectory = app()->environment('local')
+                ? public_path('uploads/back-page-ids')
+                : '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids';
 
-                if (!is_dir($backIdDirectory)) {
-                    mkdir($backIdDirectory, 0755, true);
+            foreach ([$frontIdDirectory, $backIdDirectory] as $directory) {
+                if (!is_dir($directory)) {
+                    mkdir($directory, 0755, true);
                 }
             }
 
-            // Upload front and back images
-            $national_id_front_avatar = $request->file('national_id_front_avatar');
-            $national_id_back_avatar = $request->file('national_id_back_avatar');
+            if ($request->hasFile('national_id_front_avatar')) {
+                $frontAvatar = $request->file('national_id_front_avatar');
+                $frontFileName = "{$driver->email}-national-id-front." . $frontAvatar->getClientOriginalExtension();
+                $frontAvatar->move($frontIdDirectory, $frontFileName);
+                $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontFileName;
+            }
 
-            // Create file names
-            $frontFileName = "{$driver->email}-national-id-front." . $national_id_front_avatar->getClientOriginalExtension();
-            $backFileName = "{$driver->email}-national-id-back." . $national_id_back_avatar->getClientOriginalExtension();
+            if ($request->hasFile('national_id_back_avatar')) {
+                $backAvatar = $request->file('national_id_back_avatar');
+                $backFileName = "{$driver->email}-national-id-back." . $backAvatar->getClientOriginalExtension();
+                $backAvatar->move($backIdDirectory, $backFileName);
+                $driver->national_id_back_avatar = 'uploads/back-page-ids/' . $backFileName;
+            }
 
-            // Move the uploaded files to the new directories
-            $national_id_front_avatar->move($frontIdDirectory, $frontFileName);
-            $national_id_back_avatar->move($backIdDirectory, $backFileName);
-
-            // Update driver details with the relative paths
-            $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontFileName;
-            $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backFileName;
-            $driver->national_id_no = $request->input('national_id_no'); // Corrected key name here
+            $driver->national_id_no = $request->input('national_id_no');
             $driver->save();
 
             return redirect()->route('driver.registration.page')->with('success', 'Driver personal documents uploaded successfully.');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('UPLOAD DRIVER PERSONAL DOCUMENTS ERROR');
             Log::error($e->getMessage());
 
             return back()->with('error', 'Something went wrong.')->withInput();
         }
     }
-
 
 
     /**
