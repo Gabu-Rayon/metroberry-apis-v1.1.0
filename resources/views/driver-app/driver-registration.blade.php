@@ -25,7 +25,15 @@
                 </a>
             </div>
 
-
+            <!--Page Title & Icons End-->
+            <div class="rest-container">
+                <div class="text-center header-icon-logo-margin header-icon-logo-margin-extra">
+                    <div class="profile-picture-container">
+                        <img src="{{ asset('mobile-app-assets/images/driver-registration.svg') }}"
+                            alt="Driver Registration Icon" />
+                    </div>
+                </div>
+                
             @if (session('success'))
                 <div id="success-message" class="alert alert-success" style="display: none;">
                     {{ session('success') }}
@@ -37,15 +45,7 @@
                     {{ session('error') }}
                 </div>
             @endif
-
-            <!--Page Title & Icons End-->
-            <div class="rest-container">
-                <div class="text-center header-icon-logo-margin header-icon-logo-margin-extra">
-                    <div class="profile-picture-container">
-                        <img src="{{ asset('mobile-app-assets/images/driver-registration.svg') }}"
-                            alt="Driver Registration Icon" />
-                    </div>
-                </div>
+            
                 <div class="address-title">Driver Registration</div>
 
                 <!--Driver Registration Information Links Container Start-->
