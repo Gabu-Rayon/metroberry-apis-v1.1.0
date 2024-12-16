@@ -20,6 +20,8 @@ return new class extends Migration
             $table->date('date_of_installation');
             $table->date('expiry_date');
             $table->string('certificate_copy');
+            $table->string('chasis_no');
+            $table->enum('status', ['active', 'inactive'])->default('inactive');
             $table->timestamps();
         });
     }

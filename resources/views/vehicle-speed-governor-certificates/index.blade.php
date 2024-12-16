@@ -37,7 +37,7 @@
                                             <span class='m-1'></span>
                                             @if (Auth::user()->can('create vehicle'))
                                                 <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#vehicleModal">
+                                                    data-bs-target="#certificateModal">
                                                     <i class="fa-solid fa-user-plus"></i>&nbsp; Add Speed Governor Certificate
                                                 </button>
                                             @endif
@@ -62,27 +62,27 @@
                                             <tbody>
                                                 @foreach ($speed_governors as $speed_governor)
                                                     <tr>
-                                                        <td class="text-center"></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
+                                                        <td class="text-center">{{ $speed_governor->vehicle->model }} {{ $speed_governor->vehicle->make }}, {{ $speed_governor->vehicle->plate_number }}</td>
+                                                        <td>{{ $speed_governor->certificate_no }}</td>
+                                                        <td>{{ $speed_governor->type_of_governor }}</td>
+                                                        <td>{{ $speed_governor->date_of_installation }}</td>
+                                                        <td>{{ $speed_governor->expiry_date }}</td>
                                                         @if (Auth::user()->role == 'admin')
                                                             <td class="text-center">
                                                                 @if (\Auth::user()->can('edit vehicle speed governor'))
                                                                     <a href="javascript:void(0);"
                                                                         class="btn btn-sm btn-primary"
-                                                                        onclick="axiosModal('vehicle/speed-governor/{{ $vehicle->id }}/edit')"
+                                                                        onclick="axiosModal('vehicle/speed-governor/{{ $speed_governor->id }}/edit')"
                                                                         title="Edit Certificate">
                                                                         <i class="fas fa-edit"></i>
                                                                     </a>
                                                                 @endif
                                                                 <span class='m-1'></span>
-                                                                @if ($vehicle->status == 'active')
+                                                                @if ($speed_governor->status == 'active')
                                                                     @if (\Auth::user()->can('deactivate vehicle speed governor'))
                                                                         <a href="javascript:void(0);"
                                                                             class="btn btn-sm btn-success"
-                                                                            onclick="axiosModal('vehicle/speed-governor/{{ $vehicle->id }}/deactivate')"
+                                                                            onclick="axiosModal('speed-governor/{{ $speed_governor->id }}/deactivate')"
                                                                             title="Deactivate Certificate">
                                                                             <i class="fas fa-toggle-on"></i>
                                                                         </a>
@@ -91,7 +91,7 @@
                                                                     @if (\Auth::user()->can('activate vehicle speed governor'))
                                                                         <a href="javascript:void(0);"
                                                                             class="btn btn-sm btn-secondary"
-                                                                            onclick="axiosModal('vehicle/speed-governor/{{ $vehicle->id }}/activate')"
+                                                                            onclick="axiosModal('speed-governor/{{ $speed_governor->id }}/activate')"
                                                                             title="Activate Certificate">
                                                                             <i class="fas fa-toggle-off"></i>
                                                                         </a>
@@ -101,7 +101,7 @@
                                                                 @if (\Auth::user()->can('delete vehicle speed governor'))
                                                                     <a href="javascript:void(0);"
                                                                         class="btn btn-sm btn-danger"
-                                                                        onclick="axiosModal('vehicle/speed-governor/{{ $vehicle->id }}/delete')"
+                                                                        onclick="axiosModal('speed-governor/{{ $speed_governor->id }}/delete')"
                                                                         title="Delete">
                                                                         <i class="fas fa-trash"></i>
                                                                     </a>
@@ -126,99 +126,107 @@
     </div>
     <!-- END layout-wrapper -->
 
-    <div class="modal fade" id="vehicleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="certificateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form action="/vehicle/store" method="POST" class="needs-validation modal-content"
+            <form action="speed-governor/create" method="POST" class="needs-validation modal-content"
                 enctype="multipart/form-data">
                 @csrf
                 <div class="card-header my-3 p-2 border-bottom">
-                    <h4>Add New Vehicle</h4>
+                    <h4>Add New Certificate</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12 col-lg-6">
 
                             <div class="form-group row my-2">
-                                <label for="model" class="col-sm-5 col-form-label">Vehicle Model <i
-                                        class="text-danger">*</i></label>
+                                <label for="vehicle_id" class="col-sm-5 col-form-label">Select Vehicle</label>
                                 <div class="col-sm-7">
-                                    <input name="model" class="form-control" type="text" placeholder="Vehicle Model"
-                                        id="model" value="{{ old('model') }}" required>
+                                    <select class="form-control basic-single select2" name="vehicle_id"
+                                        id="vehicle_id" tabindex="-1" aria-hidden="true">
+                                        <option value="">Please Select Vehicle</option>
+                                        @foreach ($vehicles as $vehicle)
+                                            <option value="{{ $vehicle->id }}" {{ old('vehicle_id') == $vehicle->id ? 'selected' : '' }}>
+                                                {{ $vehicle->make }}, {{ $vehicle->model }}, {{ $vehicle->plate_number }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
 
                             <div class="form-group row my-2">
-                                <label for="make" class="col-sm-5 col-form-label">Vehicle Make <i
-                                        class="text-danger">*</i></label>
+                                <label for="class_no" class="col-sm-5 col-form-label">Select Class</label>
                                 <div class="col-sm-7">
-                                    <input name="make" autocomplete="off" required class="form-control" type="text"
-                                        placeholder="Vehicle Make" id="make" value="{{ old('make') }}">
+                                    <select class="form-control basic-single select2" name="class_no"
+                                        id="class_no" tabindex="-1" aria-hidden="true">
+                                        <option value="">Please Select Class</option>
+                                       <option value="A" {{ old('class_no') == 'A' ? 'selected' : '' }}>Class A</option>
+                                        <option value="B" {{ old('class_no') == 'B' ? 'selected' : '' }}>Class B</option>
+                                    </select>
                                 </div>
                             </div>
 
                             <div class="form-group row my-2">
-                                <label for="year" class="col-sm-5 col-form-label">Vehicle Year of Manufacturer <i
-                                        class="text-danger">*</i></label>
+                                <label for="installation_date" class="col-sm-5 col-form-label">
+                                    Installation Date
+                                    <i class="text-danger">*</i>
+                                </label>
                                 <div class="col-sm-7">
-                                    <input name="year" class="form-control" type="date"
-                                        placeholder="Year of Manufacturer" id="year" value="{{ old('year') }}">
+                                    <input name="installation_date" class="form-control" type="date"
+                                        placeholder="Installation Date" id="installation_date" value="{{ old('installation_date') }}">
                                 </div>
                             </div>
 
                             <div class="form-group row my-2">
-                                <label for="plate_number" class="col-sm-5 col-form-label">Vehicle Number Plate <i
-                                        class="text-danger">*</i></label>
+                                <label for="copy" class="col-sm-5 col-form-label">
+                                    Copy
+                                    <i class="text-danger">*</i>
+                                </label>
                                 <div class="col-sm-7">
-                                    <input name="plate_number" class="form-control" type="text"
-                                        placeholder="Enter Number Plate" id="plate_number"
-                                        value="{{ old('plate_number') }}" required>
+                                    <input name="copy" class="form-control" type="file" id="copy" value="{{ old('copy') }}" required>
                                 </div>
-                            </div>
-                            <div class="form-group row my-2">
-                                <label for="vehicle_avatar" class="col-sm-5 col-form-label">Vehicle Avatar <i
-                                        class="text-danger">*</i></label>
-                                <div class="col-sm-7">
-                                    <input name="vehicle_avatar" class="form-control" type="file" id="vehicle_avatar"
-                                        value="{{ old('vehicle_avatar') }}" required>
-                                </div>
-                            </div>
+                            </div>                            
                         </div>
 
                         <div class="col-md-12 col-lg-6">
 
                             <div class="form-group row my-2">
-                                <label for="fuel_type" class="col-sm-5 col-form-label">Fuel Type <i
-                                        class="text-danger">*</i></label>
+                                <label for="certificate_no" class="col-sm-5 col-form-label">
+                                    Certificate No
+                                    <i class="text-danger">*</i>
+                                </label>
                                 <div class="col-sm-7">
-                                    <input name="fuel_type" class="form-control" type="text"
-                                        placeholder="Enter Vehicle Fuel Type" id="fuel_type"
-                                        value="{{ old('fuel_type') }}" required>
+                                    <input name="certificate_no" class="form-control" type="text" placeholder="Enter Certificate No" id="certificate_no" value="{{ old('certificate_no') }}" required>
                                 </div>
                             </div>
+
                             <div class="form-group row my-2">
-                                <label for="engine_size" class="col-sm-5 col-form-label">Engine Size <i
-                                        class="text-danger">*</i></label>
+                                <label for="type" class="col-sm-5 col-form-label">
+                                    Type
+                                    <i class="text-danger">*</i>
+                                </label>
                                 <div class="col-sm-7">
-                                    <input name="engine_size" class="form-control" type="number"
-                                        placeholder="Enter Engine Size" id="engine_size"
-                                        value="{{ old('engine_size') }}" required>
+                                    <input name="type" class="form-control" type="text" placeholder="Enter Type" id="type" value="{{ old('type') }}" required>
                                 </div>
                             </div>
+
                             <div class="form-group row my-2">
-                                <label for="color" class="col-sm-5 col-form-label">Vehicle Color <i
-                                        class="text-danger">*</i></label>
+                                <label for="expiry_date" class="col-sm-5 col-form-label">
+                                    Expiry Date
+                                    <i class="text-danger">*</i>
+                                </label>
                                 <div class="col-sm-7">
-                                    <input name="color" class="form-control" type="text"
-                                        placeholder="Enter Vehicle Color" id="color" value="{{ old('color') }}"
-                                        required>
+                                    <input name="expiry_date" class="form-control" type="date"
+                                        placeholder="Expiry Date" id="expiry_date" value="{{ old('expiry_date') }}">
                                 </div>
                             </div>
+
                             <div class="form-group row my-2">
-                                <label for="seats" class="col-sm-5 col-form-label">No of Seats <i
-                                        class="text-danger">*</i></label>
+                                <label for="chasis_no" class="col-sm-5 col-form-label">
+                                    Chasis No
+                                    <i class="text-danger">*</i>
+                                </label>
                                 <div class="col-sm-7">
-                                    <input name="seats" class="form-control" type="number" placeholder="No of Seats"
-                                        id="seats" value="{{ old('seats') }}" required>
+                                    <input name="chasis_no" class="form-control" type="text" placeholder="Enter Chasis No" id="chasis_no" value="{{ old('chasis_no') }}" required>
                                 </div>
                             </div>
 

@@ -671,20 +671,20 @@ Route::put('vehicle/speed-governor/{id}/edit', [VehicleSpeedGovernorCertificateC
     ->name('vehicle.speed.governor.edit')
     ->middleware('auth', 'can:edit vehicle speed governor');
 
-Route::get('vehicle/speed-governor/{id}/verify', [VehicleSpeedGovernorCertificateController::class, 'verifyForm'])
-    ->name('vehicle.speed.governor.verify')
+Route::get('vehicle/speed-governor/{id}/activate', [VehicleSpeedGovernorCertificateController::class, 'activateForm'])
+    ->name('vehicle.speed.governor.activate')
     ->middleware('auth', 'can:activate vehicle speed governor');
 
-Route::put('vehicle/speed-governor/{id}/verify', [VehicleSpeedGovernorCertificateController::class, 'verify'])
-    ->name('vehicle.speed.governor.verify')
+Route::put('vehicle/speed-governor/{id}/activate', [VehicleSpeedGovernorCertificateController::class, 'activate'])
+    ->name('vehicle.speed.governor.activate')
     ->middleware('auth', 'can:activate vehicle speed governor');
 
-Route::get('vehicle/speed-governor/{id}/suspend', [VehicleSpeedGovernorCertificateController::class, 'suspendForm'])
-    ->name('vehicle.speed.governor.suspend')
+Route::get('vehicle/speed-governor/{id}/deactivate', [VehicleSpeedGovernorCertificateController::class, 'deactivateForm'])
+    ->name('vehicle.speed.governor.deactivate')
     ->middleware('auth', 'can:deactivate vehicle speed governor');
 
-Route::put('vehicle/speed-governor/{id}/suspend', [VehicleSpeedGovernorCertificateController::class, 'suspend'])
-    ->name('vehicle.speed.governor.suspend')
+Route::put('vehicle/speed-governor/{id}/deactivate', [VehicleSpeedGovernorCertificateController::class, 'deactivate'])
+    ->name('vehicle.speed.governor.deactivate')
     ->middleware('auth', 'can:deactivate vehicle speed governor');
 
 // Delete Vehicle Speed Governor Certificate
