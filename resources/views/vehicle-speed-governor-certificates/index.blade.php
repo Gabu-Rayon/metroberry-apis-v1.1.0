@@ -72,7 +72,7 @@
                                                                 @if (\Auth::user()->can('edit vehicle speed governor'))
                                                                     <a href="javascript:void(0);"
                                                                         class="btn btn-sm btn-primary"
-                                                                        onclick="axiosModal('vehicle/speed-governor/{{ $speed_governor->id }}/edit')"
+                                                                        onclick="axiosModal('speed-governor/{{ $speed_governor->id }}/edit')"
                                                                         title="Edit Certificate">
                                                                         <i class="fas fa-edit"></i>
                                                                     </a>

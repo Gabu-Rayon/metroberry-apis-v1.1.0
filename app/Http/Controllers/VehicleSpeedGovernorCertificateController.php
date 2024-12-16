@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SpeedGovernorExport;
+use App\Imports\SpeedGovernorImport;
+use Exception;
+
+
 
 class VehicleSpeedGovernorCertificateController extends Controller
 {
@@ -77,6 +83,92 @@ class VehicleSpeedGovernorCertificateController extends Controller
             return redirect()->back()->with('error', $e->getMessage())->withInput();
         }
     }
+
+    public function edit($id)
+    {
+        $vehicles = Vehicle::all();
+        $certificate = VehicleSpeedGovernorCertificate::find($id);
+        return view('vehicle-speed-governor-certificates.edit', compact('certificate', 'vehicles'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    
+     public function update(Request $request, $id)
+     {
+         try {
+             $data = $request->all();
+     
+             $validator = Validator::make($data, [
+                 'vehicle' => 'exists:vehicles,id',
+                 'certificate_no' => 'string',
+                 'class_no' => 'in:A,B',
+                 'type_of_governor' => 'string',
+                 'date_of_installation' => 'date',
+                 'expiry_date' => 'date',
+                 'certificate_copy' => 'file|mimes:png,jpg,jpeg,webp',
+                 'chasis_no' => 'string',
+             ]);
+     
+             if ($validator->fails()) {
+                 Log::error('VALIDATION ERROR');
+                 Log::error($validator->errors());
+                 return back()->with('error', $validator->errors()->first());
+             }
+     
+             DB::beginTransaction();
+     
+             $certificate = VehicleSpeedGovernorCertificate::findOrFail($id);
+     
+             $updateData = [
+                 'vehicle_id' => $data['vehicle'],
+                 'certificate_no' => $data['certificate_no'],
+                 'class_no' => $data['class_no'],
+                 'type_of_governor' => $data['type_of_governor'],
+                 'date_of_installation' => $data['date_of_installation'],
+                 'expiry_date' => $data['expiry_date'],
+                 'chasis_no' => $data['chasis_no'],
+                 'status' => 'inactive',
+             ];
+     
+             // Check if a new file is uploaded
+             if ($request->hasFile('certificate_copy')) {
+                 $existingPath = $certificate->certificate_copy;
+                 if (File::exists(public_path($existingPath))) {
+                     File::delete(public_path($existingPath));
+                 }
+     
+                 $file = $request->file('certificate_copy');
+                 $extension = $file->getClientOriginalExtension();
+                 $fileName = "{$data['certificate_no']}-certificate.{$extension}";
+     
+                 $uploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads/speed-gov-cert-copies/';
+                 if (!file_exists($uploadPath)) {
+                     mkdir($uploadPath, 0755, true);
+                 }
+     
+                 $file->move($uploadPath, $fileName);
+                 $updateData['certificate_copy'] = $uploadPath . $fileName;
+             }
+     
+             $certificate->update($updateData);
+     
+             // Update related vehicle status
+             $certificate->vehicle->status = 'inactive';
+             $certificate->vehicle->save();
+     
+             DB::commit();
+     
+             return redirect()->route('vehicle.speed.governor')->with('success', 'Speed Governor updated successfully.');
+         } catch (Exception $e) {
+             DB::rollBack();
+             Log::error('UPDATE SPEED GOVERNOR CERTIFICATE ERROR');
+             Log::error($e);
+             return back()->with('error', 'Something went wrong.');
+         }
+     }
+     
 
     public function activateForm(string $id) {
         $certificate = VehicleSpeedGovernorCertificate::find($id);
@@ -183,6 +275,44 @@ class VehicleSpeedGovernorCertificateController extends Controller
             Log::error('DELETE SPEED GOVERNOR ERROR');
             Log::error($e);
             return back()->with('error', 'Something went wrong.');
+        }
+    }
+
+    public function export()
+    {
+        return Excel::download(new SpeedGovernorExport, 'speed-governors.xlsx');
+    }
+
+    public function import()
+    {
+        return view('vehicle-speed-governor-certificates.import');
+    }
+
+    public function importStore(Request $request)
+    {
+        $rules = [
+            'file' => 'required|mimes:csv,txt,xlsx',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()->back()->with('error', $validator->errors()->first());
+        }
+
+        try {
+            Excel::import(new SpeedGovernorImport, $request->file('file'));
+
+            Log::info('Data from SpeedGovernorImport CSV File being Imported: ', ['file' => $request->file('file')]);
+
+            // Redirect back with success message
+            return redirect()->back()->with('success', 'Records imported successfully.');
+        } catch (Exception $e) {
+            // Log the error
+            Log::error('Error importing Speed Governors: ' . $e->getMessage());
+
+            // Redirect back with error message
+            return redirect()->back()->with('error', 'An error occurred while importing the Speed Governors records.');
         }
     }
 }

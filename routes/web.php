@@ -704,6 +704,10 @@ Route::get('vehicle/speed-governor/import', [VehicleSpeedGovernorCertificateCont
     ->name('vehicle.speed.governor.import')
     ->middleware('auth', 'can:import vehicle speed governors');
 
+Route::post('vehicle/speed-governor/import', [VehicleSpeedGovernorCertificateController::class, 'importStore'])
+    ->name('vehicle.speed.governor.import')
+    ->middleware('auth', 'can:import vehicle speed governors');
+
 // Renew Speed Governor Certificate
 Route::get('vehicle/speed-governor/{id}/renew', [VehicleSpeedGovernorCertificateController::class, 'renew'])
     ->name('vehicle.speed.governor.renew')
