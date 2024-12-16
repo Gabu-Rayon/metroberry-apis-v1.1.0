@@ -1,4 +1,4 @@
-<form action="{{ route('vehicle.speed.governor.export') }}" method="POST" class="needs-validation modal-content" enctype="multipart/form-data">
+<form action="{{ route('vehicle.speed.governor.import') }}" method="POST" class="needs-validation modal-content" enctype="multipart/form-data">
     @csrf
     @METHOD('POST')
     <div class="card-header my-3 p-2 border-bottom">
