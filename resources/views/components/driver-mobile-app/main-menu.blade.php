@@ -8,9 +8,10 @@
         </div>
         <div class="profile-picture text-center">
             @if (Auth::user()->avatar)
-                <img src="{{ asset( Auth::user()->avatar) }}" alt="Profile Picture" class="rounded-profile-picture" />
+                <img src="{{ asset(Auth::user()->avatar) }}" alt="Profile Picture" class="rounded-profile-picture" />
             @else
-                <img src="{{ asset('mobile-app-assets/images/anonymous.jpeg') }}" alt="Profile Picture" class="rounded-profile-picture" />
+                <img src="{{ asset('mobile-app-assets/images/anonymous.jpeg') }}" alt="Profile Picture"
+                    class="rounded-profile-picture" />
             @endif
         </div>
         <div class="profile-info">
@@ -75,9 +76,9 @@
                 <span class="notification-num">3</span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
-            <a class="menu-item" href="{{ route('driver.vehicle') }}">
+            <a class="menu-item" href="{{ route('driver.vehicle.docs.registration') }}">
                 <span class="menu-item-icon fas fa-car"></span>
-                <span class="menu-item-title">Vehicle</span>
+                <span class="menu-item-title">Vehicle Registration</span>
                 <span class="menu-item-click fas fa-check green-status"></span>
             </a>
 
@@ -119,7 +120,8 @@
                 <span class="menu-item-icon menu-light support">
                     <img src="{{ asset('mobile-app-assets/icons/support-light.svg') }}" alt="Support Lighter Icon" />
                 </span>
-                <span class="menu-item-title">Online Support <small class="text-danger"><i>coming soon</i></small> </span>
+                <span class="menu-item-title">Online Support <small class="text-danger"><i>coming soon</i></small>
+                </span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
             {{-- <a href="#" class="menu-item margin-top-auto">

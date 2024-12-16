@@ -14,6 +14,8 @@ class Vehicle extends Model
         'driver_id',
         'organisation_id',
         'model',
+        'manufacturer_id',
+        'fuel_type_id',
         'make',
         'year',
         'plate_number',
@@ -23,20 +25,15 @@ class Vehicle extends Model
         'fuel_type',
         'engine_size',
         'avatar',
+        'ride_type_id',
         'status',
     ];
-
-
-
-    
 
     protected $hidden = [
         'organisation_id',
         'created_at',
         'updated_at',
     ];
-
-
 
     public function creator()
     {
@@ -62,7 +59,7 @@ class Vehicle extends Model
     {
         return $this->trips()->where('status', 'scheduled');
     }
-    
+
     public function assignedTrips()
     {
         return $this->trips()->where('status', 'assigned');
@@ -112,5 +109,20 @@ class Vehicle extends Model
     public function inspectionCertificates()
     {
         return $this->hasMany(NTSAInspectionCertificate::class);
+    }
+
+    public function manufacturer()
+    {
+        return $this->belongsTo(VehicleManufacturer::class, 'manufacturer_id');
+    }
+
+    public function fuelType()
+    {
+        return $this->belongsTo(FuelType::class, 'fuel_type_id');
+    }
+
+    public function speedGovernorCertificate()
+    {
+        return $this->hasOne(VehicleSpeedGovernorCertificate::class, 'vehicle_id');
     }
 }

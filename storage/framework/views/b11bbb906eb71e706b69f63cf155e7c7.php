@@ -39,6 +39,19 @@
 
                 <!--Driver's License Fields Container Start-->
                 <div class="all-container all-container-with-classes">
+                    <?php if(session('success')): ?>
+                        <div id="success-message" class="alert alert-success" style="display: none;">
+                            <?php echo e(session('success')); ?>
+
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if(session('error')): ?>
+                        <div id="error-message" class="alert alert-danger" style="display: none;">
+                            <?php echo e(session('error')); ?>
+
+                        </div>
+                    <?php endif; ?>
                     <form class="width-100" action="<?php echo e(route('driver.license.document.update', $driver->id)); ?>"
                         method="POST" enctype="multipart/form-data">
                         <?php echo csrf_field(); ?>

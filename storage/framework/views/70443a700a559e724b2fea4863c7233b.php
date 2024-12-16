@@ -8,9 +8,10 @@
         </div>
         <div class="profile-picture text-center">
             <?php if(Auth::user()->avatar): ?>
-                <img src="<?php echo e(asset( Auth::user()->avatar)); ?>" alt="Profile Picture" class="rounded-profile-picture" />
+                <img src="<?php echo e(asset(Auth::user()->avatar)); ?>" alt="Profile Picture" class="rounded-profile-picture" />
             <?php else: ?>
-                <img src="<?php echo e(asset('mobile-app-assets/images/anonymous.jpeg')); ?>" alt="Profile Picture" class="rounded-profile-picture" />
+                <img src="<?php echo e(asset('mobile-app-assets/images/anonymous.jpeg')); ?>" alt="Profile Picture"
+                    class="rounded-profile-picture" />
             <?php endif; ?>
         </div>
         <div class="profile-info">
@@ -49,7 +50,7 @@
                 <span class="menu-item-icon menu-light">
                     <img src="<?php echo e(asset('')); ?>mobile-app-assets/icons/my-wallet-light.svg" alt="Wallet Icon" />
                 </span>
-                <span class="menu-item-title">My Wallet</span>
+                <span class="menu-item-title">My Wallet <small class="text-danger"><i>coming soon</i></small> </span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
             <a class="menu-item" href="<?php echo e(route('driver.registration.page')); ?>">
@@ -71,13 +72,13 @@
                 <span class="menu-item-icon menu-light">
                     <img src="<?php echo e(asset('mobile-app-assets/icons/notification-light.svg')); ?>" alt="Notification Icon" />
                 </span>
-                <span class="menu-item-title">Notifications</span>
+                <span class="menu-item-title">Notifications <small class="text-danger"><i>coming soon</i></small></span>
                 <span class="notification-num">3</span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
-            <a class="menu-item" href="<?php echo e(route('driver.vehicle')); ?>">
+            <a class="menu-item" href="<?php echo e(route('driver.vehicle.docs.registration')); ?>">
                 <span class="menu-item-icon fas fa-car"></span>
-                <span class="menu-item-title">Vehicle</span>
+                <span class="menu-item-title">Vehicle Registration</span>
                 <span class="menu-item-click fas fa-check green-status"></span>
             </a>
 
@@ -109,7 +110,8 @@
                 <span class="menu-item-icon menu-light support">
                     <img src="<?php echo e(asset('mobile-app-assets/icons/support-light.svg')); ?>" alt="Support Lighter Icon" />
                 </span>
-                <span class="menu-item-title">Online Support</span>
+                <span class="menu-item-title">Online Support <small class="text-danger"><i>coming soon</i></small>
+                </span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
             

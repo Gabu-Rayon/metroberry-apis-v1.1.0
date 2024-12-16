@@ -7,16 +7,22 @@ use App\Models\Trip;
 use App\Models\User;
 use App\Rules\Phone;
 use App\Models\Driver;
+use App\Models\Vehicle;
+use App\Models\FuelType;
 use App\Models\PSVBadge;
 use App\Models\Organisation;
 use App\Models\VehicleClass;
 use Illuminate\Http\Request;
 use App\Models\DriversLicenses;
+use App\Models\VehicleInsurance;
 use Illuminate\Support\Facades\DB;
+use App\Models\VehicleManufacturer;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\NTSAInspectionCertificate;
 use Illuminate\Support\Facades\Validator;
+use App\Models\VehicleSpeedGovernorCertificate;
 
 class DriverAppController extends Controller
 {
@@ -602,37 +608,6 @@ class DriverAppController extends Controller
         return view('driver-app.documents');
     }
 
-    /**
-     * Driver Vehicle Page
-     * 
-     * @return \Illuminate\View\View
-     */
-
-    public function vehicle()
-    {
-
-        // Get the authenticated user
-        $user = Auth::user();
-        $organisations = Organisation::all();
-        $vehicleClasses = VehicleClass::all();
-
-        // Check if the user is a driver
-        if ($user->role !== 'driver') {
-            return redirect()->back()->with('error', 'Access Denied. Only Drivers can access this page.');
-        }
-
-        // Fetch the driver data based on the user_id in the drivers table
-        $driver = Driver::where('user_id', $user->id)->firstOrFail();
-        return view('driver-app.vehicle', compact('driver', 'organisations', 'vehicleClasses'));
-    }
-
-    /**
-     * 
-     * 
-     * @return \Illuminate\View\View
-     */
-
-
     public function driverRegistrationPage()
     {
         return view('driver-app.driver-registration');
@@ -890,75 +865,605 @@ class DriverAppController extends Controller
         }
     }
 
-    public function updateVehicleDetails(Request $request, $driverVehicleDetails)
-    {
-        $user = Auth::user();
-        $driver = $user->driver;
 
-        // Validate the request data
-        $validated = $request->validate([
-            'speed_govenor_front_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'speed_govenor_back_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'vehicle_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'organisation_id' => 'required|exists:organisations,id',
-            'vehicle_class_id' => 'required|exists:vehicle_classes,id',
-            'car_registration_num' => 'required|string|max:255',
-            'car_fuel_type' => 'nullable|string|max:255',
-            'date_of_manufacture' => 'nullable|date',
-            'manufacture_make' => 'nullable|string|max:255',
-            'car_engine_size' => 'nullable|string|max:255',
+    //Methods for the Vehicle Registration 
+
+
+    public function driverVehicleDocsRegsitration()
+    {
+
+        return view('driver-app.driver-vehicle-registration');
+
+    }
+
+
+
+    /****
+     * 
+     * Driver Vehicle Registration  
+     * 
+     * Use the Same Form to POST  & PUT
+     * 
+     */
+
+
+
+
+    public function vehicleRegistration()
+    {
+        // Get the authenticated user
+        $user = Auth::user();
+        $organisations = Organisation::all();
+        $vehicleClasses = VehicleClass::all();
+        $VehicleManufacturers = VehicleManufacturer::all();
+        $vehicleFuelTypes = FuelType::all();
+
+        // Check if the user is a driver
+        if ($user->role !== 'driver') {
+            return redirect()->back()->with('error', 'Access Denied. Only Drivers can access this page.');
+        }
+
+        // Fetch the driver data based on the user_id in the drivers table
+        $driver = Driver::where('user_id', $user->id)->firstOrFail();
+        
+
+        return view('driver-app.vehicle-registration', compact('organisations', 'vehicleClasses', 'VehicleManufacturers', 'driver', 'vehicleFuelTypes'));
+   
+    }
+
+
+
+    // Store a new vehicle
+    public function vehicleRegistrationStore(Request $request)
+    {
+        $data = $request->all();
+
+        Log::info('Data From the Form to Create A new Vehicle: ');
+        Log::info($data);
+
+        $validator = Validator::make($data, [
+            'driver_vehicle_model' => 'required|string|max:255',
+            'driver_vehicle_plate_number' => 'required|string|max:255',
+            'driver_vehicle_seats_no' => 'required|integer',
+            'driver_vehicle_avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp,jfif|max:2048',
+            'driver_vehicle_organisation' => 'required|exists:organisations,id',
+            'driver_vehicle_class' => 'required|exists:vehicle_classes,id',
+            'driver_vehicle_fuel_type' => 'required|exists:fuel_types,id',
+            'driver_vehicle_date_of_manufacture' => 'required|digits:4',
+            'driver_vehicle_manufacturer' => 'required|exists:vehicle_manufacturers,id',
+            'driver_vehicle_engine_size' => 'nullable|string|max:255',
         ]);
+
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR: ');
+            Log::error($validator->errors());
+            return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+        }
+
+        $avatarPath = null;
+        $authUser = Auth::user();
+
+        // Retrieve driver's name
+        $driverName = $authUser->name;
+        $driverPlateNumber = $data['driver_vehicle_plate_number'];
+
+        // Handle avatar upload
+        if ($request->hasFile('driver_vehicle_avatar')) {
+            $avatarFile = $request->file('driver_vehicle_avatar');
+            $avatarExtension = $avatarFile->getClientOriginalExtension();
+            $avatarFileName = "{$driverName}-{$driverPlateNumber}-avatar.{$avatarExtension}";
+            $avatarPath = 'uploads/avatars/' . $avatarFileName;
+            $avatarFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
+        }
+        Log::info('The  vehicle avatar path  to be uploaded : ');
+        Log::info($avatarPath);
+
+        $fuelTypeId = $data['driver_vehicle_fuel_type'];
+
+        // Retrieve fuel type name (assuming there's a `name` column in `fuel_types` table)
+        $fuelType = Fueltype::find($fuelTypeId);
+
+        $fuelTypeName = $fuelType ? $fuelType->name : 'Unknown';
+
+        Log::info('the Fuel Type Name :');
+
+        Log::info($fuelTypeName);
+
+        // Retrieve driver_id from drivers table using the user_id
+        $driver = Driver::where('user_id', $authUser->id)->first();
+        if (!$driver) {
+            Log::error('Driver not found for the authenticated user.');
+            return redirect()->back()->with('error', 'Driver not found.')->withInput();
+        }
+
+        // Create a new vehicle record
+        $vehicle = Vehicle::create([
+            'created_by' => $authUser->id,
+            'driver_id' => $driver->id,
+            'organisation_id' => $data['driver_vehicle_organisation'],
+            'model' => $data['driver_vehicle_model'],
+            'manufacturer_id' => $data['driver_vehicle_manufacturer'],
+            'fuel_type_id' => $data['driver_vehicle_fuel_type'],
+            'make' => $data['driver_vehicle_model'],
+            'year' => $data['driver_vehicle_date_of_manufacture'],
+            'plate_number' => $data['driver_vehicle_plate_number'],
+            'color' => $data['driver_vehicle_color'] ?? 'Unknown',
+            'seats' => $data['driver_vehicle_seats_no'],
+            'class' => $data['driver_vehicle_class'],
+            'engine_size' => $data['driver_vehicle_engine_size'],
+            'avatar' => $avatarPath,
+            'fuel_type' => $fuelTypeName,
+            'ride_type_id' => null,
+            'status' => $data['status'] ?? 'inactive',
+        ]);
+
+        return redirect()->route('driver.vehicle.docs.registration')->with('success', 'Vehicle Added successfully');
+    }
+
+    // Update an existing vehicle
+    public function vehicleRegistrationUpdate(Request $request, $vehicle)
+    {
+        $data = $request->all();
+
+        Log::info('Data From the Form to Update Vehicle: ');
+        Log::info($data);
+
+        $validator = Validator::make($data, [
+            'driver_vehicle_model' => 'required|string|max:255',
+            'driver_vehicle_plate_number' => 'required|string|max:255',
+            'driver_vehicle_seats_no' => 'required|integer',
+            'driver_vehicle_avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp,jfif|max:2048',
+            'driver_vehicle_organisation' => 'required|exists:organisations,id',
+            'driver_vehicle_class' => 'required|exists:vehicle_classes,id',
+            'driver_vehicle_fuel_type' => 'required|exists:fuel_types,id',
+            'driver_vehicle_date_of_manufacture' => 'required|digits:4',
+            'driver_vehicle_manufacturer' => 'required|exists:vehicle_manufacturers,id',
+            'driver_vehicle_engine_size' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR: ');
+            Log::error($validator->errors());
+            return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+        }
+
+        $vehicle = Vehicle::findOrFail($vehicle);
+
+        $avatarPath = $vehicle->avatar;
+        $authUser = Auth::user();
+
+        // Retrieve driver's name
+        $driverName = $authUser->name;
+        $driverPlateNumber = $data['driver_vehicle_plate_number'];
+
+        // Handle avatar upload
+        if ($request->hasFile('driver_vehicle_avatar')) {
+            $avatarFile = $request->file('driver_vehicle_avatar');
+            $avatarExtension = $avatarFile->getClientOriginalExtension();
+            $avatarFileName = "{$driverName}-{$driverPlateNumber}-avatar.{$avatarExtension}";
+            $avatarPath = 'uploads/avatars/' . $avatarFileName;
+            $avatarFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
+        }
+
+
+        Log::info('The  vehicle avatar path  to be uploaded : ');
+        Log::info($avatarPath);
+
+        $fuelTypeId = $data['driver_vehicle_fuel_type'];
+
+        // Retrieve fuel type name (assuming there's a `name` column in `fuel_types` table)
+        $fuelType = Fueltype::find($fuelTypeId);
+
+        $fuelTypeName = $fuelType ? $fuelType->name : 'Unknown';
+
+        Log::info('the Fuel Type Name :');
+
+        Log::info($fuelTypeName);
+
+
+        // Retrieve driver_id from drivers table using the user_id
+        $driver = Driver::where('user_id', $authUser->id)->first();
+        if (!$driver) {
+            Log::error('Driver not found for the authenticated user.');
+            return redirect()->back()->with('error', 'Driver not found.')->withInput();
+        }
+
+        // Update the vehicle record
+        $vehicle->update([
+            'created_by' => $authUser->id,
+            'driver_id' => $driver->id,
+            'organisation_id' => $data['driver_vehicle_organisation'],
+            'model' => $data['driver_vehicle_model'],
+            'manufacturer_id' => $data['driver_vehicle_manufacturer'],
+            'fuel_type_id' => $data['driver_vehicle_fuel_type'],
+            'make' => $data['driver_vehicle_model'],
+            'year' => $data['driver_vehicle_date_of_manufacture'],
+            'plate_number' => $data['driver_vehicle_plate_number'],
+            'color' => $data['driver_vehicle_color'] ?? 'Unknown',
+            'seats' => $data['driver_vehicle_seats_no'],
+            'class' => $data['driver_vehicle_class'],
+            'engine_size' => $data['driver_vehicle_engine_size'],
+            'avatar' => $avatarPath,
+            'fuel_type' => $fuelTypeName,
+            'ride_type_id' => null,
+            'status' => $data['status'] ?? 'inactive',
+        ]);
+
+        return redirect()->route('driver.vehicle.docs.registration')->with('success', 'Vehicle updated successfully');
+    }
+
+
+
+    public function vehicleInsuranceDocument()
+    {
+        // Get the authenticated user
+        $user = Auth::user();
+
+        if ($user->role !== 'driver') {
+            return redirect()->back()->with('error', 'Access Denied. Only Drivers can access this page.');
+        }
+
+        $driver = Driver::where('user_id', $user->id)->firstOrFail();
+
+        if (!$driver->vehicle) {
+            return redirect()->back()->with('error', 'Please Register Vehicle to continue to Vehicle Insurance Registration.');
+        }
 
         $vehicle = $driver->vehicle;
 
-        if (!$vehicle) {
-            return redirect()->back()->with('error', 'Vehicle not found! Contact Admin for registration instructions.');
-        }
+        $insurance = NTSAInspectionCertificate::where('vehicle_id', $vehicle->id)->get();
 
-        // Define the base storage path
-        $basePath = '/home/kknuicdz/public_html_metroberry_app/';
+        return view('driver-app.vehicle-insurance-registration', compact('driver', 'insurance', 'vehicle'));
 
-        // Handle file upload for the vehicle avatar
-        if ($request->hasFile('vehicle_avatar')) {
-            $vehicleAvatarFile = $request->file('vehicle_avatar');
-            $vehicleAvatarFileName = "vehicle_{$vehicle->id}." . $vehicleAvatarFile->getClientOriginalExtension();
-            $vehicleAvatarPath = $vehicleAvatarFile->move($basePath . 'vehicle-avatars', $vehicleAvatarFileName);
-
-            $vehicle->update(['avatar' => $vehicleAvatarPath]);
-        }
-
-        // Handle file upload for the vehicle certificate (front)
-        if ($request->hasFile('license_front_avatar')) {
-            $certificateFrontFile = $request->file('license_front_avatar');
-            $certificateFrontFileName = "vehicle_certificate_front_{$vehicle->id}." . $certificateFrontFile->getClientOriginalExtension();
-            $certificateFrontPath = $certificateFrontFile->move($basePath . 'vehicle-certificates', $certificateFrontFileName);
-
-            $vehicle->update(['license_front_avatar' => $certificateFrontPath]);
-        }
-
-        // Handle file upload for the vehicle certificate (back)
-        if ($request->hasFile('license_back_avatar')) {
-            $certificateBackFile = $request->file('license_back_avatar');
-            $certificateBackFileName = "vehicle_certificate_back_{$vehicle->id}." . $certificateBackFile->getClientOriginalExtension();
-            $certificateBackPath = $certificateBackFile->move($basePath . 'vehicle-certificates', $certificateBackFileName);
-
-            $vehicle->update(['license_back_avatar' => $certificateBackPath]);
-        }
-
-        // Update the other vehicle details in the database
-        $vehicle->update([
-            'organisation_id' => $request->organisation_id,
-            'vehicle_class_id' => $request->vehicle_class_id,
-            'plate_number' => $request->input('car_registration_num'),
-            'fuel_type' => $request->input('car_fuel_type'),
-            'year' => $request->input('date_of_manufacture'),
-            'make' => $request->input('manufacture_make'),
-            'engine_size' => $request->input('car_engine_size'),
-        ]);
-
-        return redirect()->route('driver.dashboard')->with('success', 'Vehicle details updated successfully.');
     }
 
+
+    public function vehicleInsuranceStore(Request $request)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'insurance_number' => 'required|string|max:255',
+            'insurance_copy' => 'required|file|mimes:jpeg,jpg,png,pdf|max:2048',
+            'vehicle_id' => 'required|exists:vehicles,id',
+        ]);
+
+        // Get the authenticated user and their driver information
+        $user = Auth::user();
+        $driver = $user->driver;
+
+        // Retrieve the driver's name and email
+        $driverName = $user->name;
+        $driverEmail = $user->email;
+        $ntsaCertificateNo = $driver->speedGovernorCertificate->ntsa_inspection_certificate_no ?? 'no-ntsa-cert';
+
+        // Concatenate the filename for the uploaded file
+        $filename = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '-vehicle-insurance';
+
+        // Store the insurance copy in the specified directory
+        $insuranceCopyPath = $request->file('insurance_copy')->storeAs('vehicle-insurance-copies', $filename . '.' . $request->file('insurance_copy')->getClientOriginalExtension(), 'public');
+
+        // Create a new VehicleInsurance record
+        $vehicleInsurance = new VehicleInsurance([
+            'insurance_number' => $request->insurance_number,
+            'insurance_copy' => $insuranceCopyPath,
+            'driver_id' => $driver->id,
+            'vehicle_id' => $request->vehicle_id,
+        ]);
+
+        // Save the insurance record
+        $vehicleInsurance->save();
+
+        // Redirect with success message
+        return redirect()->route('driver.registration.page')
+            ->with('success', 'Vehicle Insurance successfully added.');
+    }
+
+    public function vehicleInsuranceUpdate(Request $request, $insuranceId)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'insurance_number' => 'required|string|max:255',
+            'insurance_copy' => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:2048',
+            'vehicle_id' => 'required|exists:vehicles,id',
+        ]);
+
+        // Find the existing vehicle insurance record by ID
+        $vehicleInsurance = VehicleInsurance::findOrFail($insuranceId);
+
+        // Get the authenticated user and their driver information
+        $user = Auth::user();
+        $driver = $user->driver;
+
+        // Retrieve the driver's name and email
+        $driverName = $user->name;
+        $driverEmail = $user->email;
+        $ntsaCertificateNo = $driver->speedGovernorCertificate->ntsa_inspection_certificate_no ?? 'no-ntsa-cert';
+
+        // Concatenate the filename for the uploaded file if new file is uploaded
+        if ($request->hasFile('insurance_copy')) {
+            // Delete the old file if it exists
+            if (file_exists(storage_path('app/public/' . $vehicleInsurance->insurance_copy))) {
+                unlink(storage_path('app/public/' . $vehicleInsurance->insurance_copy));
+            }
+
+            // Create the new filename
+            $filename = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '-vehicle-insurance';
+
+            // Store the new insurance copy
+            $insuranceCopyPath = $request->file('insurance_copy')->storeAs('vehicle-insurance-copies', $filename . '.' . $request->file('insurance_copy')->getClientOriginalExtension(), 'public');
+        } else {
+            // Use the existing file path if no new file is uploaded
+            $insuranceCopyPath = $vehicleInsurance->insurance_copy;
+        }
+
+        // Update the vehicle insurance record
+        $vehicleInsurance->update([
+            'insurance_number' => $request->insurance_number,
+            'insurance_copy' => $insuranceCopyPath,
+            'vehicle_id' => $request->vehicle_id,
+        ]);
+
+        // Redirect with success message
+        return redirect()->route('driver.registration.page')
+            ->with('success', 'Vehicle Insurance successfully updated.');
+    }
+
+
+    public function ntsaInspectionCertificateDocument()
+    {
+        // Get the authenticated user
+        $user = Auth::user();
+
+        if ($user->role !== 'driver') {
+            return redirect()->back()->with('error', 'Access Denied. Only Drivers can access this page.');
+        }
+
+        $driver = Driver::where('user_id', $user->id)->firstOrFail();
+
+        if (!$driver->vehicle) {
+            return redirect()->back()->with('error', 'Please Register Vehicle to continue to NTSA Inspection Certificate Registration..');
+        }
+
+        $vehicle = $driver->vehicle;
+
+        $inspectionCertificate = NTSAInspectionCertificate::where('vehicle_id', $vehicle->id)->get();
+
+        return view('driver-app.ntsa-inspection-registration', compact('driver', 'inspectionCertificates', 'vehicle'));
+    }
+
+
+
+    public function ntsaInspectionCertificateStore(Request $request)
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'driver_ntsa_inspection_certificate_no' => 'required|string|max:255',
+            'driver_ntsa_inspection_certificate_date_of_issue' => 'required|date',
+            'driver_ntsa_inspection_certificate_date_of_expiry' => 'required|date|after_or_equal:driver_ntsa_inspection_certificate_date_of_issue',
+            'driver_ntsa_certificate_copy' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'driver_vehicle_id' => 'required|exists:vehicles,id',
+        ]);
+
+        // Retrieve the driver info from the authenticated user's driver record
+        $driver = auth()->user()->driver;
+        $user = $driver->user; // Assuming 'user' relationship exists in the 'driver' model
+
+        // Prepare the custom file name
+        $driverName = $user->name;
+        $driverEmail = $user->email;
+        $ntsaCertificateNo = $request->input('driver_ntsa_inspection_certificate_no');
+
+        $fileName = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '.' . $request->file('driver_ntsa_certificate_copy')->getClientOriginalExtension();
+
+        // Store the uploaded certificate copy with the custom file name
+        if ($request->hasFile('driver_ntsa_certificate_copy')) {
+            $certificateAvatar = $request->file('driver_ntsa_certificate_copy')->storeAs(
+                'ntsa-insp-cert-copies',
+                $fileName,
+                'public'
+            );
+        }
+
+        // Store the inspection certificate in the database
+        $inspectionCertificate = new NTSAInspectionCertificate();
+        $inspectionCertificate->driver_id = $driver->id; // Assuming 'driver' relationship exists on user
+        $inspectionCertificate->vehicle_id = $request->input('driver_vehicle_id');
+        $inspectionCertificate->ntsa_inspection_certificate_no = $ntsaCertificateNo;
+        $inspectionCertificate->ntsa_inspection_certificate_date_of_issue = $request->input('driver_ntsa_inspection_certificate_date_of_issue');
+        $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry = $request->input('driver_ntsa_inspection_certificate_date_of_expiry');
+        $inspectionCertificate->ntsa_inspection_certificate_avatar = $certificateAvatar;
+        $inspectionCertificate->save();
+
+        // Return success response or redirect
+        return redirect()->route('driver.registration.page')->with('success', 'NTSA Inspection Certificate registered successfully!');
+    }
+
+
+    public function ntsaInspectionCertificateUpdate(Request $request, $id)
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'driver_ntsa_inspection_certificate_no' => 'required|string|max:255',
+            'driver_ntsa_inspection_certificate_date_of_issue' => 'required|date',
+            'driver_ntsa_inspection_certificate_date_of_expiry' => 'required|date|after_or_equal:driver_ntsa_inspection_certificate_date_of_issue',
+            'driver_ntsa_certificate_copy' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'driver_vehicle_id' => 'required|exists:vehicles,id',
+        ]);
+
+        // Find the existing inspection certificate
+        $inspectionCertificate = NTSAInspectionCertificate::findOrFail($id);
+
+        // Retrieve the driver info from the authenticated user's driver record
+        $driver = auth()->user()->driver;
+        $user = $driver->user; // Assuming 'user' relationship exists in the 'driver' model
+
+        // Prepare the custom file name if a new file is uploaded
+        if ($request->hasFile('driver_ntsa_certificate_copy')) {
+            // Delete the old certificate image if exists
+            if ($inspectionCertificate->ntsa_inspection_certificate_avatar) {
+                Storage::disk('public')->delete($inspectionCertificate->ntsa_inspection_certificate_avatar);
+            }
+
+            $driverName = $user->name;
+            $driverEmail = $user->email;
+            $ntsaCertificateNo = $request->input('driver_ntsa_inspection_certificate_no');
+
+            $fileName = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '.' . $request->file('driver_ntsa_certificate_copy')->getClientOriginalExtension();
+
+            // Store the uploaded certificate copy with the custom file name
+            $certificateAvatar = $request->file('driver_ntsa_certificate_copy')->storeAs(
+                'ntsa-insp-cert-copies',
+                $fileName,
+                'public'
+            );
+
+            $inspectionCertificate->ntsa_inspection_certificate_avatar = $certificateAvatar;
+        }
+
+        // Update the certificate data
+        $inspectionCertificate->vehicle_id = $request->input('driver_vehicle_id');
+        $inspectionCertificate->ntsa_inspection_certificate_no = $request->input('driver_ntsa_inspection_certificate_no');
+        $inspectionCertificate->ntsa_inspection_certificate_date_of_issue = $request->input('driver_ntsa_inspection_certificate_date_of_issue');
+        $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry = $request->input('driver_ntsa_inspection_certificate_date_of_expiry');
+        $inspectionCertificate->save();
+
+        // Return success response or redirect
+        return redirect()->route('driver.registration.page')->with('success', 'NTSA Inspection Certificate updated successfully!');
+    }
+
+
+
+    public function speedGovernorRegistration()
+    {
+        // Get the authenticated user
+        $user = Auth::user();
+
+        if ($user->role !== 'driver') {
+            return redirect()->back()->with('error', 'Access Denied. Only Drivers can access this page.');
+        }
+
+        $driver = Driver::where('user_id', $user->id)->firstOrFail();
+
+        if (!$driver->vehicle) {
+            return redirect()->back()->with('error', 'Please Register Vehicle to continue to Speed Governor Registration.');
+        }
+
+        $vehicle = $driver->vehicle;
+
+        $speedGovernorCertificate = VehicleSpeedGovernorCertificate::where('vehicle_id', $vehicle->id)->get();
+
+        // Pass the data to the view
+        return view('driver-app.speed-governor-registration', compact('driver', 'speedGovernorCertificate'));
+    }
+
+    public function speedGovernorRegistrationStore(Request $request)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'driver_certificate_no' => 'required|string|max:255',
+            'driver_certificate_copy' => 'required|file|mimes:jpeg,jpg,png,pdf|max:2048',
+            'driver_class_no' => 'required|string|max:255',
+            'driver_speed_governor_date_of_installation' => 'required|date',
+            'driver_speed_governor_expiry_date' => 'required|date|after:driver_speed_governor_date_of_installation',
+            'driver_speed_governor_type' => 'required|string|max:255',
+            'driver_vehicle_id' => 'required|exists:vehicles,id',
+        ]);
+
+        // Get the authenticated user and the associated driver
+        $user = Auth::user();
+        $driver = $user->driver;
+
+        // Get the driver's name, email, and NTSA certificate number
+        $driverName = $user->name;
+        $driverEmail = $user->email;
+        $certificateNo = $request->driver_certificate_no;
+
+        // Generate a unique filename by concatenating driver name, email, and certificate number
+        $filename = $driverName . '_' . $driverEmail . '_' . $certificateNo . '.' . $request->file('driver_certificate_copy')->extension();
+
+        // Store the certificate copy in the specified directory
+        $certificatePath = $request->file('driver_certificate_copy')->storeAs(
+            'vehicle-speed-governor-copies',
+            $filename,
+            'public'
+        );
+
+        // Create a new SpeedGovernorCertificate
+        $speedGovernorCertificate = new VehicleSpeedGovernorCertificate([
+            'driver_certificate_no' => $certificateNo,
+            'certificate_copy' => $certificatePath,
+            'class_no' => $request->driver_class_no,
+            'date_of_installation' => $request->driver_speed_governor_date_of_installation,
+            'expiry_date' => $request->driver_speed_governor_expiry_date,
+            'type_of_governor' => $request->driver_speed_governor_type,
+            'driver_id' => $driver->id,
+            'vehicle_id' => $request->driver_vehicle_id,
+        ]);
+
+        // Save the Speed Governor Certificate
+        $speedGovernorCertificate->save();
+
+        // Redirect with success message
+        return redirect()->route('driver.vehicle.docs.registration')
+            ->with('success', 'Speed Governor Certificate successfully Added.');
+    }
+
+    public function speedGovernorRegistrationUpdate(Request $request, $certificateId)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'driver_certificate_no' => 'required|string|max:255',
+            'driver_certificate_copy' => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:2048',
+            'driver_class_no' => 'required|string|max:255',
+            'driver_speed_governor_date_of_installation' => 'required|date',
+            'driver_speed_governor_expiry_date' => 'required|date|after:driver_speed_governor_date_of_installation',
+            'driver_speed_governor_type' => 'required|string|max:255',
+            'driver_vehicle_id' => 'required|exists:vehicles,id',
+        ]);
+
+        // Find the existing SpeedGovernorCertificate by ID
+        $speedGovernorCertificate = VehicleSpeedGovernorCertificate::findOrFail($certificateId);
+
+        // Get the driver's name, email, and NTSA certificate number
+        $user = Auth::user();
+        $driverName = $user->name;
+        $driverEmail = $user->email;
+        $certificateNo = $request->driver_certificate_no;
+
+        // Store the certificate copy if uploaded
+        $certificatePath = $speedGovernorCertificate->certificate_copy;
+        if ($request->hasFile('driver_certificate_copy')) {
+            // Delete the old certificate if a new one is uploaded
+            if (file_exists(storage_path('app/public/' . $certificatePath))) {
+                unlink(storage_path('app/public/' . $certificatePath));
+            }
+
+            // Generate a new filename by concatenating driver name, email, and certificate number
+            $filename = $driverName . '_' . $driverEmail . '_' . $certificateNo . '.' . $request->file('driver_certificate_copy')->extension();
+
+            // Store the new certificate in the specified directory
+            $certificatePath = $request->file('driver_certificate_copy')->storeAs(
+                'vehicle-speed-governor-copies',
+                $filename,
+                'public'
+            );
+        }
+
+        // Update the SpeedGovernorCertificate details
+        $speedGovernorCertificate->update([
+            'driver_certificate_no' => $certificateNo,
+            'certificate_copy' => $certificatePath,
+            'class_no' => $request->driver_class_no,
+            'date_of_installation' => $request->driver_speed_governor_date_of_installation,
+            'expiry_date' => $request->driver_speed_governor_expiry_date,
+            'type_of_governor' => $request->driver_speed_governor_type,
+            'vehicle_id' => $request->driver_vehicle_id,
+        ]);
+
+        // Redirect with success message
+        return redirect()->route('driver.vehicle.docs.registration')
+            ->with('success', 'Speed Governor Certificate successfully updated.');
+    }
 
 
 }

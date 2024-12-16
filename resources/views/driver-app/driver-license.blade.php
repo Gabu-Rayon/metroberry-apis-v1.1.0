@@ -84,7 +84,8 @@
                         <!--Input Field Container Start-->
                         <div class="form-group form-control-margin">
                             <label class="label-title">Expiry Date : <span
-                                    class="text-primary">{{ $driver->driverLicense->driving_license_date_of_expiry ?? null }}</span></label>
+                                    class="text-primary">{{ $driver->driverLicense->driving_license_date_of_expiry ?? null }}</span>
+                                    </label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
                                     name="driving_license_date_of_expiry" autocomplete="off"

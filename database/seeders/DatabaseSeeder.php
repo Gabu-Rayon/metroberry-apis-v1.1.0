@@ -25,5 +25,11 @@ class DatabaseSeeder extends Seeder
         $this->call([VehiclePartSeeder::class]);
         $this->call([VehicleClassSeeder::class]);
         $this->call(LanguagesTableSeeder::class);
+        $this->call([
+            VehicleManufacturersTableSeeder::class,
+        ]);
+        $this->call([
+            FuelTypesTableSeeder::class,
+        ]);
     }
 }

@@ -17,6 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('organisation_id')->nullable();
             $table->string('model');
+            $table->unsignedBigInteger('manufacturer_id');
+            $table->unsignedBigInteger('fuel_type_id');
             $table->string('make');
             $table->string('year');
             $table->string('plate_number')->unique();
@@ -30,6 +32,8 @@ return new class extends Migration
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
+            $table->foreign('manufacturer_id')->references('id')->on('vehicle_manufacturers')->onDelete('cascade');
+            $table->foreign('fuel_type_id')->references('id')->on('fuel_types')->onDelete('cascade');
             $table->timestamps();
         });
     }

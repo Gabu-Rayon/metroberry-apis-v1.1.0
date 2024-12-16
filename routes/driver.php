@@ -58,6 +58,81 @@ Route::put('driver/trip-completed/show/{id}', [DriverAppController::class, 'trip
 Route::post('driver/update-profile-picture', [DriverAppController::class, 'updateProfilePicture'])->name('driver.updateProfilePicture')->middleware('auth');
 
 
-// driver.vehicle.details.update
+//More route for driver Vehicle Registration 
+Route::get('driver/vehicle/docs/registration', [DriverAppController::class, 'driverVehicleDocsRegsitration'])->name('driver.vehicle.docs.registration')->middleware('auth');
 
-Route::put('driver/update-vehicle-details/{id}', [DriverAppController::class, 'updateVehicleDetails'])->name('driver.vehicle.details.update')->middleware('auth');
+
+/***
+ * 
+ * 
+ * Vehicle Registration
+ * 
+ * 
+ */
+
+
+
+Route::get('/driver/registration/vehicle', [DriverAppController::class, 'vehicleRegistration'])->name('driver.registration.vehicle')->middleware('auth');
+
+/** Use the same Form to both PUT & POST */
+// creating a new vehicle
+Route::post('driver/registration/vehicle/store', [DriverAppController::class, 'vehicleRegistrationStore'])->name('driver.registration.vehicle.store')->middleware('auth');
+
+// updating an existing vehicle
+Route::put('driver/registration/vehicle/{vehicle}/update', [DriverAppController::class, 'vehicleRegistrationUpdate'])->name('driver.registration.vehicle.update')->middleware('auth');
+
+
+/***
+ * 
+ * 
+ *Insurance Document 
+ * 
+ * 
+ */
+
+Route::get('/driver/registration/vehicle/insurance/document', [DriverAppController::class, 'vehicleInsuranceDocument'])->name('driver.registration.vehicle.insurance.document')->middleware('auth');
+
+/** Use the same Form to both PUT & POST */
+// creating a new Insurance Document Post
+Route::post('driver/registration/vehicle/ntsa/inspection/certificate/store', [DriverAppController::class, 'ntsaInspectionCertificateStore'])->name('driver.registration.ntsa.ispection.certificate.store')->middleware('auth');
+
+// updating an existing  Insurance Document Post
+Route::put('driver/registration/vehicle/ntsa/inspection/certificate/{ntsaCertificateId}/update', [DriverAppController::class, 'ntsaInspectionCertificateUpdate'])->name('driver.registration.ntsa.ispection.certificate.update')->middleware('auth');
+
+
+
+/***
+ * 
+ * 
+ *  inspection certificate
+ * 
+ * 
+ */
+
+Route::get('/driver/registration/ntsa/inspection/certificate/document', [DriverAppController::class, 'ntsaInspectionCertificateDocument'])->name('driver.registration.ntsa.ispection.certificate.document')->middleware('auth');
+
+/** Use the same Form to both PUT & POST */
+// creating a new inspection certificate
+Route::post('driver/registration/vehicle/ntsa/inspection/certificate/store', [DriverAppController::class, 'ntsaInspectionCertificateStore'])->name('driver.registration.ntsa.ispection.certificate.store')->middleware('auth');
+
+// updating an existing inspection certificate
+Route::put('driver/registration/vehicle/ntsa/inspection/certificate/{ntsaCertificateId}/update', [DriverAppController::class, 'ntsaInspectionCertificateUpdate'])->name('driver.registration.ntsa.ispection.certificate.update')->middleware('auth');
+
+
+
+/***
+ * 
+ * 
+ *  Speed Governor
+ * 
+ * 
+ */
+
+Route::get('/driver/speed/governor/registration', [DriverAppController::class, 'speedGovernorRegistration'])->name('driver.speed.governor.registration')->middleware('auth');
+
+/** Use the same Form to both PUT & POST */
+// creating a new Speed Governor
+Route::post('driver/registration//speed/governor/vehicle/store', [DriverAppController::class, 'speedGovernorRegistrationStore'])->name('driver.registration.speed.governor.store')->middleware('auth');
+
+// updating an existing Speed Governor
+Route::put('driver/registration/vehicle/speed/governor/{certificateId}/update', [DriverAppController::class, 'speedGovernorRegistrationUpdate'])->name('driver.registration.speed.governor.update')->middleware('auth');

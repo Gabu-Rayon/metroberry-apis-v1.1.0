@@ -1,7 +1,7 @@
+@extends('layouts.mobile-app')
 
-
-<?php $__env->startSection('title', 'Registration | Driver'); ?>
-<?php $__env->startSection('content'); ?>
+@section('title', 'Vehicle Registration | Driver')
+@section('content')
     <!--Loading Container Start-->
     <div id="load" class="loading-overlay display-flex flex-column justify-content-center align-items-center">
         <div class="primary-color font-28 fas fa-spinner fa-spin"></div>
@@ -12,15 +12,15 @@
         <div class="col-xs-12 col-sm-12">
             <!--Page Title & Icons Start-->
             <div class="header-icons-container text-center">
-                <a href="<?php echo e(route('driver.dashboard')); ?>">
+                <a href="{{ route('driver.dashboard') }}">
                     <span class="float-left">
-                        <img src="<?php echo e(asset('mobile-app-assets/icons/back.svg')); ?>" alt="Back Icon" />
+                        <img src="{{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
                     </span>
                 </a>
-                <span>Driver Registration</span>
+                <span>Driver Vehicle Registration</span>
                 <a href="#">
                     <span class="float-right menu-open closed">
-                        <img src="<?php echo e(asset('mobile-app-assets/icons/menu.svg')); ?>" alt="Menu Hamburger Icon" />
+                        <img src="{{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon" />
                     </span>
                 </a>
             </div>
@@ -29,71 +29,84 @@
             <div class="rest-container">
                 <div class="text-center header-icon-logo-margin header-icon-logo-margin-extra">
                     <div class="profile-picture-container">
-                        <img src="<?php echo e(asset('mobile-app-assets/images/driver-registration.svg')); ?>"
-                            alt="Driver Registration Icon" />
+                        <img src="{{ asset('mobile-app-assets/images/driver-registration.svg') }}"
+                            alt="Driver Vehicle Registration Icon" />
                     </div>
                 </div>
                 
-            <?php if(session('success')): ?>
+            @if (session('success'))
                 <div id="success-message" class="alert alert-success" style="display: none;">
-                    <?php echo e(session('success')); ?>
-
+                    {{ session('success') }}
                 </div>
-            <?php endif; ?>
+            @endif
 
-            <?php if(session('error')): ?>
+            @if (session('error'))
                 <div id="error-message" class="alert alert-danger" style="display: none;">
-                    <?php echo e(session('error')); ?>
-
+                    {{ session('error') }}
                 </div>
-            <?php endif; ?>
+            @endif
             
-                <div class="address-title">Driver Registration</div>
+                <div class="address-title">Driver Vehicle Registration</div>
 
-                <!--Driver Registration Information Links Container Start-->
+                <!--Driver Vheicle Registration Information Links Container Start-->
                 <div class="sign-up-form-container">
                     <div class="width-100">
-                        <!--Driver Driver's License Item Start-->
+                        <!--Driver Vehicle'sItem Start-->
                         <div class="border-bottom-primary">
-                            <a href="<?php echo e(route('driver.license.document')); ?>" class="home-options-list href-decoration-none">
-                                License
+                            <a href="{{ route('driver.registration.vehicle') }}" class="home-options-list href-decoration-none">
+                                Vehicle
                                 <span class="fas fa-check icon chosen hidden"></span>
                                 <span class="icon choose float-right">
-                                    <img src="<?php echo e(asset('mobile-app-assets/icons/angle-right.svg')); ?>"
+                                    <img src="{{ asset('mobile-app-assets/icons/angle-right.svg') }}"
                                         alt="Angle Right Icon" />
                                 </span>
                             </a>
                         </div>
-                        <!--Driver Driver's License Item End-->
+                        <!--Driver Vehicle's Item End-->
 
-                        <!--Driver   Personal ID Card Item Start-->
+                        <!--Driver Vehicle Insruance Card Item Start-->
                         <div class="border-bottom-primary">
-                            <a href="<?php echo e(route('personal.id.card.document')); ?>"
+                            <a href="{{ route('driver.registration.vehicle.insurance.document') }}"
                                 class="home-options-list href-decoration-none">
-                                Personal ID Card
+                                Vehicle Insurance
                                 <span class="fas fa-check icon chosen hidden"></span>
                                 <span class="icon choose float-right">
-                                    <img src="<?php echo e(asset('mobile-app-assets/icons/angle-right.svg')); ?>"
+                                    <img src="{{ asset('mobile-app-assets/icons/angle-right.svg') }}"
                                         alt="Angle Right Icon" />
                                 </span>
                             </a>
                         </div>
-                        <!--Driver   Personal ID Card Item End-->
-                        <!--Driver  PSV Badge Item Start-->
+                        <!--Driver   VwehicleInsruance Card Item End-->
+
+                        <!--Driver NTSA INSPECTION Certificate Item Start-->
                         <div class="border-bottom-primary">
-                            <a href="<?php echo e(route('psvbadge.document')); ?>" class="home-options-list href-decoration-none">
-                                PSV Badge
+                            <a href="{{ route('driver.registration.ntsa.ispection.certificate.document') }}" class="home-options-list href-decoration-none">
+                                NTSA Inspect Certificate
                                 <span class="fas fa-check icon chosen hidden"></span>
                                 <span class="icon choose float-right">
-                                    <img src="<?php echo e(asset('mobile-app-assets/icons/angle-right.svg')); ?>"
+                                    <img src="{{ asset('mobile-app-assets/icons/angle-right.svg') }}"
                                         alt="Angle Right Icon" />
                                 </span>
                             </a>
                         </div>
-                        <!--Driver  PSV Badge Item End-->
+                        <!--Driver  NTSA INSPECTION Certificate Item End-->
+
+                         <!--Driver Speed Governor Item Start-->
+                        <div class="border-bottom-primary">
+                            <a href="{{ route('driver.speed.governor.registration') }}" class="home-options-list href-decoration-none">
+                                Speed Governor
+                                <span class="fas fa-check icon chosen hidden"></span>
+                                <span class="icon choose float-right">
+                                    <img src="{{ asset('mobile-app-assets/icons/angle-right.svg') }}"
+                                        alt="Angle Right Icon" />
+                                </span>
+                            </a>
+                        </div>
+                        <!--Driver  Speed Governor  Item End-->
+
                     </div>
                 </div>
-                <!--Driver Registration Information Links Container End-->
+                <!--Driver Vehicle Registration Information Links Container End-->
             </div>
         </div>
         <!--Terms And Conditions Agreement Container Start-->
@@ -110,11 +123,9 @@
         <!--Terms And Conditions Agreement Container End-->
 
         <!--Main Menu Start-->
-        <?php echo $__env->make('components.driver-mobile-app.main-menu', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+        @include('components.driver-mobile-app.main-menu')
         <!--Main Menu End-->
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<?php $__env->stopSection(); ?>
-
-<?php echo $__env->make('layouts.mobile-app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\metroberry-apis-v1.1.0\resources\views/driver-app/driver-registration.blade.php ENDPATH**/ ?>
+@endsection
