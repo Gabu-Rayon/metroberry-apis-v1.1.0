@@ -75,15 +75,11 @@
                                                                 {{ $vehicle->driver->user->name }}
                                                             @else
                                                                 @if (\Auth::user()->can('assign vehicle'))
-                                                                    @if ($vehicle->status == 'active')
-                                                                        <a href="javascript:void(0);"
-                                                                            class="btn btn-sm btn-primary"
-                                                                            onclick="axiosModal('/vehicle/{{ $vehicle->id }}/assign/driver')">
-                                                                            Assign Driver
-                                                                        </a>
-                                                                    @else
-                                                                        -
-                                                                    @endif
+                                                                    <a href="javascript:void(0);"
+                                                                        class="btn btn-sm btn-primary"
+                                                                        onclick="axiosModal('/vehicle/{{ $vehicle->id }}/assign/driver')">
+                                                                        Assign Driver
+                                                                    </a>
                                                                 @endif
                                                             @endif
                                                         </td>

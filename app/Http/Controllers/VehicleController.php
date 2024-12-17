@@ -417,9 +417,7 @@ class VehicleController extends Controller
     {
         try {
             $vehicle = Vehicle::findOrFail($id);
-            $drivers = Driver::where('status', 'active')
-                ->whereNull('vehicle_id')
-                ->get();
+            $drivers = Driver::whereNull('vehicle_id')->get();
             return view('vehicle.assign-driver', compact('vehicle', 'drivers'));
         } catch (Exception $e) {
             Log::error('Error fetching vehicle for Assigning: ' . $e->getMessage());
@@ -436,26 +434,6 @@ class VehicleController extends Controller
         try {
             $vehicle = Vehicle::with('insurance')->findOrFail($id);
             $driver = Driver::findOrFail($request->input('driver_id'));
-
-            // Check if the vehicle has valid insurance
-            if (!$vehicle->insurance) {
-                return redirect()->back()->with('error', 'Vehicle has no insurance.');
-            }
-
-            $insurance = $vehicle->insurance;
-            $today = now()->toDateString();
-            $insuranceStartDate = $insurance->insurance_date_of_issue;
-            $insuranceEndDate = $insurance->insurance_date_of_expiry;
-
-            // Validate insurance dates
-            if ($today < $insuranceStartDate || $today > $insuranceEndDate) {
-                return redirect()->back()->with('error', 'Insurance is not valid today.');
-            }
-
-            // Check if insurance status is active
-            if ($insurance->status != 1) {
-                return redirect()->back()->with('error', 'Insurance is not active.');
-            }
 
             // Assign driver to vehicle
             $vehicle->driver_id = $driver->id;
