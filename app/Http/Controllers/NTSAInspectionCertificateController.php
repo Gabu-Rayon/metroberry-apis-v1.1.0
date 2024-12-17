@@ -54,7 +54,7 @@ class NTSAInspectionCertificateController extends Controller
             if ($validator->fails()) {
                 Log::error('VALIDATION ERROR');
                 Log::error($validator->errors());
-                return back()->with('error', $validator->errors()->first());
+                return back()->with('error', $validator->errors()->first())->withInput();
             }
 
             DB::beginTransaction();
@@ -105,7 +105,7 @@ class NTSAInspectionCertificateController extends Controller
             DB::rollBack();
             Log::error('STORE INSPECTION CERTIFICATE ERROR');
             Log::error($e);
-            return back()->with('error', 'Something went wrong.');
+            return back()->with('error', 'Something went wrong.')->withInput();
         }
     }
 
