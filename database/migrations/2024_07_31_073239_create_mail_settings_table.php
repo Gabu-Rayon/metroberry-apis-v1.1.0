@@ -23,6 +23,8 @@ return new class extends Migration {
 
             $table->boolean('app_debug')->default(false)->nullable();
             $table->boolean('force_https')->default(false)->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

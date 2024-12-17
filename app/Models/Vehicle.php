@@ -16,7 +16,6 @@ class Vehicle extends Model
         'model',
         'manufacturer_id',
         'fuel_type_id',
-        'make',
         'year',
         'plate_number',
         'color',

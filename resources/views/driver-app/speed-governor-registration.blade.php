@@ -29,7 +29,7 @@
                     </span>
                 </a>
                 @if ($driver->status == 'inactive')
-                    <span>Deactivated</span>
+                    <span>Account Deactivated</span>
                 @else
                     <span>Speed Governor</span>
                 @endif
@@ -66,134 +66,134 @@
                             @method('POST')
                         @endif
 
-                        <!-- Your form fields here -->
-                    </form>
 
+                        <input class="form-control form-control-with-padding" type="hidden" name="driver_speed_governor_vehicle_id"
+                            autocomplete="off" placeholder="Vehicle ID"
+                            value="{{ old('driver_speed_governor_vehicle_id', $driver->vehicle->id) }}" readonly />
 
-                    <!--Input Field Container Start-->
-                    <div class="form-group form-control-margin">
-                        <label class="label-title">Certificate No</label>
-                        <div class="input-group">
-                            <input class="form-control form-control-with-padding" type="text"
-                                name="driver_certificate_no" autocomplete="on" placeholder="Driver Certificate No"
-                                value="{{ old('driver_certificate_no', $driver->speedGovernorCertificate->certificate_no ?? '') }}" />
-                            <div class="input-group-append">
-                                <span class="fas fa-id-card icon-inherited-color"></span>
+                        <div class="form-group form-control-margin">
+                            {{-- This is used to just show Driver the Vehicle  and its NOT POST TO DATABSE WHEN DOING (post & update) --}}
+
+                            <label class="label-title">Vehicle</label>
+
+                            <div class="#">
+
+                                {{ $driver->vehicle->plate_number ?? 'N/A' }}:
+                                {{ optional($driver->vehicle->manufacturer)->name ?? '' }}
+                                {{ $driver->vehicle->model ?? '' }}
+
+                                <div class="input-group-append">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!--Input Field Container End-->
-
-                    <!-- Upload Certificate Copy -->
-                    <div class="form-group">
-                        <label class="width-100">
-                            <div class="display-flex justify-content-between">
-                                <span class="position-relative upload-btn">
-                                    <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
-                                    <input class="scan-prompt" type="file" accept="image/*"
-                                        name="driver_certificate_copy" id="certificate-copy-input" />
-                                </span>
-                                <span class="text-uppercase">Certificate Copy</span>
-                                <span class="delete-btn" id="certificate-copy-delete">
-                                    <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
-                                </span>
+                        <!--Input Field Container End-->
+                        <!--Input Field Container Start-->
+                        <div class="form-group form-control-margin">
+                            <label class="label-title">Certificate No</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-with-padding" type="text"
+                                    name="driver_speed_governor_certificate_no" autocomplete="on" placeholder="Driver Certificate No"
+                                    value="{{ old('driver_speed_governor_certificate_no', $driver->speedGovernorCertificate->certificate_no ?? '') }}" />
+                                <div class="input-group-append">
+                                    <span class="fas fa-id-card icon-inherited-color"></span>
+                                </div>
                             </div>
-                            <div class="scan-your-card-prompt margin-top-5">
-                                <div class="position-relative">
-                                    <div class="upload-picture-container">
-                                        <div class="upload-camera-container text-center">
-                                            <span class="#">
-                                                <img id="certificate-copy-preview"
-                                                    src="{{ $driver->speedGovernorCertificate->certificate_copy ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                    alt="Certificate Copy" />
-                                            </span>
+                        </div>
+                        <!--Input Field Container End-->
+
+                        <!-- Upload Certificate Copy -->
+                        <div class="form-group">
+                            <label class="width-100">
+                                <div class="display-flex justify-content-between">
+                                    <span class="position-relative upload-btn">
+                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                        <input class="scan-prompt" type="file" accept="image/*"
+                                            name="driver_speed_governor_certificate_copy" id="certificate-copy-input" />
+                                    </span>
+                                    <span class="text-uppercase">Certificate Copy</span>
+                                    <span class="delete-btn" id="certificate-copy-delete">
+                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                    </span>
+                                </div>
+                                <div class="scan-your-card-prompt margin-top-5">
+                                    <div class="position-relative">
+                                        <div class="upload-picture-container">
+                                            <div class="upload-camera-container text-center">
+                                                <span class="#">
+                                                    <img id="certificate-copy-preview"
+                                                        src="{{ $driver->speedGovernorCertificate->certificate_copy ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        alt="Certificate Copy" />
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </label>
-                    </div>
+                            </label>
+                        </div>
 
-                    <!--Input Field Container Start-->
-                    <div class="form-group form-control-margin">
-                        <label class="label-title">Class No</label>
-                        <div class="input-group">
-                            <input class="form-control form-control-with-padding" type="text" name="driver_class_no"
-                                autocomplete="on" placeholder="Driver Class No"
-                                value="{{ old('driver_class_no', $driver->speedGovernorCertificate->class_no ?? '') }}" />
-                            <div class="input-group-append">
-                                <span class="fas fa-id-card icon-inherited-color"></span>
+                        <!--Input Field Container Start-->
+                        <div class="form-group form-control-margin">
+                            <label class="label-title">Class No</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-with-padding" type="text" name="driver_speed_governor_class_no"
+                                    autocomplete="on" placeholder="Driver Class No"
+                                    value="{{ old('driver_speed_governor_class_no', $driver->speedGovernorCertificate->class_no ?? '') }}" />
+                                <div class="input-group-append">
+                                    <span class="fas fa-id-card icon-inherited-color"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!--Input Field Container End-->
+                        <!--Input Field Container End-->
 
-                    <!--Input Field Container Start-->
-                    <div class="form-group form-control-margin">
-                        <label class="label-title">Date of Installation</label>
-                        <div class="input-group">
-                            <input class="form-control form-control-with-padding" type="date"
-                                name="driver_speed_governor_date_of_installation" autocomplete="on"
-                                placeholder="Date of Installation"
-                                value="{{ old('driver_speed_governor_date_of_installation', $driver->speedGovernorCertificate->date_of_installation ?? '') }}" />
-                            <div class="input-group-append">
-                                <span class="fas fa-id-card icon-inherited-color"></span>
+                        <!--Input Field Container Start-->
+                        <div class="form-group form-control-margin">
+                            <label class="label-title">Date of Installation</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-with-padding" type="date"
+                                    name="driver_speed_governor_date_of_installation" autocomplete="on"
+                                    placeholder="Date of Installation"
+                                    value="{{ old('driver_speed_governor_date_of_installation', $driver->speedGovernorCertificate->date_of_installation ?? '') }}" />
+                                <div class="input-group-append">
+                                    <span class="fas fa-id-card icon-inherited-color"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!--Input Field Container End-->
+                        <!--Input Field Container End-->
 
-                    <!--Input Field Container Start-->
-                    <div class="form-group form-control-margin">
-                        <label class="label-title">Expiry Date</label>
-                        <div class="input-group">
-                            <input class="form-control form-control-with-padding" type="date"
-                                name="driver_speed_governor_expiry_date" autocomplete="on" placeholder="Expiry Date"
-                                value="{{ old('driver_speed_governor_expiry_date', $driver->speedGovernorCertificate->expiry_date ?? '') }}" />
-                            <div class="input-group-append">
-                                <span class="fas fa-id-card icon-inherited-color"></span>
+                        <!--Input Field Container Start-->
+                        <div class="form-group form-control-margin">
+                            <label class="label-title">Expiry Date</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-with-padding" type="date"
+                                    name="driver_speed_governor_expiry_date" autocomplete="on" placeholder="Expiry Date"
+                                    value="{{ old('driver_speed_governor_expiry_date', $driver->speedGovernorCertificate->expiry_date ?? '') }}" />
+                                <div class="input-group-append">
+                                    <span class="fas fa-id-card icon-inherited-color"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!--Input Field Container End-->
+                        <!--Input Field Container End-->
 
-                    <!--Input Field Container Start-->
-                    <div class="form-group form-control-margin">
-                        <label class="label-title">Type Of Speed Governor</label>
-                        <div class="input-group">
-                            <input class="form-control form-control-with-padding" type="text"
-                                name="driver_speed_governor_type" autocomplete="on" placeholder="Type Of Speed Governor"
-                                value="{{ old('driver_speed_governor_type', $driver->speedGovernorCertificate->type_of_governor ?? '') }}" />
-                            <div class="input-group-append">
-                                <span class="fas fa-id-card icon-inherited-color"></span>
+                        <!--Input Field Container Start-->
+                        <div class="form-group form-control-margin">
+                            <label class="label-title">Type Of Speed Governor</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-with-padding" type="text"
+                                    name="driver_speed_governor_type" autocomplete="on"
+                                    placeholder="Type Of Speed Governor"
+                                    value="{{ old('driver_speed_governor_type', $driver->speedGovernorCertificate->type_of_governor ?? '') }}" />
+                                <div class="input-group-append">
+                                    <span class="fas fa-id-card icon-inherited-color"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!--Input Field Container End-->
+                        <!--Input Field Container End-->
 
-                    <!--Vehicle Field Start-->
-                    <div class="form-group">
-                        <label class="width-100">
-                            <span class="label-title">Vehicle</span>
-                            <span class="car-info-wrap display-block">
-                                <select class="custom-select font-weight-light car-info" name="driver_vehicle_id">
-                                    @foreach ($vehicles as $vehicle)
-                                        <option value="{{ $vehicle->id }}"
-                                            {{ old('driver_vehicle_id', $driver->vehicle_id ?? '') == $vehicle->id ? 'selected' : '' }}>
-                                            {{ $vehicle->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </span>
-                        </label>
-                    </div>
-                    <!--Vehicle Field End-->
-
-                    <div class="form-submit-button text-center">
-                        <button type="submit" class="btn btn-dark text-uppercase">
-                            {{ $isUpdate ? 'Update' : 'Register' }}
-                        </button>
-                    </div>
+                        <div class="form-submit-button text-center">
+                            <button type="submit" class="btn btn-dark text-uppercase">
+                                {{ $isUpdate ? 'Update' : 'Register' }}
+                            </button>
+                        </div>
                     </form>
                 </div>
                 <!--Driver's License Fields Container End-->

@@ -68,15 +68,16 @@
 
                             {{-- This is used to just show Driver the Vehicle  and its NOT POST TO DATABSE WHEN DOING (post & update) --}}
                             <label class="label-title">Vehicle</label>
-                            <div class="input-group">
-                                <input class="form-control form-control-with-padding" type="text"
-                                    name="driver_vehicle_name" autocomplete="off" placeholder="Vehicle ID"
-                                    value="{{ old('driver_vehicle_name', $driver->vehicle->model) }}" readonly />
-                                <div class="input-group-append">
+                            <div class="#">
 
+                                {{ $driver->vehicle->plate_number ?? 'N/A' }}:
+                                {{ optional($driver->vehicle->manufacturer)->name ?? '' }}
+                                {{ $driver->vehicle->model ?? '' }}
+                                <div class="input-group-append">
                                 </div>
                             </div>
                         </div>
+                        <!--Input Field Container End-->
                         <!--Input Field Container End-->
 
                         <!--Input Field Container Start-->

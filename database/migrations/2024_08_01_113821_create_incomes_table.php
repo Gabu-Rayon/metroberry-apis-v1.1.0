@@ -18,6 +18,8 @@ return new class extends Migration
             $table->enum('category', ['trips']);
             $table->date('entry_date');
             $table->text('description');
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -20,6 +20,8 @@ return new class extends Migration {
             $table->string('logo_white')->nullable();
             $table->string('logo_black')->nullable();
             $table->string('site_favicon')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
