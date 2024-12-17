@@ -108,7 +108,7 @@ class Vehicle extends Model
 
     public function inspectionCertificates()
     {
-        return $this->hasMany(NTSAInspectionCertificate::class);
+        return $this->hasOne(NTSAInspectionCertificate::class);
     }
 
     public function manufacturer()

@@ -54,7 +54,7 @@ class NTSAInspectionCertificateController extends Controller
             if ($validator->fails()) {
                 Log::error('VALIDATION ERROR');
                 Log::error($validator->errors());
-                return back()->with('error', $validator->errors()->first());
+                return back()->with('error', $validator->errors()->first())->withInput();
             }
 
             DB::beginTransaction();
@@ -68,7 +68,7 @@ class NTSAInspectionCertificateController extends Controller
             $avatarFileName = "{$certNo}-inspection-certificate.{$avatarExtension}";
 
             // Define the path where the avatar will be stored
-            $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
+            $baseUploadPath = './public/public_html_metroberry_app/uploads';
             $avatarPath = "{$baseUploadPath}/ntsa-insp-cert-copies/{$avatarFileName}";
 
             // Create the directory if it doesn't exist
@@ -105,7 +105,7 @@ class NTSAInspectionCertificateController extends Controller
             DB::rollBack();
             Log::error('STORE INSPECTION CERTIFICATE ERROR');
             Log::error($e);
-            return back()->with('error', 'Something went wrong.');
+            return back()->with('error', 'Something went wrong.')->withInput();
         }
     }
 
@@ -172,7 +172,7 @@ class NTSAInspectionCertificateController extends Controller
                 $avatarFileName = "{$certNo}-avatar.{$avatarExtension}";
 
                 // Define the path for the new avatar
-                $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
+                $baseUploadPath = './public/public_html_metroberry_app/uploads';
                 $avatarPath = "{$baseUploadPath}/ntsa-insp-cert-copies/{$avatarFileName}";
 
                 // Create the directory if it doesn't exist
@@ -307,7 +307,7 @@ class NTSAInspectionCertificateController extends Controller
             $certificate->vehicle->save();
 
             // Define the path to the avatar
-            $avatarPath = '/home/kknuicdz/public_html_metroberry_app/' . $certificate->ntsa_inspection_certificate_avatar;
+            $avatarPath = './public/public_html_metroberry_app/' . $certificate->ntsa_inspection_certificate_avatar;
 
             // Delete the associated image from the specified directory
             if (File::exists($avatarPath)) {

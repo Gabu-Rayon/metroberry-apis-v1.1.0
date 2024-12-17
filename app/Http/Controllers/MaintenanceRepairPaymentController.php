@@ -108,7 +108,7 @@ class MaintenanceRepairPaymentController extends Controller
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
 
                 // Define the upload path
-                $uploadPath = '/home/kknuicdz/public_html_metroberry_app/maintenance_repair_payment_receipts';
+                $uploadPath = './public/public_html_metroberry_app/maintenance_repair_payment_receipts';
 
                 // Ensure the directory exists
                 if (!is_dir($uploadPath)) {

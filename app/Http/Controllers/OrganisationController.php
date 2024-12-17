@@ -165,7 +165,7 @@ class OrganisationController extends Controller
             if (app()->environment('local')) {
                 $baseUploadPath = public_path('uploads');
             } else {
-                $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
+                $baseUploadPath = './public/public_html_metroberry_app/uploads';
             }
 
             // Store logo in the public folder
@@ -289,7 +289,7 @@ class OrganisationController extends Controller
             $certificatePath = $organisation->certificate_of_organisation; // Keep the existing certificate path if not updated
 
             // Define the base path for uploads
-            $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
+            $baseUploadPath = './public/public_html_metroberry_app/uploads';
 
             // Store logo in the public folder
             if ($request->hasFile('logo')) {
@@ -367,7 +367,7 @@ class OrganisationController extends Controller
             DB::beginTransaction();
 
             // Define file paths
-            $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
+            $baseUploadPath = './public/public_html_metroberry_app/uploads';
             $certificatePath = "{$baseUploadPath}/organisation-certificates/{$user->email}-certificate.pdf"; // Adjust according to your naming convention
             $logoPath = "{$baseUploadPath}/company-logos/{$user->email}-avatar." . pathinfo($organisation->certificate_of_organisation, PATHINFO_EXTENSION); // Get the correct extension or naming convention
 
