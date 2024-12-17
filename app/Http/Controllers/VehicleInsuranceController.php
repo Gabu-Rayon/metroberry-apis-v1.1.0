@@ -116,7 +116,7 @@ class VehicleInsuranceController extends Controller
             if ($request->hasFile('policy_document')) {
                 $file = $request->file('policy_document');
                 $fileName = time() . '_' . $file->getClientOriginalName();
-                $directory = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
+                $directory = './public/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
                 $policyDocument = 'uploads/vehicle_insurance_policy_document/' . $fileName;
 
                 // Create the directory if it doesn't exist
@@ -237,7 +237,7 @@ class VehicleInsuranceController extends Controller
             if ($request->hasFile('policy_document')) {
                 $file = $request->file('policy_document');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $directory = '/home/kknuicdz/public_html_metroberry_app/uploads/policy_documents/';
+                $directory = './public/public_html_metroberry_app/uploads/policy_documents/';
                 $filePath = 'uploads/policy_documents/' . $filename;
 
                 // Create the directory if it doesn't exist
@@ -250,7 +250,7 @@ class VehicleInsuranceController extends Controller
 
                 // Delete old policy document if it exists
                 if ($vehicleInsurance->policy_document) {
-                    $oldFilePath = '/home/kknuicdz/public_html_metroberry_app/' . $vehicleInsurance->policy_document;
+                    $oldFilePath = './public/public_html_metroberry_app/' . $vehicleInsurance->policy_document;
                     if (file_exists($oldFilePath)) {
                         unlink($oldFilePath);
                     }
@@ -326,7 +326,7 @@ class VehicleInsuranceController extends Controller
 
             // Delete old policy document if it exists
             if ($insurance->policy_document) {
-                $filePath = '/home/kknuicdz/public_html_metroberry_app/' . $insurance->policy_document;
+                $filePath = './public/public_html_metroberry_app/' . $insurance->policy_document;
                 if (file_exists($filePath)) {
                     unlink($filePath);
                 }
@@ -393,7 +393,7 @@ class VehicleInsuranceController extends Controller
             if ($request->hasFile('policy_document')) {
                 $file = $request->file('policy_document');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $directory = '/home/kknuicdz/public_html_metroberry_app/uploads/policy_documents/';
+                $directory = './public/public_html_metroberry_app/uploads/policy_documents/';
                 $filePath = $directory . $filename;
 
                 // Move the file to the specified directory
@@ -401,7 +401,7 @@ class VehicleInsuranceController extends Controller
 
                 // Delete old policy document if it exists
                 if ($insurance->policy_document) {
-                    $oldFilePath = '/home/kknuicdz/public_html_metroberry_app/' . $insurance->policy_document;
+                    $oldFilePath = './public/public_html_metroberry_app/' . $insurance->policy_document;
                     if (file_exists($oldFilePath)) {
                         unlink($oldFilePath);
                     }

@@ -68,8 +68,8 @@ class DriversLicensesController extends Controller
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
                 $frontLicenseFileName = "{$licenseNumber}-front-id.{$frontLicenseExtension}";
                 // Move the file to the specified directory
-                $frontLicensePath = '/home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics/' . $frontLicenseFileName;
-                $frontLicenseFile->move('/home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName);
+                $frontLicensePath = './public/public_html_metroberry_app/uploads/front-license-pics/' . $frontLicenseFileName;
+                $frontLicenseFile->move('./public/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName);
             }
 
             // Handle the back license image upload
@@ -78,8 +78,8 @@ class DriversLicensesController extends Controller
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
                 $backLicenseFileName = "{$licenseNumber}-back-id.{$backLicenseExtension}";
                 // Move the file to the specified directory
-                $backLicensePath = '/home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics/' . $backLicenseFileName;
-                $backLicenseFile->move('/home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName);
+                $backLicensePath = './public/public_html_metroberry_app/uploads/back-license-pics/' . $backLicenseFileName;
+                $backLicenseFile->move('./public/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName);
             }
 
             DB::beginTransaction();
@@ -154,29 +154,29 @@ class DriversLicensesController extends Controller
             // Handle new front license image upload
             if ($request->hasFile('driving_license_avatar_front')) {
                 // If there's an existing front image, delete it
-                if ($frontLicensePath && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $frontLicensePath)) {
-                    unlink('/home/kknuicdz/public_html_metroberry_app/' . $frontLicensePath);
+                if ($frontLicensePath && file_exists('./public/public_html_metroberry_app/' . $frontLicensePath)) {
+                    unlink('./public/public_html_metroberry_app/' . $frontLicensePath);
                 }
                 // Store the new front image
                 $frontLicenseFile = $request->file('driving_license_avatar_front');
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
                 $frontLicenseFileName = "{$license->driving_license_no}-front-id.{$frontLicenseExtension}";
                 $frontLicensePath = 'uploads/front-license-pics/' . $frontLicenseFileName; // Path to store
-                $frontLicenseFile->move('/home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName); // Move file
+                $frontLicenseFile->move('./public/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName); // Move file
             }
 
             // Handle new back license image upload
             if ($request->hasFile('driving_license_avatar_back')) {
                 // If there's an existing back image, delete it
-                if ($backLicensePath && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $backLicensePath)) {
-                    unlink('/home/kknuicdz/public_html_metroberry_app/' . $backLicensePath);
+                if ($backLicensePath && file_exists('./public/public_html_metroberry_app/' . $backLicensePath)) {
+                    unlink('./public/public_html_metroberry_app/' . $backLicensePath);
                 }
                 // Store the new back image
                 $backLicenseFile = $request->file('driving_license_avatar_back');
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
                 $backLicenseFileName = "{$license->driving_license_no}-back-id.{$backLicenseExtension}";
                 $backLicensePath = 'uploads/back-license-pics/' . $backLicenseFileName; // Path to store
-                $backLicenseFile->move('/home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName); // Move file
+                $backLicenseFile->move('./public/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName); // Move file
             }
 
             DB::beginTransaction();
@@ -228,13 +228,13 @@ class DriversLicensesController extends Controller
             DB::beginTransaction();
 
             // Delete the front avatar if it exists
-            if ($license->driving_license_avatar_front && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $license->driving_license_avatar_front)) {
-                unlink('/home/kknuicdz/public_html_metroberry_app/' . $license->driving_license_avatar_front); // Delete the front avatar
+            if ($license->driving_license_avatar_front && file_exists('./public/public_html_metroberry_app/' . $license->driving_license_avatar_front)) {
+                unlink('./public/public_html_metroberry_app/' . $license->driving_license_avatar_front); // Delete the front avatar
             }
 
             // Delete the back avatar if it exists
-            if ($license->driving_license_avatar_back && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $license->driving_license_avatar_back)) {
-                unlink('/home/kknuicdz/public_html_metroberry_app/' . $license->driving_license_avatar_back); // Delete the back avatar
+            if ($license->driving_license_avatar_back && file_exists('./public/public_html_metroberry_app/' . $license->driving_license_avatar_back)) {
+                unlink('./public/public_html_metroberry_app/' . $license->driving_license_avatar_back); // Delete the back avatar
             }
 
             // Delete the license

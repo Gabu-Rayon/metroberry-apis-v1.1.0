@@ -109,7 +109,7 @@ class VehicleController extends Controller
             // Handle the file upload
             if ($request->hasFile('vehicle_avatar')) {
                 // Define the absolute path where you want to save the avatar
-                $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
+                $avatarDirectory = './public/public_html_metroberry_app/uploads/vehicle-avatars/';
 
                 // Create the directory if it doesn't exist
                 if (!File::exists($avatarDirectory)) {
@@ -304,7 +304,7 @@ class VehicleController extends Controller
             // Check if the vehicle_avatar file exists in the request
             if ($request->hasFile('vehicle_avatar')) {
                 // Define the path where you want to save the avatar
-                $avatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
+                $avatarPath = './public/public_html_metroberry_app/uploads/vehicle-avatars/';
 
                 // Create the directory if it doesn't exist
                 if (!File::exists($avatarPath)) {
@@ -384,7 +384,7 @@ class VehicleController extends Controller
             $vehicle = Vehicle::findOrFail($id);
 
             // Define the absolute path to the vehicle avatar
-            $avatarPath = '/home/kknuicdz/public_html_metroberry_app/' . $vehicle->avatar;
+            $avatarPath = './public/public_html_metroberry_app/' . $vehicle->avatar;
 
             // Check if the avatar file exists and delete it
             if (File::exists($avatarPath)) {

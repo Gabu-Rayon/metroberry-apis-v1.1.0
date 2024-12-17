@@ -114,7 +114,7 @@ class EmployeeController extends Controller
                 $frontIdPath = 'uploads/front-page-ids/' . $frontIdFileName;
 
                 // Move the file to the specified directory
-                $frontIdFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($frontIdPath), $frontIdFileName);
+                $frontIdFile->move('./public/public_html_metroberry_app/' . dirname($frontIdPath), $frontIdFileName);
             }
 
             // Handle back page ID upload
@@ -125,7 +125,7 @@ class EmployeeController extends Controller
                 $backIdPath = 'uploads/back-page-ids/' . $backIdFileName;
 
                 // Move the file to the specified directory
-                $backIdFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($backIdPath), $backIdFileName);
+                $backIdFile->move('./public/public_html_metroberry_app/' . dirname($backIdPath), $backIdFileName);
             }
 
             // Handle avatar upload
@@ -136,7 +136,7 @@ class EmployeeController extends Controller
                 $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
 
                 // Move the file to the specified directory
-                $avatarFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
+                $avatarFile->move('./public/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
             }
 
             // Create user
@@ -331,7 +331,7 @@ class EmployeeController extends Controller
             // Handle avatar upload
             if ($request->hasFile('avatar')) {
                 // Check if the model already has a file and delete the old one
-                $oldAvatarPath = '/home/kknuicdz/public_html_metroberry_app/' . $user->avatar; // Assuming field name matches the file input
+                $oldAvatarPath = './public/public_html_metroberry_app/' . $user->avatar; // Assuming field name matches the file input
                 if ($user->avatar && file_exists($oldAvatarPath)) {
                     unlink($oldAvatarPath); // Delete the old file
                 }
@@ -341,14 +341,14 @@ class EmployeeController extends Controller
                 $avatarFileName = "{$email}-avatar.{$avatarExtension}";
 
                 // Move the new file to the specified directory
-                $avatarFile->move('/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars', $avatarFileName);
+                $avatarFile->move('./public/public_html_metroberry_app/uploads/user-avatars', $avatarFileName);
                 $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
             }
 
             // Handle front page ID upload
             if ($request->hasFile('front_page_id')) {
                 // Check if the model already has a file and delete the old one
-                $oldFrontIdPath = '/home/kknuicdz/public_html_metroberry_app/' . $customer->front_page_id; // Assuming field name matches the file input
+                $oldFrontIdPath = './public/public_html_metroberry_app/' . $customer->front_page_id; // Assuming field name matches the file input
                 if ($customer->front_page_id && file_exists($oldFrontIdPath)) {
                     unlink($oldFrontIdPath); // Delete the old file
                 }
@@ -358,14 +358,14 @@ class EmployeeController extends Controller
                 $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
 
                 // Move the new file to the specified directory
-                $frontIdFile->move('/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids', $frontIdFileName);
+                $frontIdFile->move('./public/public_html_metroberry_app/uploads/front-page-ids', $frontIdFileName);
                 $customer->front_page_id = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
             }
 
             // Handle back page ID upload
             if ($request->hasFile('back_page_id')) {
                 // Check if the model already has a file and delete the old one
-                $oldBackIdPath = '/home/kknuicdz/public_html_metroberry_app/' . $customer->back_page_id; // Assuming field name matches the file input
+                $oldBackIdPath = './public/public_html_metroberry_app/' . $customer->back_page_id; // Assuming field name matches the file input
                 if ($customer->back_page_id && file_exists($oldBackIdPath)) {
                     unlink($oldBackIdPath); // Delete the old file
                 }
@@ -375,7 +375,7 @@ class EmployeeController extends Controller
                 $backIdFileName = "{$email}-back-id.{$backIdExtension}";
 
                 // Move the new file to the specified directory
-                $backIdFile->move('/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids', $backIdFileName);
+                $backIdFile->move('./public/public_html_metroberry_app/uploads/back-page-ids', $backIdFileName);
                 $customer->back_page_id = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
             }
 
@@ -517,21 +517,21 @@ class EmployeeController extends Controller
 
             // Delete associated files
             if ($user->avatar) {
-                $oldAvatarPath = '/home/kknuicdz/public_html_metroberry_app/' . $user->avatar;
+                $oldAvatarPath = './public/public_html_metroberry_app/' . $user->avatar;
                 if (file_exists($oldAvatarPath)) {
                     unlink($oldAvatarPath); // Delete the old avatar
                 }
             }
 
             if ($customer->national_id_front_avatar) {
-                $oldFrontIdPath = '/home/kknuicdz/public_html_metroberry_app/' . $customer->national_id_front_avatar;
+                $oldFrontIdPath = './public/public_html_metroberry_app/' . $customer->national_id_front_avatar;
                 if (file_exists($oldFrontIdPath)) {
                     unlink($oldFrontIdPath); // Delete the old front ID
                 }
             }
 
             if ($customer->national_id_behind_avatar) {
-                $oldBackIdPath = '/home/kknuicdz/public_html_metroberry_app/' . $customer->national_id_behind_avatar;
+                $oldBackIdPath = './public/public_html_metroberry_app/' . $customer->national_id_behind_avatar;
                 if (file_exists($oldBackIdPath)) {
                     unlink($oldBackIdPath); // Delete the old back ID
                 }
