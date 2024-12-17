@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InsuranceRecurringPeriod;
 use Exception;
 use App\Models\Trip;
 use App\Models\User;
@@ -14,6 +15,7 @@ use App\Models\Organisation;
 use App\Models\VehicleClass;
 use Illuminate\Http\Request;
 use App\Models\DriversLicenses;
+use App\Models\InsuranceCompany;
 use App\Models\VehicleInsurance;
 use Illuminate\Support\Facades\DB;
 use App\Models\VehicleManufacturer;
@@ -960,7 +962,7 @@ class DriverAppController extends Controller
 
         $fuelTypeId = $data['driver_vehicle_fuel_type'];
 
-        // Retrieve fuel type name (assuming there's a `name` column in `fuel_types` table)
+        // Retrieve fuel type name (assuming there's a "name" column in "fuel_types" table)
         $fuelType = Fueltype::find($fuelTypeId);
 
         $fuelTypeName = $fuelType ? $fuelType->name : 'Unknown';
@@ -1051,7 +1053,7 @@ class DriverAppController extends Controller
 
         $fuelTypeId = $data['driver_vehicle_fuel_type'];
 
-        // Retrieve fuel type name (assuming there's a `name` column in `fuel_types` table)
+        // Retrieve fuel type name (assuming there's a "name" column in "fuel_types" table)
         $fuelType = Fueltype::find($fuelTypeId);
 
         $fuelTypeName = $fuelType ? $fuelType->name : 'Unknown';
@@ -1092,7 +1094,12 @@ class DriverAppController extends Controller
         return redirect()->route('driver.vehicle.docs.registration')->with('success', 'Vehicle updated successfully');
     }
 
-
+/**
+ * 
+ * Vehicle Insurance Registration
+ * 
+ * 
+ */
 
     public function vehicleInsuranceDocument()
     {
@@ -1111,103 +1118,171 @@ class DriverAppController extends Controller
 
         $vehicle = $driver->vehicle;
 
-        $insurance = NTSAInspectionCertificate::where('vehicle_id', $vehicle->id)->get();
+        $vehicleInsurance = VehicleInsurance::where('vehicle_id', $vehicle->id)->get();
+        $vehiclesInsuranceCompanies = InsuranceCompany::all();
+        $vehicleInsuranceRecurringPeriod = InsuranceRecurringPeriod::all();
 
-        return view('driver-app.vehicle-insurance-registration', compact('driver', 'insurance', 'vehicle'));
+        return view('driver-app.vehicle-insurance-registration', compact('driver', 'vehicleInsurance','vehiclesInsuranceCompanies','vehicleInsuranceRecurringPeriod', 'vehicle'));
 
     }
-
 
     public function vehicleInsuranceStore(Request $request)
     {
-        // Validate the incoming request
-        $request->validate([
-            'insurance_number' => 'required|string|max:255',
-            'insurance_copy' => 'required|file|mimes:jpeg,jpg,png,pdf|max:2048',
-            'vehicle_id' => 'required|exists:vehicles,id',
+        $data = $request->all();
+
+        Log::info('Data From the Form to Store Vehicle Insurance : ', $data);
+
+        $validator = Validator::make($data, [
+            'driver_vehicle_id' => 'required',
+            'driver_vehicle_insurance_company_id' => 'required|exists:insurance_companies,id',
+            'driver_insurance_policy_no' => 'required|string|max:255',
+            'driver_insurance_date_of_issue' => 'required|date',
+            'driver_insurance_date_of_expiry' => 'required|date',
+            'driver_vehicle_insurance_recurring_period' => 'required|exists:insurance_recurring_periods,id',
+            'driver_insurance_recurring_date' => 'required|date',
+            'driver_insurance_reminder' => 'nullable|string',
+            'driver_insurance_deductible' => 'nullable|integer',
+            'driver_insurance_charges_payable' => 'nullable|integer',
+            'driver_insurance_remark' => 'nullable|string',
+            'driver_insurance_policy_document' => 'nullable|file|mimes:pdf,jpg,png,jpeg,webp,jfif|max:2048',
         ]);
 
-        // Get the authenticated user and their driver information
-        $user = Auth::user();
-        $driver = $user->driver;
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR: ', $validator->errors()->toArray());
+            return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+        }
 
-        // Retrieve the driver's name and email
-        $driverName = $user->name;
-        $driverEmail = $user->email;
-        $ntsaCertificateNo = $driver->speedGovernorCertificate->ntsa_inspection_certificate_no ?? 'no-ntsa-cert';
+        $authUser = Auth::user();
+        $driver = Driver::where('user_id', $authUser->id)->first();
 
-        // Concatenate the filename for the uploaded file
-        $filename = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '-vehicle-insurance';
+        if (!$driver) {
+            Log::error('Driver not found for the authenticated user.');
+            return redirect()->back()->with('error', 'Driver not found.')->withInput();
+        }
 
-        // Store the insurance copy in the specified directory
-        $insuranceCopyPath = $request->file('insurance_copy')->storeAs('vehicle-insurance-copies', $filename . '.' . $request->file('insurance_copy')->getClientOriginalExtension(), 'public');
+        $driverVehicle = Vehicle::where('driver_id', $driver->id)->first();
 
-        // Create a new VehicleInsurance record
-        $vehicleInsurance = new VehicleInsurance([
-            'insurance_number' => $request->insurance_number,
-            'insurance_copy' => $insuranceCopyPath,
-            'driver_id' => $driver->id,
-            'vehicle_id' => $request->vehicle_id,
+        if (!$driverVehicle) {
+            Log::error('Driver Vehicle not found for the authenticated user.');
+            return redirect()->back()->with('error', 'Driver Vehicle not found.')->withInput();
+        }
+
+        $driverVehicleInsurancePolicyDocPath = null;
+
+        if ($request->hasFile('driver_insurance_policy_document')) {
+            $file = $request->file('driver_insurance_policy_document');
+            $fileName = "{$authUser->name}-{$data['driver_insurance_policy_no']}.{$file->getClientOriginalExtension()}";
+            $driverVehicleInsurancePolicyDocPath = 'uploads/avatars/' . $fileName;
+            $file->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($driverVehicleInsurancePolicyDocPath), $fileName);
+        }
+
+        Log::info('The Driver vehicle Insurance Policy Document path to be uploaded: ', [$driverVehicleInsurancePolicyDocPath]);
+
+        $driverVehicleInsurance = VehicleInsurance::create([
+            'vehicle_id' => $data['driver_vehicle_id'],
+            'insurance_company_id' => $data['driver_vehicle_insurance_company_id'],
+            'insurance_policy_no' => $data['driver_insurance_policy_no'],
+            'insurance_date_of_issue' => $data['driver_insurance_date_of_issue'],
+            'insurance_date_of_expiry' => $data['driver_insurance_date_of_expiry'],
+            'charges_payable' => $data['driver_insurance_charges_payable'],
+            'recurring_period_id' => $data['driver_vehicle_insurance_recurring_period'],
+            'recurring_date' => $data['driver_insurance_recurring_date'],
+            'reminder' => $data['driver_insurance_reminder'],
+            'deductible' => $data['driver_insurance_deductible'],
+            'status' => false,
+            'remark' => $data['driver_insurance_remark'],
+            'policy_document' => $driverVehicleInsurancePolicyDocPath,
+            'created_by' => $authUser->id,
         ]);
 
-        // Save the insurance record
-        $vehicleInsurance->save();
-
-        // Redirect with success message
-        return redirect()->route('driver.registration.page')
-            ->with('success', 'Vehicle Insurance successfully added.');
+        return redirect()->route('driver.vehicle.docs.registration')->with('success', 'Vehicle insurance added successfully.');
     }
+
 
     public function vehicleInsuranceUpdate(Request $request, $insuranceId)
     {
-        // Validate the incoming request
-        $request->validate([
-            'insurance_number' => 'required|string|max:255',
-            'insurance_copy' => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:2048',
-            'vehicle_id' => 'required|exists:vehicles,id',
+        $data = $request->all();
+
+        Log::info('Data From the Form to Update Vehicle Insurance : ', $data);
+
+        $validator = Validator::make($data, [
+            'driver_vehicle_id' => 'required',
+            'driver_vehicle_insurance_company_id' => 'required',
+            'driver_insurance_policy_no' => 'required|string|max:255',
+            'driver_insurance_date_of_issue' => 'required|date',
+            'driver_insurance_date_of_expiry' => 'required|date',
+            'driver_vehicle_insurance_recurring_period' => 'required|integer',
+            'driver_insurance_recurring_date' => 'required|date',
+            'driver_insurance_reminder' => 'nullable|string',
+            'driver_insurance_deductible' => 'nullable|integer',
+            'driver_insurance_charges_payable' => 'nullable|integer',
+            'driver_insurance_remark' => 'nullable|string',
+            'driver_insurance_policy_document' => 'nullable|file|mimes:pdf,jpg,png,jpeg,webp,jfif|max:2048',
         ]);
 
-        // Find the existing vehicle insurance record by ID
-        $vehicleInsurance = VehicleInsurance::findOrFail($insuranceId);
-
-        // Get the authenticated user and their driver information
-        $user = Auth::user();
-        $driver = $user->driver;
-
-        // Retrieve the driver's name and email
-        $driverName = $user->name;
-        $driverEmail = $user->email;
-        $ntsaCertificateNo = $driver->speedGovernorCertificate->ntsa_inspection_certificate_no ?? 'no-ntsa-cert';
-
-        // Concatenate the filename for the uploaded file if new file is uploaded
-        if ($request->hasFile('insurance_copy')) {
-            // Delete the old file if it exists
-            if (file_exists(storage_path('app/public/' . $vehicleInsurance->insurance_copy))) {
-                unlink(storage_path('app/public/' . $vehicleInsurance->insurance_copy));
-            }
-
-            // Create the new filename
-            $filename = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '-vehicle-insurance';
-
-            // Store the new insurance copy
-            $insuranceCopyPath = $request->file('insurance_copy')->storeAs('vehicle-insurance-copies', $filename . '.' . $request->file('insurance_copy')->getClientOriginalExtension(), 'public');
-        } else {
-            // Use the existing file path if no new file is uploaded
-            $insuranceCopyPath = $vehicleInsurance->insurance_copy;
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR: ', $validator->errors()->toArray());
+            return redirect()->back()->with('error', $validator->errors()->first())->withInput();
         }
 
-        // Update the vehicle insurance record
-        $vehicleInsurance->update([
-            'insurance_number' => $request->insurance_number,
-            'insurance_copy' => $insuranceCopyPath,
-            'vehicle_id' => $request->vehicle_id,
+        $authUser = Auth::user();
+        $driver = Driver::where('user_id', $authUser->id)->first();
+
+        if (!$driver) {
+            Log::error('Driver not found for the authenticated user.');
+            return redirect()->back()->with('error', 'Driver not found.')->withInput();
+        }
+
+        $driverVehicle = Vehicle::where('driver_id', $driver->id)->first();
+
+        if (!$driverVehicle) {
+            Log::error('Driver Vehicle not found for the authenticated user.');
+            return redirect()->back()->with('error', 'Driver Vehicle not found.')->withInput();
+        }
+
+        $driverVehicleInsurance = VehicleInsurance::findOrFail($insuranceId);
+        $driverVehicleInsurancePolicyDocPath = $driverVehicleInsurance->policy_document;
+
+        if ($request->hasFile('driver_insurance_policy_document')) {
+            if ($driverVehicleInsurancePolicyDocPath) {
+                // Optionally delete the old document here
+            }
+
+            $file = $request->file('driver_insurance_policy_document');
+            $fileName = "{$authUser->name}-{$data['driver_insurance_policy_no']}.{$file->getClientOriginalExtension()}";
+            $driverVehicleInsurancePolicyDocPath = 'uploads/avatars/' . $fileName;
+            $file->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($driverVehicleInsurancePolicyDocPath), $fileName);
+        }
+
+        Log::info('The Driver vehicle Insurance Policy Document path to be uploaded: ', [$driverVehicleInsurancePolicyDocPath]);
+
+        $driverVehicleInsurance->update([
+            'vehicle_id' => $data['driver_vehicle_id'],
+            'insurance_company_id' => $data['driver_vehicle_insurance_company_id'],
+            'insurance_policy_no' => $data['driver_insurance_policy_no'],
+            'insurance_date_of_issue' => $data['driver_insurance_date_of_issue'],
+            'insurance_date_of_expiry' => $data['driver_insurance_date_of_expiry'],
+            'charges_payable' => $data['driver_insurance_charges_payable'],
+            'recurring_period_id' => $data['driver_vehicle_insurance_recurring_period'],
+            'recurring_date' => $data['driver_insurance_recurring_date'],
+            'reminder' => $data['driver_insurance_reminder'],
+            'deductible' => $data['driver_insurance_deductible'],
+            'status' => false,
+            'remark' => $data['driver_insurance_remark'],
+            'policy_document' => $driverVehicleInsurancePolicyDocPath,
+            'created_by' => $authUser->id,
         ]);
 
-        // Redirect with success message
-        return redirect()->route('driver.registration.page')
-            ->with('success', 'Vehicle Insurance successfully updated.');
+        return redirect()->route('driver.vehicle.docs.registration')->with('success', 'Vehicle insurance updated successfully.');
     }
 
+
+
+
+
+    /**
+     * NTSA Vehicle Registration
+     */
 
     public function ntsaInspectionCertificateDocument()
     {
@@ -1331,7 +1406,13 @@ class DriverAppController extends Controller
         return redirect()->route('driver.registration.page')->with('success', 'NTSA Inspection Certificate updated successfully!');
     }
 
-
+/***
+ * 
+ * 
+ * Speed Limit Certificate
+ * 
+ * 
+ */
 
     public function speedGovernorRegistration()
     {
