@@ -87,11 +87,14 @@
                                                                 @endif
                                                             @endif
                                                         </td>
-                                                        <td>{{ $vehicle->make }}</td>
+                                                        <td>{{ $vehicle->manufacturer->name }}</td>
                                                         <td>{{ $vehicle->model }}</td>
                                                         <td>{{ $vehicle->plate_number }}</td>
                                                         <td>{{ $vehicle->seats }}</td>
-                                                        <td>{{ $vehicle->fuel_type }}</td>
+                                                        @php
+                                                            $fuel_type = $fuel_types->findOrFail($vehicle->fuel_type_id);
+                                                        @endphp
+                                                        <td>{{ $fuel_type->name }}</td>
                                                         <td>{{ $vehicle->engine_size }}<i>CC</i></td>
                                                         <td>
                                                             @if ($vehicle->status == 'active')
@@ -181,11 +184,15 @@
                             </div>
 
                             <div class="form-group row my-2">
-                                <label for="make" class="col-sm-5 col-form-label">Vehicle Make <i
-                                        class="text-danger">*</i></label>
+                                <label for="manufacturer_id" class="col-sm-5 col-form-label">Select Make</label>
                                 <div class="col-sm-7">
-                                    <input name="make" autocomplete="off" required class="form-control" type="text"
-                                        placeholder="Vehicle Make" id="make" value="{{ old('make') }}">
+                                    <select class="form-control basic-single select2" name="manufacturer_id"
+                                        id="manufacturer_id" tabindex="-1" aria-hidden="true">
+                                        <option value="">Please Select Make</option>
+                                        @foreach ($manufacturers as $manufacturer)
+                                            <option value="{{ $manufacturer->id }}">Class {{ $manufacturer->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
 
@@ -197,6 +204,7 @@
                                         placeholder="Year of Manufacturer" id="year" value="{{ old('year') }}">
                                 </div>
                             </div>
+
                             <div class="form-group row my-2">
                                 <label for="vehicle_class" class="col-sm-5 col-form-label">Select Vehicle Class</label>
                                 <div class="col-sm-7">
@@ -232,14 +240,18 @@
                         <div class="col-md-12 col-lg-6">
 
                             <div class="form-group row my-2">
-                                <label for="fuel_type" class="col-sm-5 col-form-label">Fuel Type <i
-                                        class="text-danger">*</i></label>
+                                <label for="fuel_type" class="col-sm-5 col-form-label">Select Fuel Type</label>
                                 <div class="col-sm-7">
-                                    <input name="fuel_type" class="form-control" type="text"
-                                        placeholder="Enter Vehicle Fuel Type" id="fuel_type"
-                                        value="{{ old('fuel_type') }}" required>
+                                    <select class="form-control basic-single select2" name="fuel_type"
+                                        id="fuel_type" tabindex="-1" aria-hidden="true">
+                                        <option value="">Please Select Fuel Yupe</option>
+                                        @foreach ($fuel_types as $fuel_type)
+                                            <option value="{{ $fuel_type->id }}">Class {{ $fuel_type->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
+
                             <div class="form-group row my-2">
                                 <label for="engine_size" class="col-sm-5 col-form-label">Engine Size <i
                                         class="text-danger">*</i></label>

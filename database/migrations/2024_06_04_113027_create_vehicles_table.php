@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('model');
             $table->unsignedBigInteger('manufacturer_id');
             $table->unsignedBigInteger('fuel_type_id');
-            $table->string('make');
             $table->string('year');
             $table->string('plate_number')->unique();
             $table->string('color');

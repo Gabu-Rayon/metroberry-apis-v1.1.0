@@ -17,9 +17,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
-
-
-
+use App\Models\VehicleManufacturer;
+use App\Models\FuelType;
 
 class VehicleController extends Controller
 {
@@ -51,8 +50,10 @@ class VehicleController extends Controller
             Log::info('Vehicles fetched: ', ['vehicles' => $vehicles]);
             $organisations = Organisation::all();
             $vehicleClasses = VehicleClass::all();
+            $manufacturers = VehicleManufacturer::all();
+            $fuel_types = FuelType::all();
 
-            return view('vehicle.index', compact('vehicles', 'organisations', 'vehicleClasses'));
+            return view('vehicle.index', compact('vehicles', 'organisations', 'vehicleClasses', 'manufacturers', 'fuel_types'));
         } catch (Exception $e) {
             // Log the error message
             Log::error('Error fetching vehicles: ' . $e->getMessage());
@@ -82,7 +83,6 @@ class VehicleController extends Controller
 
             $validator = Validator::make($data, [
                 'model' => 'required|string|max:255',
-                'make' => 'required|string|max:255',
                 'year' => 'required|date',
                 'color' => 'required|string|max:255',
                 'seats' => 'required|string|max:255',
@@ -92,6 +92,7 @@ class VehicleController extends Controller
                 'vehicle_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp,jfif|max:2048',
                 'organisation_id' => 'required|numeric',
                 'vehicle_class' => 'required|string',
+                'manufacturer_id' => 'required|numeric|exists:vehicle_manufacturers,id'
             ]);
 
             if ($validator->fails()) {
@@ -134,7 +135,6 @@ class VehicleController extends Controller
             $vehicle->created_by = Auth::user()->id;
             $vehicle->organisation_id = $request->organisation_id;
             $vehicle->model = $request->model;
-            $vehicle->make = $request->make;
             $vehicle->year = $year;
             $vehicle->color = $request->color;
             $vehicle->seats = $request->seats;
@@ -143,6 +143,8 @@ class VehicleController extends Controller
             $vehicle->fuel_type = $request->fuel_type;
             $vehicle->engine_size = $request->engine_size;
             $vehicle->avatar = $avatarPath; // Save the path to the avatar
+            $vehicle->manufacturer_id = $request->manufacturer_id;
+            $vehicle->fuel_type_id = $request->fuel_type;
             $vehicle->save();
 
             return redirect()->route('vehicle')->with('success', 'Vehicle added successfully.');
@@ -228,6 +230,8 @@ class VehicleController extends Controller
             $drivers = Driver::all();
             $organisations = Organisation::all();
             $vehicleClasses = VehicleClass::all();
+            $manufacturers = VehicleManufacturer::all();
+            $fuel_types = FuelType::all();
 
             // Fetch the assigned Organisation's name if exists
             $assignedOrganisationName = null;
@@ -251,7 +255,7 @@ class VehicleController extends Controller
             }
 
 
-            return view('vehicle.edit', compact('vehicle', 'assignedDriverName', 'drivers', 'assignedOrganisationName', 'organisations', 'assignedVehicleClass', 'vehicleClasses'));
+            return view('vehicle.edit', compact('vehicle', 'assignedDriverName', 'drivers', 'assignedOrganisationName', 'organisations', 'assignedVehicleClass', 'vehicleClasses', 'manufacturers', 'fuel_types'));
         } catch (Exception $e) {
             Log::error('Error fetching vehicle for edit: ' . $e->getMessage());
             return back()->with('error', 'An error occurred while fetching the vehicle. Please try again.');
@@ -276,7 +280,7 @@ class VehicleController extends Controller
 
             $validator = Validator::make($data, [
                 'model' => 'required|string|max:255',
-                'make' => 'required|string|max:255',
+                'manufacturer_id' => 'required|numeric|exists:vehicle_manufacturers,id',
                 'year' => 'required|date_format:Y',
                 'color' => 'required|string|max:255',
                 'seats' => 'required|integer|min:1',
@@ -323,7 +327,7 @@ class VehicleController extends Controller
 
             // Update other vehicle fields
             $vehicle->model = $request->model;
-            $vehicle->make = $request->make;
+            $vehicle->manufacturer_id = $request->manufacturer_id;
             $vehicle->year = $request->year;
             $vehicle->color = $request->color;
             $vehicle->seats = $request->seats;
