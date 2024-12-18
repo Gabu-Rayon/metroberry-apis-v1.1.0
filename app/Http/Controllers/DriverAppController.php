@@ -298,6 +298,7 @@ class DriverAppController extends Controller
                 'expiry_date' => 'required|date|after:issue_date',
                 'license_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
                 'license_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'first_date_of_issue' => 'required|date|before:' . now()->subYears(5)->toDateString(),
             ]);
 
             if ($validator->fails()) {
@@ -330,6 +331,7 @@ class DriverAppController extends Controller
                 'driving_license_date_of_expiry' => $data['expiry_date'],
                 'driving_license_avatar_front' => 'uploads/front-license-pics/' . $frontFileName,
                 'driving_license_avatar_back' => 'uploads/back-license-pics/' . $backFileName,
+                'first_date_of_issue' => $data['first_date_of_issue'],
             ]);
 
             DB::commit();

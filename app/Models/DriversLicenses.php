@@ -12,6 +12,7 @@ class DriversLicenses extends Model
     protected $fillable = [
         'driver_id',
         'driving_license_no',
+        'first_date_of_issue',
         'driving_license_date_of_issue',
         'driving_license_date_of_expiry',
         'driving_license_avatar_front',

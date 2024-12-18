@@ -222,6 +222,18 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group row my-2">
+                                    <label for="first_date_of_issue" class="col-sm-5 col-form-label">
+                                        First Date of Issue
+                                        <i class="text-danger">*</i>
+                                    </label>
+                                    <div class="col-sm-7">
+                                        <input name="first_date_of_issue" class="form-control" type="date"
+                                            placeholder="First Date of Issue" id="first_date_of_issue" required
+                                            value="{{ old('first_date_of_issue') }}" />
+                                    </div>
+                                </div>
+
 
                                 <div class="form-group row my-2">
                                     <label for="front_page_id" class="col-sm-5 col-form-label">
