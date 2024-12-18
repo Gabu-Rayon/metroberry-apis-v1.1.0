@@ -94,10 +94,10 @@ Route::get('/driver/registration/vehicle/insurance/document', [DriverAppControll
 
 /** Use the same Form to both PUT & POST */
 // creating a new Insurance Document Post
-Route::post('driver/registration/vehicle/ntsa/inspection/certificate/store', [DriverAppController::class, 'ntsaInspectionCertificateStore'])->name('driver.registration.ntsa.ispection.certificate.store')->middleware('auth');
+Route::post('/driver/registration/vehicle/insurance/store', [DriverAppController::class, 'vehicleInsuranceStore'])->name('driver.registration.vehicle.insurance.store')->middleware('auth');
 
 // updating an existing  Insurance Document Post
-Route::put('driver/registration/vehicle/ntsa/inspection/certificate/{ntsaCertificateId}/update', [DriverAppController::class, 'ntsaInspectionCertificateUpdate'])->name('driver.registration.ntsa.ispection.certificate.update')->middleware('auth');
+Route::put('/driver/registration/vehicle/insurance/{insuranceId}/update', [DriverAppController::class, 'vehicleInsuranceUpdate'])->name('driver.registration.vehicle.insurance.update')->middleware('auth');
 
 
 

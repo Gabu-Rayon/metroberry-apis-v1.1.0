@@ -29,7 +29,7 @@
                     </span>
                 </a>
                 @if ($driver->status == 'inactive')
-                    <span>Deactivated</span>
+                    <span>Account Deactivated</span>
                 @else
                     <span>NTSA Inspection Certificate</span>
                 @endif
@@ -61,27 +61,33 @@
                         @method($method)
 
                         <!-- Vehicle Info -->
+
+                        <input class="form-control form-control-with-padding" type="hidden" name="driver_vehicle_id"
+                            autocomplete="off" placeholder="Vehicle ID"
+                            value="{{ old('driver_vehicle_id', $driver->vehicle->id) }}" readonly />
+
                         <div class="form-group form-control-margin">
-                            <div class="label-title">Vehicle</div>
-                            <div class="input-group">
-                                <div class="form-control text-center" style="border: none; outline: none;">
-                                    {{ $vehicle->plate_number ?? 'N/A' }}: {{ optional($vehicle->manufacturer)->name ?? '' }} {{ $vehicle->model ?? '' }}
-                                </div>
+
+                            {{-- This is used to just show Driver the Vehicle  and its NOT POST TO DATABSE WHEN DOING (post & update) --}}
+                            <label class="label-title">Vehicle</label>
+                            <div class="#">
+
+                                {{ $vehicle->plate_number ?? 'N/A' }}: {{ optional($vehicle->manufacturer)->name ?? '' }}
+                                {{ $vehicle->model ?? '' }}
                                 <div class="input-group-append">
-                                    <span class="fas fa-car icon-inherited-color"></span>
                                 </div>
                             </div>
                         </div>
+                        <!--Input Field Container End-->
 
                         <!-- Certificate Number -->
                         <div class="form-group form-control-margin">
                             <label class="label-title">Certificate No</label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="text"
-                                       name="driver_ntsa_inspection_certificate_no"
-                                       autocomplete="on" required maxlength="50"
-                                       placeholder="Driver NTSA Inspection Certificate No"
-                                       value="{{ old('driver_ntsa_inspection_certificate_no', $inspectionCertificate->ntsa_inspection_certificate_no ?? '') }}" />
+                                    name="driver_ntsa_inspection_certificate_no" autocomplete="on" required maxlength="50"
+                                    placeholder="Driver NTSA Inspection Certificate No"
+                                    value="{{ old('driver_ntsa_inspection_certificate_no', $inspectionCertificate->ntsa_inspection_certificate_no ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
@@ -92,10 +98,9 @@
                         <div class="form-group form-control-margin">
                             <label class="label-title">Cost</label>
                             <div class="input-group">
-                                <input class="form-control form-control-with-padding" type="number"
-                                       name="cost" autocomplete="on" required
-                                       placeholder="Cost"
-                                       value="{{ old('cost', $inspectionCertificate->cost ?? '') }}" />
+                                <input class="form-control form-control-with-padding" type="number" name="cost"
+                                    autocomplete="on" required placeholder="Cost"
+                                    value="{{ old('cost', $inspectionCertificate->cost ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-dollar icon-inherited-color"></span>
                                 </div>
@@ -109,7 +114,7 @@
                                     <span class="position-relative upload-btn">
                                         <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
                                         <input class="scan-prompt" type="file" accept="image/*"
-                                               name="driver_ntsa_certificate_copy" id="certificate-copy-input" />
+                                            name="driver_ntsa_certificate_copy" id="certificate-copy-input" />
                                     </span>
                                     <span class="text-uppercase">NTSA Certificate Copy</span>
                                     <span class="delete-btn" id="certificate-copy-delete">
@@ -120,8 +125,8 @@
                                     <div class="position-relative">
                                         <div class="upload-picture-container text-center">
                                             <img id="certificate-copy-preview"
-                                                 src="{{ $inspectionCertificate->ntsa_inspection_certificate_avatar ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                 alt="Certificate Copy" />
+                                                src="{{ $inspectionCertificate->ntsa_inspection_certificate_avatar ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                alt="Certificate Copy" />
                                         </div>
                                     </div>
                                 </div>
@@ -133,8 +138,8 @@
                             <label class="label-title">Date of Issue</label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
-                                       name="driver_ntsa_inspection_certificate_date_of_issue" autocomplete="on"
-                                       value="{{ old('driver_ntsa_inspection_certificate_date_of_issue', $inspectionCertificate->ntsa_inspection_certificate_date_of_issue ?? '') }}" />
+                                    name="driver_ntsa_inspection_certificate_date_of_issue" autocomplete="on"
+                                    value="{{ old('driver_ntsa_inspection_certificate_date_of_issue', $inspectionCertificate->ntsa_inspection_certificate_date_of_issue ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-calendar-alt icon-inherited-color"></span>
                                 </div>
@@ -146,8 +151,8 @@
                             <label class="label-title">Expiry Date</label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
-                                       name="driver_inspection_certificate_date_of_expiry" autocomplete="on"
-                                       value="{{ old('driver_inspection_certificate_date_of_expiry', $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry ?? '') }}" />
+                                    name="driver_inspection_certificate_date_of_expiry" autocomplete="on"
+                                    value="{{ old('driver_inspection_certificate_date_of_expiry', $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-calendar-check icon-inherited-color"></span>
                                 </div>
@@ -181,7 +186,7 @@
         document.getElementById('certificate-copy-input').addEventListener('change', function(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
-            reader.onload = function () {
+            reader.onload = function() {
                 document.getElementById('certificate-copy-preview').src = reader.result;
             };
             reader.readAsDataURL(file);

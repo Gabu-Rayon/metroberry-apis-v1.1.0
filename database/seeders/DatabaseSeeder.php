@@ -31,5 +31,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FuelTypesTableSeeder::class,
         ]);
+        $this->call(InsuranceRecurringPeriodsTableSeeder::class);
     }
 }
