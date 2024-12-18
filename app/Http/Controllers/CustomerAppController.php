@@ -111,12 +111,27 @@ class CustomerAppController extends Controller
             return back()->with('error', $validator->errors()->first())->withInput();
         }
 
-
         try {
             // Handle avatar upload if provided
             $avatarPath = null;
             if ($request->hasFile('avatar')) {
-                $avatarPath = $request->file('avatar')->store('uploads/user-avatars', 'public');
+                // Concatenate email, phone, and name to form a unique file name
+                $file = $request->file('avatar');
+                $fileName = strtolower(str_replace(['@', '.', ' '], ['', '', '_'], $request->input('email'))) . '-' .
+                    strtolower(str_replace([' ', '-', '+'], ['_', '_', ''], $request->input('phone'))) . '-' .
+                    strtolower(str_replace(' ', '_', $request->input('name'))) . '.' . $file->getClientOriginalExtension();
+
+                // Set the path where the avatar will be uploaded
+                $avatarDirectory = './public/public_html_metroberry_app/uploads/user-avatars';
+
+                // Create the directory if it doesn't exist
+                if (!file_exists($avatarDirectory)) {
+                    mkdir($avatarDirectory, 0755, true);
+                }
+
+                // Move the uploaded avatar to the specified directory
+                $file->move($avatarDirectory, $fileName);
+                $avatarPath = 'avatars/' . $fileName; // Save the relative path in the database
             }
 
             // Create the user
@@ -152,9 +167,11 @@ class CustomerAppController extends Controller
             return redirect()->route('users.sign.in.page')->with('success', 'Account created successfully. Please provide your phone number.');
         } catch (\Exception $e) {
             // Handle exceptions and show an error message
+            Log::error('Registration Error: ', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'Failed to register customer. Please try again later.');
         }
     }
+
 
     // Sign-up continue page method
     public function signUpContinuePage()
@@ -553,10 +570,8 @@ class CustomerAppController extends Controller
         $customer->organisation_id = $request->input('organisation');
         $customer->national_id_no = $request->input('national_id_no');
 
-
-
         // Base path for uploads
-        $baseUploadPath = './public';
+        $baseUploadPath = './public/public_html_metroberry_app/';
 
         // Function to create directory if it doesn't exist
         $createDirIfNotExists = function ($path) {
@@ -565,7 +580,15 @@ class CustomerAppController extends Controller
             }
         };
 
-        // Handle profile picture upload
+        // Function to generate file name based on user details
+        $generateFileName = function ($type, $file, $user) {
+            return strtolower(str_replace(['@', '.', ' '], ['', '', '_'], $user->email)) . '-' .
+                strtolower(str_replace([' ', '-', '+'], ['_', '_', ''], $user->phone)) . '-' .
+                strtolower(str_replace(' ', '_', $user->name)) . '-' .
+                time() . '-' . $type . '.' . $file->getClientOriginalExtension();
+        };
+
+        // Handle profile picture upload (avatar)
         if ($request->hasFile('profile_picture')) {
             // Check if the old file exists and delete it if necessary
             if ($customer->profile_picture) {
@@ -576,15 +599,16 @@ class CustomerAppController extends Controller
             }
 
             $file = $request->file('profile_picture');
-            $filename = time() . '_profile.' . $file->getClientOriginalExtension();
-            $userDirPath = $baseUploadPath . '/uploads/user-avatars/' . $customer->id;
+            $fileName = $generateFileName('profile', $file, $user);
+
+            $userDirPath = $baseUploadPath . 'uploads/user-avatars/' . $customer->id;
 
             // Create the directory if it doesn't exist
             $createDirIfNotExists($userDirPath);
 
             // Move the new file to the specified directory
-            $file->move($userDirPath, $filename);
-            $customer->profile_picture = 'uploads/user-avatars/' . $customer->id . '/' . $filename; // Save the relative path
+            $file->move($userDirPath, $fileName);
+            $customer->profile_picture = 'uploads/user-avatars/' . $customer->id . '/' . $fileName; // Save the relative path
         }
 
         // Handle national ID front avatar upload
@@ -598,15 +622,16 @@ class CustomerAppController extends Controller
             }
 
             $file = $request->file('national_id_front_avatar');
-            $filename = time() . '_national_id_front.' . $file->getClientOriginalExtension();
-            $frontIdDirPath = $baseUploadPath . '/uploads/front-page-ids/' . $customer->id;
+            $fileName = $generateFileName('national_id_front', $file, $user);
+
+            $frontIdDirPath = $baseUploadPath . 'uploads/front-page-ids/' . $customer->id;
 
             // Create the directory if it doesn't exist
             $createDirIfNotExists($frontIdDirPath);
 
             // Move the new file to the specified directory
-            $file->move($frontIdDirPath, $filename);
-            $customer->national_id_front_avatar = 'uploads/front-page-ids/' . $customer->id . '/' . $filename; // Save the relative path
+            $file->move($frontIdDirPath, $fileName);
+            $customer->national_id_front_avatar = 'uploads/front-page-ids/' . $customer->id . '/' . $fileName; // Save the relative path
         }
 
         // Handle national ID behind avatar upload
@@ -620,15 +645,16 @@ class CustomerAppController extends Controller
             }
 
             $file = $request->file('national_id_behind_avatar');
-            $filename = time() . '_national_id_behind.' . $file->getClientOriginalExtension();
-            $behindIdDirPath = $baseUploadPath . '/uploads/back-page-ids/' . $customer->id;
+            $fileName = $generateFileName('national_id_behind', $file, $user);
+
+            $behindIdDirPath = $baseUploadPath . 'uploads/back-page-ids/' . $customer->id;
 
             // Create the directory if it doesn't exist
             $createDirIfNotExists($behindIdDirPath);
 
             // Move the new file to the specified directory
-            $file->move($behindIdDirPath, $filename);
-            $customer->national_id_behind_avatar = 'uploads/back-page-ids/' . $customer->id . '/' . $filename; // Save the relative path
+            $file->move($behindIdDirPath, $fileName);
+            $customer->national_id_behind_avatar = 'uploads/back-page-ids/' . $customer->id . '/' . $fileName; // Save the relative path
         }
 
         // Save the updated customer details
@@ -638,9 +664,6 @@ class CustomerAppController extends Controller
         // Redirect back with a success message
         return redirect()->route('customer.profile', $id)->with('success', 'Profile updated successfully.');
     }
-
-
-
 
 
     public function tripsHistory()

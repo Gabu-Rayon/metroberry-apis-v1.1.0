@@ -75,35 +75,34 @@ class VehicleInsuranceController extends Controller
      *
      *
      */
-   
+
 
     public function store(Request $request)
     {
         try {
             // Log the request data
-            Log::info('Vehicle Insurance store request data From the Form :', $request->all());
+            Log::info('Vehicle Insurance store request data From the Form:', $request->all());
 
             $data = $request->all();
             // Validate the request data
-
             $validator = Validator::make($data, [
-                'vehicle_id' => 'required|numeric|unique:vehicle_insurances',
-                'insurance_company_id' => 'required|numeric',
-                'insurance_policy_no' => 'required|numeric',
+                'vehicle_id' => 'required|numeric|exists:vehicles,id',
+                'insurance_company_id' => 'required|numeric|exists:insurance_companies,id',
+                'insurance_policy_no' => 'required|string|max:255',
                 'insurance_date_of_issue' => 'required|date',
                 'insurance_date_of_expiry' => 'required|date|after:insurance_date_of_issue',
                 'charges_payable' => 'required|numeric',
-                'recurring_period_id' => 'required|numeric',
+                'recurring_period_id' => 'required|numeric|exists:insurance_recurring_periods,id',
                 'recurring_date' => 'required|date',
-                'reminder' => 'required|numeric',
+                'reminder' => 'required|boolean',
                 'deductible' => 'required|numeric',
-                'status' => 'required|numeric',
-                'remark' => 'nullable|string',
+                'status' => 'required|boolean',
+                'remark' => 'nullable|string|max:500',
                 'policy_document' => 'required|file|mimes:pdf|max:2048',
             ]);
 
             if ($validator->fails()) {
-                Log::info('VALIDATION ERROR Here ');
+                Log::info('VALIDATION ERROR Here');
                 Log::info($validator->errors());
                 return redirect()->back()->with('error', $validator->errors()->first())->withInput();
             }
@@ -113,11 +112,22 @@ class VehicleInsuranceController extends Controller
             // Log the request data
             Log::info('Vehicle Insurance store request data:', $request->all());
 
+            $policyDocument = null;
+
             if ($request->hasFile('policy_document')) {
                 $file = $request->file('policy_document');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $directory = './public/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
-                $policyDocument = 'uploads/vehicle_insurance_policy_document/' . $fileName;
+
+                // Get the vehicle model and plate number to concatenate them in the file name of the policy document
+                $vehicle = Vehicle::findOrFail($request->vehicle_id);
+                $plate_number = $vehicle->plate_number;
+                $vehicle_model = $vehicle->model;
+                $insurance_policy_no = $request->insurance_policy_no;
+
+                // Construct the filename using plate number, vehicle model, and insurance policy number
+                $filename = $plate_number . '_' . $vehicle_model . '_' . $insurance_policy_no . '.' . $file->getClientOriginalExtension();
+
+                $directory = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
+                $policyDocument = 'uploads/vehicle_insurance_policy_document/' . $filename;
 
                 // Create the directory if it doesn't exist
                 if (!file_exists($directory)) {
@@ -125,7 +135,7 @@ class VehicleInsuranceController extends Controller
                 }
 
                 // Store the file in the specified path
-                $file->move($directory, $fileName);
+                $file->move($directory, $filename);
             }
 
             // Create a new vehicle insurance record
@@ -199,7 +209,6 @@ class VehicleInsuranceController extends Controller
      *
      *
      */
-   
 
 
     public function update(Request $request, $id)
@@ -236,8 +245,18 @@ class VehicleInsuranceController extends Controller
             // Handle file upload if provided
             if ($request->hasFile('policy_document')) {
                 $file = $request->file('policy_document');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $directory = './public/public_html_metroberry_app/uploads/policy_documents/';
+
+                // Get the vehicle model and plate number to concatenate them in the file name of the policy document
+                $vehicle = Vehicle::findOrFail($request->vehicle_id);
+                $plate_number = $vehicle->plate_number;
+                $vehicle_model = $vehicle->model;
+                $insurance_policy_no = $request->insurance_policy_no;
+
+                // Construct the filename using plate number, vehicle model, and insurance policy number
+                $filename = $plate_number . '_' . $vehicle_model . '_' . $insurance_policy_no . '.' . $file->getClientOriginalExtension();
+
+                // Define the directory path
+                $directory = '/home/kknuicdz/public_html_metroberry_app/uploads/policy_documents/';
                 $filePath = 'uploads/policy_documents/' . $filename;
 
                 // Create the directory if it doesn't exist
@@ -250,7 +269,7 @@ class VehicleInsuranceController extends Controller
 
                 // Delete old policy document if it exists
                 if ($vehicleInsurance->policy_document) {
-                    $oldFilePath = './public/public_html_metroberry_app/' . $vehicleInsurance->policy_document;
+                    $oldFilePath = '/home/kknuicdz/public_html_metroberry_app/' . $vehicleInsurance->policy_document;
                     if (file_exists($oldFilePath)) {
                         unlink($oldFilePath);
                     }
@@ -277,6 +296,7 @@ class VehicleInsuranceController extends Controller
                 'policy_document' => $vehicleInsurance->policy_document ?? $vehicleInsurance->policy_document,
             ]);
 
+            // Update the status of the associated vehicle and driver
             $vehicleInsurance->vehicle->status = 'inactive';
             $vehicleInsurance->vehicle->driver->status = 'inactive';
             $vehicleInsurance->vehicle->save();
@@ -286,11 +306,10 @@ class VehicleInsuranceController extends Controller
             return redirect()->route('vehicle.insurance.index')->with('success', 'Vehicle Insurance updated successfully.');
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Error updating vehicle Insurance: ' . $e->getMessage());
-            return back()->with('error', 'An error occurred while updating the Insurance. Please try again.');
+            Log::error('Error updating vehicle insurance: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while updating the insurance. Please try again.');
         }
     }
-
 
     /**
      * Remove the specified resource from storage.

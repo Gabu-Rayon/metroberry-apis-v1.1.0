@@ -101,6 +101,8 @@ class EmployeeController extends Controller
             $backIdPath = null;
             $avatarPath = null;
             $email = $data['email'];
+            $phone = $data['phone'];
+            $name = $data['name'];
             $generatedPassword = $data['password'];
 
             Log::info('password Generated for this user : ');
@@ -110,7 +112,7 @@ class EmployeeController extends Controller
             if ($request->hasFile('front_page_id')) {
                 $frontIdFile = $request->file('front_page_id');
                 $frontIdExtension = $frontIdFile->getClientOriginalExtension();
-                $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+                $frontIdFileName = "{$name}-{$email}-{$phone}-front-page-id.{$frontIdExtension}";
                 $frontIdPath = 'uploads/front-page-ids/' . $frontIdFileName;
 
                 // Move the file to the specified directory
@@ -121,7 +123,7 @@ class EmployeeController extends Controller
             if ($request->hasFile('back_page_id')) {
                 $backIdFile = $request->file('back_page_id');
                 $backIdExtension = $backIdFile->getClientOriginalExtension();
-                $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+                $backIdFileName = "{$name}-{$email}-{$phone}-back-page-id.{$backIdExtension}";
                 $backIdPath = 'uploads/back-page-ids/' . $backIdFileName;
 
                 // Move the file to the specified directory
@@ -132,7 +134,7 @@ class EmployeeController extends Controller
             if ($request->hasFile('avatar')) {
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
-                $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+                $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
                 $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
 
                 // Move the file to the specified directory
@@ -327,6 +329,8 @@ class EmployeeController extends Controller
             $user->address = $data['address'];
             $customer->national_id_no = $data['national_id_no'];
             $email = $data['email'];
+            $name = $data['name'];
+            $phone = $data['phone'];
 
             // Handle avatar upload
             if ($request->hasFile('avatar')) {
@@ -338,7 +342,7 @@ class EmployeeController extends Controller
 
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
-                $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+                $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
 
                 // Move the new file to the specified directory
                 $avatarFile->move('./public/public_html_metroberry_app/uploads/user-avatars', $avatarFileName);
@@ -355,7 +359,7 @@ class EmployeeController extends Controller
 
                 $frontIdFile = $request->file('front_page_id');
                 $frontIdExtension = $frontIdFile->getClientOriginalExtension();
-                $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+                $frontIdFileName = "{$name}-{$email}-{$phone}-front-page-id.{$frontIdExtension}";
 
                 // Move the new file to the specified directory
                 $frontIdFile->move('./public/public_html_metroberry_app/uploads/front-page-ids', $frontIdFileName);
@@ -372,7 +376,7 @@ class EmployeeController extends Controller
 
                 $backIdFile = $request->file('back_page_id');
                 $backIdExtension = $backIdFile->getClientOriginalExtension();
-                $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+                $backIdFileName = "{$name}-{$email}-{$phone}-back-page-back-id.{$backIdExtension}";
 
                 // Move the new file to the specified directory
                 $backIdFile->move('./public/public_html_metroberry_app/uploads/back-page-ids', $backIdFileName);

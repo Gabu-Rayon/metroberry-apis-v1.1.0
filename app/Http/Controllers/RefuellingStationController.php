@@ -69,12 +69,14 @@ class RefuellingStationController extends Controller
             $certificateOfOperationsPath = null;
             $avatarPath = null;
             $email = $data['email'];
+            $phone = $data['phone'];
+            $name = $data['name'];
             $generatedPassword = $data['password'];
 
             // Handling the certificate of operations file upload
             $certificateOfOperationsFile = $request->file('certificate_of_operations');
             $certificateOfOperationsExtension = $certificateOfOperationsFile->getClientOriginalExtension();
-            $certificateOfOperationsFileName = "{$email}-cert-op.{$certificateOfOperationsExtension}";
+            $certificateOfOperationsFileName = "{$name}-{$email}-{$phone}-cert-op.{$certificateOfOperationsExtension}";
             $certificateOfOperationsFilePath = './public/public_html_metroberry_app/uploads/cert-ops';
             $certificateOfOperationsFile->move($certificateOfOperationsFilePath, $certificateOfOperationsFileName);
             $certificateOfOperationsPath = 'uploads/cert-ops/' . $certificateOfOperationsFileName;
@@ -83,7 +85,7 @@ class RefuellingStationController extends Controller
             if ($request->hasFile('avatar')) {
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
-                $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+                $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
                 $avatarFilePath = './public/public_html_metroberry_app/uploads/user-avatars';
                 $avatarFile->move($avatarFilePath, $avatarFileName);
                 $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
@@ -183,13 +185,15 @@ class RefuellingStationController extends Controller
             DB::beginTransaction();
 
             $email = $data['email'];
+            $name = $data['name'];
+            $phone = $data['email'];
 
             // Handling certificate of operations file upload
             $certificateOfOperationsPath = $station->certificate_of_operations; // Default to old path
             if ($request->hasFile('certificate_of_operations')) {
                 $certificateOfOperationsFile = $request->file('certificate_of_operations');
                 $certificateOfOperationsExtension = $certificateOfOperationsFile->getClientOriginalExtension();
-                $certificateOfOperationsFileName = "{$email}-cert-op.{$certificateOfOperationsExtension}";
+                $certificateOfOperationsFileName = "{$name}-{$email}-{$phone}-cert-op.{$certificateOfOperationsExtension}";
                 $certificateOfOperationsFilePath = './public/public_html_metroberry_app/uploads/cert-ops';
                 $certificateOfOperationsFile->move($certificateOfOperationsFilePath, $certificateOfOperationsFileName);
                 $certificateOfOperationsPath = 'uploads/cert-ops/' . $certificateOfOperationsFileName;
@@ -208,7 +212,7 @@ class RefuellingStationController extends Controller
             if ($request->hasFile('avatar')) {
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
-                $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+                $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
                 $avatarFilePath = './public/public_html_metroberry_app/uploads/user-avatars';
                 $avatarFile->move($avatarFilePath, $avatarFileName);
                 $avatarPath = 'uploads/user-avatars/' . $avatarFileName;

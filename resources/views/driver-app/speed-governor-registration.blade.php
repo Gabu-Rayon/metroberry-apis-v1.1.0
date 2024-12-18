@@ -14,9 +14,9 @@
         @php
             $user = Auth::user();
             $driver = $user->driver;
-            $isUpdate = isset($driver->speedGovernorCertificate);
+            $isUpdate = isset($driver->vehicle->speedGovernorCertificate);
             $route = $isUpdate
-                ? route('driver.registration.speed.governor.update', $driver->speedGovernorCertificate->id)
+                ? route('driver.registration.speed.governor.update', $driver->vehicle->speedGovernorCertificate->id)
                 : route('driver.registration.speed.governor.store');
             $method = $isUpdate ? 'PUT' : 'POST';
         @endphp
@@ -57,10 +57,10 @@
 
                 <div class="all-container all-container-with-classes">
                     <form class="width-100"
-                        action="{{ $driver->speedGovernorCertificate ? route('driver.registration.speed.governor.update', $driver->speedGovernorCertificate->id) : route('driver.registration.speed.governor.store') }}"
+                        action="{{ $driver->vehicle->speedGovernorCertificate ? route('driver.registration.speed.governor.update', $driver->vehicle->speedGovernorCertificate->id) : route('driver.registration.speed.governor.store') }}"
                         method="POST" enctype="multipart/form-data">
                         @csrf
-                        @if ($driver->speedGovernorCertificate)
+                        @if ($driver->vehicle->speedGovernorCertificate)
                             @method('PUT')
                         @else
                             @method('POST')
@@ -77,11 +77,10 @@
                             <label class="label-title">Vehicle</label>
 
                             <div class="#">
-
                                 {{ $driver->vehicle->plate_number ?? 'N/A' }}:
                                 {{ optional($driver->vehicle->manufacturer)->name ?? '' }}
                                 {{ $driver->vehicle->model ?? '' }}
-
+                                
                                 <div class="input-group-append">
                                 </div>
                             </div>
@@ -93,7 +92,7 @@
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="text"
                                     name="driver_speed_governor_certificate_no" autocomplete="on" placeholder="Driver Certificate No"
-                                    value="{{ old('driver_speed_governor_certificate_no', $driver->speedGovernorCertificate->certificate_no ?? '') }}" />
+                                    value="{{ old('driver_speed_governor_certificate_no', $driver->vehicle->speedGovernorCertificate->certificate_no ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
@@ -121,8 +120,8 @@
                                             <div class="upload-camera-container text-center">
                                                 <span class="#">
                                                     <img id="certificate-copy-preview"
-                                                        src="{{ $driver->speedGovernorCertificate->certificate_copy ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                        alt="Certificate Copy" />
+                                                        src="{{ $driver->vehicle->speedGovernorCertificate->certificate_copy ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        alt="Speed Governor Certificate Copy" />
                                                 </span>
                                             </div>
                                         </div>
@@ -137,7 +136,7 @@
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="text" name="driver_speed_governor_class_no"
                                     autocomplete="on" placeholder="Driver Class No"
-                                    value="{{ old('driver_speed_governor_class_no', $driver->speedGovernorCertificate->class_no ?? '') }}" />
+                                    value="{{ old('driver_speed_governor_class_no', $driver->vehicle->speedGovernorCertificate->class_no ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
@@ -152,7 +151,7 @@
                                 <input class="form-control form-control-with-padding" type="date"
                                     name="driver_speed_governor_date_of_installation" autocomplete="on"
                                     placeholder="Date of Installation"
-                                    value="{{ old('driver_speed_governor_date_of_installation', $driver->speedGovernorCertificate->date_of_installation ?? '') }}" />
+                                    value="{{ old('driver_speed_governor_date_of_installation', $vehicle->speedGovernorCertificate->date_of_installation ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
@@ -166,7 +165,7 @@
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
                                     name="driver_speed_governor_expiry_date" autocomplete="on" placeholder="Expiry Date"
-                                    value="{{ old('driver_speed_governor_expiry_date', $driver->speedGovernorCertificate->expiry_date ?? '') }}" />
+                                    value="{{ old('driver_speed_governor_expiry_date', $vehicle->speedGovernorCertificate->expiry_date ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>
@@ -181,7 +180,7 @@
                                 <input class="form-control form-control-with-padding" type="text"
                                     name="driver_speed_governor_type" autocomplete="on"
                                     placeholder="Type Of Speed Governor"
-                                    value="{{ old('driver_speed_governor_type', $driver->speedGovernorCertificate->type_of_governor ?? '') }}" />
+                                    value="{{ old('driver_speed_governor_type', $driver->vehicle->speedGovernorCertificate->type_of_governor ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>

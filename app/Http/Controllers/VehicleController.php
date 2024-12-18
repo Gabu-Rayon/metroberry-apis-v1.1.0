@@ -118,7 +118,7 @@ class VehicleController extends Controller
                 }
 
                 // Generate a unique name for the avatar image
-                $avatarName = $request->plate_number . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
+                $avatarName = $request->plate_number . $request->model. '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
 
                 // Move the uploaded file to the absolute directory
                 $request->file('vehicle_avatar')->move($avatarDirectory, $avatarName);
@@ -316,7 +316,7 @@ class VehicleController extends Controller
                 }
 
                 // Generate a unique name for the avatar image
-                $avatarName = $vehicle->plate_number . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
+                $avatarName = $vehicle->plate_number .  $vehicle->model . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
 
                 // Move the uploaded file to the specified directory
                 $request->file('vehicle_avatar')->move($avatarPath, $avatarName);

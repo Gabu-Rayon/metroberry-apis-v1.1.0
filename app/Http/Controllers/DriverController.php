@@ -194,13 +194,15 @@ class DriverController extends Controller
             $backIdPath = null;
             $avatarPath = null;
             $email = $data['email'];
+            $name = $data['name'];
+            $phone = $data['phone'];
             $generatedPassword = $data['password'];
 
             // Handle front ID upload
             if ($request->hasFile('front_page_id')) {
                 $frontIdFile = $request->file('front_page_id');
                 $frontIdExtension = $frontIdFile->getClientOriginalExtension();
-                $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
+                $frontIdFileName = "{$name}-{$email}-{$phone}-front-id.{$frontIdExtension}";
                 $frontIdPath = 'uploads/front-page-ids/' . $frontIdFileName;
                 $frontIdFile->move('./public/public_html_metroberry_app/' . dirname($frontIdPath), $frontIdFileName);
             }
@@ -210,7 +212,7 @@ class DriverController extends Controller
             if ($request->hasFile('back_page_id')) {
                 $backIdFile = $request->file('back_page_id');
                 $backIdExtension = $backIdFile->getClientOriginalExtension();
-                $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+                $backIdFileName = "{$name}-{$email}-{$phone}-back-id.{$backIdExtension}";
                 $backIdPath = 'uploads/back-page-ids/' . $backIdFileName;
                 $backIdFile->move('./public/public_html_metroberry_app/' . dirname($backIdPath), $backIdFileName);
             }
@@ -220,7 +222,7 @@ class DriverController extends Controller
             if ($request->hasFile('avatar')) {
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
-                $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+                $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
                 $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
                 $avatarFile->move('./public/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
             }
@@ -359,6 +361,8 @@ class DriverController extends Controller
             $driver->national_id_no = $data['national_id_no'];
 
             $email = $data['email'];
+            $name = $data['name'];
+            $phone = $data['phone'];
             $avatarPath = null;
             $frontIdPath = null;
             $backIdPath = null;
@@ -375,7 +379,7 @@ class DriverController extends Controller
 
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
-                $avatarFileName = "{$email}-avatar.{$avatarExtension}";
+                $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
 
                 // Define the directory for the avatar
                 $avatarDirectory = './public/public_html_metroberry_app/uploads/user-avatars';
@@ -429,7 +433,7 @@ class DriverController extends Controller
 
                 $backIdFile = $request->file('back_page_id');
                 $backIdExtension = $backIdFile->getClientOriginalExtension();
-                $backIdFileName = "{$email}-back-id.{$backIdExtension}";
+                $backIdFileName = "{$name}-{$email}-{$phone}-back-id.{$backIdExtension}";
 
                 // Define the directory for the back ID
                 $backIdDirectory = './public/public_html_metroberry_app/uploads/back-page-ids';

@@ -62,10 +62,14 @@ class NTSAInspectionCertificateController extends Controller
             $avatarPath = null;
             $certNo = $data['ntsa_inspection_certificate_no'];
 
+            $vehicle = Vehicle::findOrFail($request->vehicle_id);
+            $plate_number = $vehicle->plate_number;
+            $vehicle_model = $vehicle->model;
+
             // Generate a unique filename for the avatar
             $avatarFile = $request->file('avatar');
             $avatarExtension = $avatarFile->getClientOriginalExtension();
-            $avatarFileName = "{$certNo}-inspection-certificate.{$avatarExtension}";
+            $avatarFileName = "{$certNo}-{$plate_number}-{$vehicle_model}-inspection-certificate.{$avatarExtension}";
 
             // Define the path where the avatar will be stored
             $baseUploadPath = './public/public_html_metroberry_app/uploads';
@@ -158,6 +162,11 @@ class NTSAInspectionCertificateController extends Controller
 
             $avatarPath = $certificate->ntsa_inspection_certificate_avatar; // Keep the existing path initially
             $certNo = $data['ntsa_inspection_certificate_no'];
+            
+            $vehicle = Vehicle::findOrFail($request->vehicle_id);
+            $plate_number = $vehicle->plate_number;
+            $vehicle_model = $vehicle->model;
+
 
             // Check if a new avatar file is uploaded
             if ($request->hasFile('avatar')) {
@@ -169,7 +178,7 @@ class NTSAInspectionCertificateController extends Controller
                 // Upload new avatar file
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
-                $avatarFileName = "{$certNo}-avatar.{$avatarExtension}";
+                $avatarFileName = "{$certNo}-{$plate_number}-{$vehicle_model}-avatar.{$avatarExtension}";
 
                 // Define the path for the new avatar
                 $baseUploadPath = './public/public_html_metroberry_app/uploads';

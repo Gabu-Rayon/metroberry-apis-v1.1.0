@@ -155,6 +155,8 @@ class OrganisationController extends Controller
             $logoPath = null;
             $certificatePath = null; // Initialize the certificate path
             $email = $data['email'];
+            $phone = $data['phone'];
+            $name = $data['name'];
             $generatedPassword = $data['password'];
             Log::info('Password Generated for this Organisation: ');
             Log::info($generatedPassword);
@@ -172,7 +174,7 @@ class OrganisationController extends Controller
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
                 $logoExtension = $logoFile->getClientOriginalExtension();
-                $logoFileName = "{$email}-avatar.{$logoExtension}";
+                $logoFileName = "{$name}-{$email}-{$phone}-avatar.{$logoExtension}";
                 $logoPath = 'company-logos/' . $logoFileName; // Store the relative path
                 $logoFile->move("{$baseUploadPath}/company-logos", $logoFileName); // Move the file to the public directory
             }
@@ -181,7 +183,7 @@ class OrganisationController extends Controller
             if ($request->hasFile('organisation_certificate')) {
                 $certificateFile = $request->file('organisation_certificate');
                 $certificateExtension = $certificateFile->getClientOriginalExtension();
-                $certificateFileName = "{$email}-certificate.{$certificateExtension}";
+                $certificateFileName = "{$name}-{$email}-{$phone}-certificate.{$certificateExtension}";
                 $certificatePath = 'organisation-certificates/' . $certificateFileName; // Store the relative path
                 $certificateFile->move("{$baseUploadPath}/organisation-certificates", $certificateFileName); // Move the file to the public directory
             }
@@ -295,7 +297,7 @@ class OrganisationController extends Controller
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
                 $logoExtension = $logoFile->getClientOriginalExtension();
-                $logoFileName = "{$user->email}-avatar.{$logoExtension}";
+                $logoFileName = "{$user->name}-{$user->email}-{$user->phone}-avatar.{$logoExtension}";
                 $logoPath = 'company-logos/' . $logoFileName; // Set relative path for logo
                 $logoFile->move("{$baseUploadPath}/company-logos", $logoFileName); // Move the file to public folder
             }
@@ -304,7 +306,7 @@ class OrganisationController extends Controller
             if ($request->hasFile('certificate_of_organisation')) {
                 $certificateFile = $request->file('certificate_of_organisation');
                 $certificateExtension = $certificateFile->getClientOriginalExtension();
-                $certificateFileName = "{$user->email}-certificate.{$certificateExtension}";
+                $certificateFileName = "{$user->name}-{$user->email}-{$user->phone}-certificate.{$certificateExtension}";
                 $certificatePath = 'organisation-certificates/' . $certificateFileName; // Set relative path for certificate
                 $certificateFile->move("{$baseUploadPath}/organisation-certificates", $certificateFileName); // Move the file to public folder
             }
@@ -368,8 +370,8 @@ class OrganisationController extends Controller
 
             // Define file paths
             $baseUploadPath = './public/public_html_metroberry_app/uploads';
-            $certificatePath = "{$baseUploadPath}/organisation-certificates/{$user->email}-certificate.pdf"; // Adjust according to your naming convention
-            $logoPath = "{$baseUploadPath}/company-logos/{$user->email}-avatar." . pathinfo($organisation->certificate_of_organisation, PATHINFO_EXTENSION); // Get the correct extension or naming convention
+            $certificatePath = "{$baseUploadPath}/organisation-certificates/{$user->name}-{$user->email}-{$user->phone}-certificate.pdf"; // Adjust according to your naming convention
+            $logoPath = "{$baseUploadPath}/company-logos/{$user->name}-{$user->email}-{$user->phone}-avatar." . pathinfo($organisation->certificate_of_organisation, PATHINFO_EXTENSION); // Get the correct extension or naming convention
 
             // Delete the certificate file if it exists
             if (File::exists($certificatePath)) {

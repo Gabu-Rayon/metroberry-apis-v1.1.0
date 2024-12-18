@@ -18,14 +18,10 @@ return new class extends Migration {
             $table->string('type_of_governor');
             $table->date('date_of_installation');
             $table->date('expiry_date');
-            $table->string('certificate_copy');
+            $table->string('certificate_copy')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
-
-
-
-
         });
     }
 

@@ -71,12 +71,16 @@ class ProfileController extends Controller
 
             // Create the directory if it doesn't exist
             if (!file_exists($avatarDirectory)) {
-                mkdir($avatarDirectory, 0755, true); 
+                mkdir($avatarDirectory, 0755, true);
             }
 
-            // Store the new avatar in the public directory
+            // Create a new file name by concatenating email, phone, and name
             $file = $request->file('avatar');
-            $fileName = time() . '_' . $file->getClientOriginalName(); // Create a unique file name
+            $fileName = strtolower(str_replace(['@', '.', ' '], ['', '', '_'], $user->email)) . '-' .
+                strtolower(str_replace([' ', '-', '+'], ['_', '_', ''], $user->phone)) . '-' .
+                strtolower(str_replace(' ', '_', $user->name)) . '.' . $file->getClientOriginalExtension();
+
+            // Store the new avatar in the public directory
             $file->move($avatarDirectory, $fileName); // Move the file to the avatars directory
 
             $user->avatar = 'avatars/' . $fileName; // Update the avatar path in the user model

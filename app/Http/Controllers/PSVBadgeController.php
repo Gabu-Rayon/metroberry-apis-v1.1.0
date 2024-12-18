@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\DriversPSVBadgesExport;
+use Exception;
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Driver;
 use App\Models\PSVBadge;
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DriversPSVBadgesExport;
+use Illuminate\Support\Facades\Validator;
 
 class PSVBadgeController extends Controller
 {
@@ -35,7 +36,7 @@ class PSVBadgeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    
+
 
 
     public function store(Request $request)
@@ -60,23 +61,28 @@ class PSVBadgeController extends Controller
             $badgePath = null;
             $badgeNumber = $data['psvbadge_no'];
 
+            $driver = Driver::findOrFail($data['driver']);
+            $driverUserId = $driver->user_id;
+            $driverUser = User::findOrFail($driverUserId);
+            $driver_name = $driverUser->name;
+            $driver_email = $driverUser->email;
+            $driver_phone = $driverUser->phone;
+
             DB::beginTransaction();
 
             if ($request->hasFile('psv_badge_avatar')) {
                 $badgeFile = $request->file('psv_badge_avatar');
                 $badgeExtension = $badgeFile->getClientOriginalExtension();
-                $badgeFileName = "{$badgeNumber}-back-id.{$badgeExtension}";
+                $badgeFileName = "{$badgeNumber}-{$driver_name}-{$driver_email}-{$driver_phone}.{$badgeExtension}";
                 // Store the avatar directly in the specified directory
-                $badgeFilePath = './public/public_html_metroberry_app/uploads/psvbadge-avatars';
+                $badgeFilePath = '/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars/';
                 $badgeFile->move($badgeFilePath, $badgeFileName);
                 $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName;
             }
 
             PSVBadge::create([
                 'driver_id' => $data['driver'],
-
                 'psv_badge_no' => $badgeNumber,
-
                 'psv_badge_date_of_issue' => $data['issue_date'],
                 'psv_badge_date_of_expiry' => $data['expiry_date'],
                 'psv_badge_avatar' => $badgePath,
@@ -84,7 +90,7 @@ class PSVBadgeController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'PSV Badge Created Successfully');
+            return redirect()->back()->with('success', 'PSV Badge Added Successfully');
         } catch (Exception $e) {
             DB::rollBack(); // Rollback if there's an error
             Log::error('PSV BADGE STORE ERROR');
@@ -92,6 +98,7 @@ class PSVBadgeController extends Controller
             return redirect()->back()->with('error', 'Something Went Wrong')->withInput();
         }
     }
+
 
 
 
@@ -115,11 +122,12 @@ class PSVBadgeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-   
     public function update(Request $request, $id)
     {
         try {
             $data = $request->all();
+
+            // Find the PSV badge from the database
             $psvbadge = PSVBadge::findOrFail($id);
 
             $validator = Validator::make($data, [
@@ -141,38 +149,48 @@ class PSVBadgeController extends Controller
             $badgePath = $psvbadge->psv_badge_avatar;
             $badgeNumber = $psvbadge->psv_badge_no;
 
+            // Get driver details
+            $psvbadge_driver_id = $psvbadge->driver_id; 
+            $driver = Driver::findOrFail($psvbadge_driver_id);
+            $driverUserId = $driver->user_id;
+            $driverUser = User::findOrFail($driverUserId);
+            $driver_name = $driverUser->name;
+            $driver_email = $driverUser->email;
+            $driver_phone = $driverUser->phone;
+
             DB::beginTransaction();
 
             // Handle new avatar upload
             if ($request->hasFile('psv_badge_avatar')) {
                 // Delete old avatar if exists
-                if ($badgePath && file_exists('./public/public_html_metroberry_app/' . $badgePath)) {
-                    unlink('./public/public_html_metroberry_app/' . $badgePath);
+                if ($badgePath && file_exists(public_path($badgePath))) {
+                    unlink(public_path($badgePath));  // Use public_path() for cross-platform compatibility
                 }
 
                 $badgeFile = $request->file('psv_badge_avatar');
                 $badgeExtension = $badgeFile->getClientOriginalExtension();
-                $badgeFileName = "{$badgeNumber}-back-id.{$badgeExtension}";
+                $badgeFileName = "{$badgeNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-back-id.{$badgeExtension}";
 
                 // Define the path in the specified directory
-                $publicPath = './public/public_html_metroberry_app/uploads/psvbadge-avatars';
-                // Create the directory if it doesn't exist
+                $publicPath = public_path('uploads/psvbadge-avatars');  
                 if (!file_exists($publicPath)) {
                     mkdir($publicPath, 0755, true);
                 }
 
                 // Move the file to the specified directory
                 $badgeFile->move($publicPath, $badgeFileName);
-                $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName; // Set the relative path for database
+                $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName; 
             }
 
+            // Update PSV Badge record
             $psvbadge->update([
                 'psv_badge_date_of_issue' => $data['psv_badge_date_of_issue'],
                 'psv_badge_date_of_expiry' => $data['psv_badge_date_of_expiry'],
                 'psv_badge_avatar' => $badgePath,
             ]);
 
-            $psvbadge->driver->status = 'inactive';
+            // Optionally, update the driver's status
+            $psvbadge->driver->status = 'inactive'; // Adjust this logic if needed
             $psvbadge->driver->save();
 
             DB::commit();
@@ -185,7 +203,6 @@ class PSVBadgeController extends Controller
             return redirect()->back()->with('error', 'Something Went Wrong');
         }
     }
-
 
 
 

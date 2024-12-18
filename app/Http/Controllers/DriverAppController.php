@@ -949,12 +949,13 @@ class DriverAppController extends Controller
         $driverName = $authUser->name;
         $driverPlateNumber = $data['driver_vehicle_plate_number'];
 
+        
         // Handle avatar upload
         if ($request->hasFile('driver_vehicle_avatar')) {
             $avatarFile = $request->file('driver_vehicle_avatar');
             $avatarExtension = $avatarFile->getClientOriginalExtension();
             $avatarFileName = "{$driverName}-{$driverPlateNumber}-avatar.{$avatarExtension}";
-            $avatarPath = 'uploads/avatars/' . $avatarFileName;
+            $avatarPath = 'uploads/vehicle-avatars/' . $avatarFileName;
             $avatarFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
         }
         Log::info('The  vehicle avatar path  to be uploaded : ');
@@ -1006,9 +1007,9 @@ class DriverAppController extends Controller
     {
         $data = $request->all();
 
-        Log::info('Data From the Form to Update Vehicle: ');
-        Log::info($data);
+        Log::info('Data From the Form to Update Vehicle: ', $data);
 
+        // Validate the incoming request data
         $validator = Validator::make($data, [
             'driver_vehicle_model' => 'required|string|max:255',
             'driver_vehicle_plate_number' => 'required|string|max:255',
@@ -1023,46 +1024,45 @@ class DriverAppController extends Controller
         ]);
 
         if ($validator->fails()) {
-            Log::error('VALIDATION ERROR: ');
-            Log::error($validator->errors());
+            Log::error('VALIDATION ERROR: ', $validator->errors()->toArray());
             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
         }
 
+        // Retrieve the vehicle to be updated
         $vehicle = Vehicle::findOrFail($vehicle);
 
         $avatarPath = $vehicle->avatar;
         $authUser = Auth::user();
 
-        // Retrieve driver's name
+        // Retrieve the authenticated user's name and vehicle plate number from the request data
         $driverName = $authUser->name;
         $driverPlateNumber = $data['driver_vehicle_plate_number'];
 
         // Handle avatar upload
         if ($request->hasFile('driver_vehicle_avatar')) {
+            // Delete the old avatar if it exists
+            if ($avatarPath && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $avatarPath)) {
+                unlink('/home/kknuicdz/public_html_metroberry_app/' . $avatarPath);
+            }
+
+            // Upload the new avatar
             $avatarFile = $request->file('driver_vehicle_avatar');
             $avatarExtension = $avatarFile->getClientOriginalExtension();
             $avatarFileName = "{$driverName}-{$driverPlateNumber}-avatar.{$avatarExtension}";
-            $avatarPath = 'uploads/avatars/' . $avatarFileName;
+            $avatarPath = 'uploads/vehicle-avatars/' . $avatarFileName;
             $avatarFile->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
         }
 
+        Log::info('The vehicle avatar path to be uploaded: ', [$avatarPath]);
 
-        Log::info('The  vehicle avatar path  to be uploaded : ');
-        Log::info($avatarPath);
-
+        // Retrieve the fuel type name based on the provided fuel type ID
         $fuelTypeId = $data['driver_vehicle_fuel_type'];
-
-        // Retrieve fuel type name (assuming there's a "name" column in "fuel_types" table)
         $fuelType = Fueltype::find($fuelTypeId);
-
         $fuelTypeName = $fuelType ? $fuelType->name : 'Unknown';
 
-        Log::info('the Fuel Type Name :');
+        Log::info('The Fuel Type Name: ', [$fuelTypeName]);
 
-        Log::info($fuelTypeName);
-
-
-        // Retrieve driver_id from drivers table using the user_id
+        // Retrieve the driver based on the authenticated user ID
         $driver = Driver::where('user_id', $authUser->id)->first();
         if (!$driver) {
             Log::error('Driver not found for the authenticated user.');
@@ -1093,12 +1093,12 @@ class DriverAppController extends Controller
         return redirect()->route('driver.vehicle.docs.registration')->with('success', 'Vehicle updated successfully');
     }
 
-/**
- * 
- * Vehicle Insurance Registration
- * 
- * 
- */
+    /**
+     * 
+     * Vehicle Insurance Registration
+     * 
+     * 
+     */
 
     public function vehicleInsuranceDocument()
     {
@@ -1127,16 +1127,13 @@ class DriverAppController extends Controller
 
     public function vehicleInsuranceStore(Request $request)
     {
-        $data = $request->all();
-
-        Log::info('Data From the Form to Store Vehicle Insurance : ', $data);
-
-        $validator = Validator::make($data, [
-            'driver_vehicle_id' => 'required',
+        // Validate the incoming request data
+        $validator = Validator::make($request->all(), [
+            'driver_vehicle_id' => 'required|exists:vehicles,id',
             'driver_vehicle_insurance_company_id' => 'required|exists:insurance_companies,id',
             'driver_insurance_policy_no' => 'required|string|max:255',
             'driver_insurance_date_of_issue' => 'required|date',
-            'driver_insurance_date_of_expiry' => 'required|date',
+            'driver_insurance_date_of_expiry' => 'required|date|after_or_equal:driver_insurance_date_of_issue',
             'driver_vehicle_insurance_recurring_period' => 'required|exists:insurance_recurring_periods,id',
             'driver_insurance_recurring_date' => 'required|date',
             'driver_insurance_reminder' => 'nullable|string',
@@ -1151,6 +1148,7 @@ class DriverAppController extends Controller
             return redirect()->back()->with('error', $validator->errors()->first())->withInput();
         }
 
+        // Retrieve the authenticated user and their driver record
         $authUser = Auth::user();
         $driver = Driver::where('user_id', $authUser->id)->first();
 
@@ -1159,44 +1157,44 @@ class DriverAppController extends Controller
             return redirect()->back()->with('error', 'Driver not found.')->withInput();
         }
 
-        $driverVehicle = Vehicle::where('driver_id', $driver->id)->first();
-
-        if (!$driverVehicle) {
-            Log::error('Driver Vehicle not found for the authenticated user.');
-            return redirect()->back()->with('error', 'Driver Vehicle not found.')->withInput();
-        }
-
+        // Define the path for storing the insurance policy document
         $driverVehicleInsurancePolicyDocPath = null;
 
         if ($request->hasFile('driver_insurance_policy_document')) {
             $file = $request->file('driver_insurance_policy_document');
-            $fileName = "{$authUser->name}-{$data['driver_insurance_policy_no']}.{$file->getClientOriginalExtension()}";
-            $driverVehicleInsurancePolicyDocPath = 'uploads/avatars/' . $fileName;
-            $file->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($driverVehicleInsurancePolicyDocPath), $fileName);
+            $fileName = "{$authUser->name}-{$authUser->email}-{$request->driver_insurance_policy_no}.{$file->getClientOriginalExtension()}";
+            $driverVehicleInsurancePolicyDocPath = 'uploads/vehicle_insurance_policy_document/' . $fileName;
+
+            $destinationPath = '/home/kknuicdz/public_html_metroberry_app/' . dirname($driverVehicleInsurancePolicyDocPath);
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+
+            $file->move($destinationPath, $fileName);
         }
 
         Log::info('The Driver vehicle Insurance Policy Document path to be uploaded: ', [$driverVehicleInsurancePolicyDocPath]);
 
-        $driverVehicleInsurance = VehicleInsurance::create([
-            'vehicle_id' => $data['driver_vehicle_id'],
-            'insurance_company_id' => $data['driver_vehicle_insurance_company_id'],
-            'insurance_policy_no' => $data['driver_insurance_policy_no'],
-            'insurance_date_of_issue' => $data['driver_insurance_date_of_issue'],
-            'insurance_date_of_expiry' => $data['driver_insurance_date_of_expiry'],
-            'charges_payable' => $data['driver_insurance_charges_payable'],
-            'recurring_period_id' => $data['driver_vehicle_insurance_recurring_period'],
-            'recurring_date' => $data['driver_insurance_recurring_date'],
-            'reminder' => $data['driver_insurance_reminder'],
-            'deductible' => $data['driver_insurance_deductible'],
+        // Store the vehicle insurance data
+        VehicleInsurance::create([
+            'vehicle_id' => $request->driver_vehicle_id,
+            'insurance_company_id' => $request->driver_vehicle_insurance_company_id,
+            'insurance_policy_no' => $request->driver_insurance_policy_no,
+            'insurance_date_of_issue' => $request->driver_insurance_date_of_issue,
+            'insurance_date_of_expiry' => $request->driver_insurance_date_of_expiry,
+            'charges_payable' => $request->driver_insurance_charges_payable,
+            'recurring_period_id' => $request->driver_vehicle_insurance_recurring_period,
+            'recurring_date' => $request->driver_insurance_recurring_date,
+            'reminder' => $request->driver_insurance_reminder,
+            'deductible' => $request->driver_insurance_deductible,
             'status' => false,
-            'remark' => $data['driver_insurance_remark'],
+            'remark' => $request->driver_insurance_remark,
             'policy_document' => $driverVehicleInsurancePolicyDocPath,
             'created_by' => $authUser->id,
         ]);
 
         return redirect()->route('driver.vehicle.docs.registration')->with('success', 'Vehicle insurance added successfully.');
     }
-
 
     public function vehicleInsuranceUpdate(Request $request, $insuranceId)
     {
@@ -1243,14 +1241,22 @@ class DriverAppController extends Controller
         $driverVehicleInsurancePolicyDocPath = $driverVehicleInsurance->policy_document;
 
         if ($request->hasFile('driver_insurance_policy_document')) {
-            if ($driverVehicleInsurancePolicyDocPath) {
-                // Optionally delete the old document here
+            // Delete the old document if it exists
+            if ($driverVehicleInsurancePolicyDocPath && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $driverVehicleInsurancePolicyDocPath)) {
+                unlink('/home/kknuicdz/public_html_metroberry_app/' . $driverVehicleInsurancePolicyDocPath);
             }
 
+            // Upload the new document
             $file = $request->file('driver_insurance_policy_document');
-            $fileName = "{$authUser->name}-{$data['driver_insurance_policy_no']}.{$file->getClientOriginalExtension()}";
-            $driverVehicleInsurancePolicyDocPath = 'uploads/avatars/' . $fileName;
-            $file->move('/home/kknuicdz/public_html_metroberry_app/' . dirname($driverVehicleInsurancePolicyDocPath), $fileName);
+            $fileName = "{$authUser->name}-{$authUser->email}-{$request->driver_insurance_policy_no}.{$file->getClientOriginalExtension()}";
+            $driverVehicleInsurancePolicyDocPath = 'uploads/vehicle_insurance_policy_document/' . $fileName;
+
+            $destinationPath = '/home/kknuicdz/public_html_metroberry_app/' . dirname($driverVehicleInsurancePolicyDocPath);
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+
+            $file->move($destinationPath, $fileName);
         }
 
         Log::info('The Driver vehicle Insurance Policy Document path to be uploaded: ', [$driverVehicleInsurancePolicyDocPath]);
@@ -1329,14 +1335,22 @@ class DriverAppController extends Controller
 
         $fileName = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '.' . $request->file('driver_ntsa_certificate_copy')->getClientOriginalExtension();
 
-        // Store the uploaded certificate copy with the custom file name
+        $driverNTSAInspectionCertDocPath = null;
+
         if ($request->hasFile('driver_ntsa_certificate_copy')) {
-            $certificateAvatar = $request->file('driver_ntsa_certificate_copy')->storeAs(
-                'ntsa-insp-cert-copies',
-                $fileName,
-                'public'
-            );
+            $file = $request->file('driver_ntsa_certificate_copy');
+            $driverNTSAInspectionCertDocPath = 'uploads/ntsa-insp-cert-copies/' . $fileName;
+            $destinationPath = '/home/kknuicdz/public_html_metroberry_app/' . dirname($driverNTSAInspectionCertDocPath);
+
+            // Ensure the destination directory exists
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+
+            $file->move($destinationPath, $fileName);
         }
+
+        Log::info('The Driver vehicle Insurance Policy Document path to be uploaded: ', [$driverNTSAInspectionCertDocPath]);
 
         // Store the inspection certificate in the database
         $inspectionCertificate = new NTSAInspectionCertificate();
@@ -1345,12 +1359,13 @@ class DriverAppController extends Controller
         $inspectionCertificate->ntsa_inspection_certificate_no = $ntsaCertificateNo;
         $inspectionCertificate->ntsa_inspection_certificate_date_of_issue = $request->input('driver_ntsa_inspection_certificate_date_of_issue');
         $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry = $request->input('driver_ntsa_inspection_certificate_date_of_expiry');
-        $inspectionCertificate->ntsa_inspection_certificate_avatar = $certificateAvatar;
+        $inspectionCertificate->ntsa_inspection_certificate_avatar = $driverNTSAInspectionCertDocPath;
         $inspectionCertificate->save();
 
         // Return success response or redirect
-        return redirect()->route('driver.registration.page')->with('success', 'NTSA Inspection Certificate registered successfully!');
+        return redirect()->route('driver.vehicle.docs.registration')->with('success', 'NTSA Inspection Certificate Added successfully!');
     }
+
 
 
     public function ntsaInspectionCertificateUpdate(Request $request, $id)
@@ -1371,47 +1386,54 @@ class DriverAppController extends Controller
         $driver = auth()->user()->driver;
         $user = $driver->user; // Assuming 'user' relationship exists in the 'driver' model
 
-        // Prepare the custom file name if a new file is uploaded
+        // Prepare the custom file name
+        $driverName = $user->name;
+        $driverEmail = $user->email;
+        $ntsaCertificateNo = $request->input('driver_ntsa_inspection_certificate_no');
+
+        $driverNTSAInspectionCertDocPath = $inspectionCertificate->ntsa_inspection_certificate_avatar;
+
         if ($request->hasFile('driver_ntsa_certificate_copy')) {
-            // Delete the old certificate image if exists
-            if ($inspectionCertificate->ntsa_inspection_certificate_avatar) {
-                Storage::disk('public')->delete($inspectionCertificate->ntsa_inspection_certificate_avatar);
+            // Delete the old file if it exists
+            if ($driverNTSAInspectionCertDocPath && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $driverNTSAInspectionCertDocPath)) {
+                unlink('/home/kknuicdz/public_html_metroberry_app/' . $driverNTSAInspectionCertDocPath);
             }
 
-            $driverName = $user->name;
-            $driverEmail = $user->email;
-            $ntsaCertificateNo = $request->input('driver_ntsa_inspection_certificate_no');
+            $file = $request->file('driver_ntsa_certificate_copy');
+            $fileName = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '.' . $file->getClientOriginalExtension();
+            $driverNTSAInspectionCertDocPath = 'uploads/ntsa-insp-cert-copies/' . $fileName;
+            $destinationPath = '/home/kknuicdz/public_html_metroberry_app/' . dirname($driverNTSAInspectionCertDocPath);
 
-            $fileName = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '.' . $request->file('driver_ntsa_certificate_copy')->getClientOriginalExtension();
+            // Ensure the destination directory exists
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
 
-            // Store the uploaded certificate copy with the custom file name
-            $certificateAvatar = $request->file('driver_ntsa_certificate_copy')->storeAs(
-                'ntsa-insp-cert-copies',
-                $fileName,
-                'public'
-            );
-
-            $inspectionCertificate->ntsa_inspection_certificate_avatar = $certificateAvatar;
+            $file->move($destinationPath, $fileName);
         }
+
+        Log::info('The Driver vehicle Insurance Policy Document path to be uploaded: ', [$driverNTSAInspectionCertDocPath]);
 
         // Update the certificate data
         $inspectionCertificate->vehicle_id = $request->input('driver_vehicle_id');
         $inspectionCertificate->ntsa_inspection_certificate_no = $request->input('driver_ntsa_inspection_certificate_no');
         $inspectionCertificate->ntsa_inspection_certificate_date_of_issue = $request->input('driver_ntsa_inspection_certificate_date_of_issue');
         $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry = $request->input('driver_ntsa_inspection_certificate_date_of_expiry');
+        $inspectionCertificate->ntsa_inspection_certificate_avatar = $driverNTSAInspectionCertDocPath;
         $inspectionCertificate->save();
 
         // Return success response or redirect
-        return redirect()->route('driver.registration.page')->with('success', 'NTSA Inspection Certificate updated successfully!');
+        return redirect()->route('driver.vehicle.docs.registration')->with('success', 'NTSA Inspection Certificate updated successfully!');
     }
 
-/***
- * 
- * 
- * Speed Limit Certificate
- * 
- * 
- */
+
+    /***
+     * 
+     * 
+     * Speed Limit Certificate
+     * 
+     * 
+     */
 
     public function speedGovernorRegistration()
     {
@@ -1433,7 +1455,7 @@ class DriverAppController extends Controller
         $speedGovernorCertificate = VehicleSpeedGovernorCertificate::where('vehicle_id', $vehicle->id)->get();
 
         // Pass the data to the view
-        return view('driver-app.speed-governor-registration', compact('driver', 'speedGovernorCertificate'));
+        return view('driver-app.speed-governor-registration', compact('driver', 'vehicle','speedGovernorCertificate'));
     }
 
     public function speedGovernorRegistrationStore(Request $request)
@@ -1478,7 +1500,7 @@ class DriverAppController extends Controller
 
         if ($request->hasFile('driver_speed_governor_certificate_copy')) {
             $file = $request->file('driver_speed_governor_certificate_copy');
-            $fileName = "{$authUser->name}-{$data['driver_speed_governor_certificate_no']}.{$file->getClientOriginalExtension()}";
+            $fileName = "{$authUser->name}-{$driverVehicle->model}-{$driverVehicle->plate_number}-{$data['driver_speed_governor_certificate_no']}.{$file->getClientOriginalExtension()}";
             $driverVehicleSpeedGovernorDocPath = 'uploads/speed-governor-cert-copies/' . $fileName;
             $destinationPath = '/home/kknuicdz/public_html_metroberry_app/' . dirname($driverVehicleSpeedGovernorDocPath);
 
@@ -1515,60 +1537,86 @@ class DriverAppController extends Controller
 
     public function speedGovernorRegistrationUpdate(Request $request, $certificateId)
     {
+        Log::info('Data From Update the Speed Governor Form: ', $request->all());
+
+        $data = $request->all();
+
         // Validate the incoming request
-        $request->validate([
-            'driver_certificate_no' => 'required|string|max:255',
-            'driver_certificate_copy' => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:2048',
-            'driver_class_no' => 'required|string|max:255',
+        $validator = Validator::make($data, [
+            'driver_speed_governor_certificate_no' => 'required|string|max:255',
+            'driver_speed_governor_certificate_copy' => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:2048',
+            'driver_speed_governor_class_no' => 'required|string|max:255',
             'driver_speed_governor_date_of_installation' => 'required|date',
             'driver_speed_governor_expiry_date' => 'required|date|after:driver_speed_governor_date_of_installation',
             'driver_speed_governor_type' => 'required|string|max:255',
-            'driver_vehicle_id' => 'required|exists:vehicles,id',
+            'driver_speed_governor_vehicle_id' => 'required|exists:vehicles,id',
         ]);
 
-        // Find the existing SpeedGovernorCertificate by ID
-        $speedGovernorCertificate = VehicleSpeedGovernorCertificate::findOrFail($certificateId);
-
-        // Get the driver's name, email, and NTSA certificate number
-        $user = Auth::user();
-        $driverName = $user->name;
-        $driverEmail = $user->email;
-        $certificateNo = $request->driver_certificate_no;
-
-        // Store the certificate copy if uploaded
-        $certificatePath = $speedGovernorCertificate->certificate_copy;
-        if ($request->hasFile('driver_certificate_copy')) {
-            // Delete the old certificate if a new one is uploaded
-            if (file_exists(storage_path('app/public/' . $certificatePath))) {
-                unlink(storage_path('app/public/' . $certificatePath));
-            }
-
-            // Generate a new filename by concatenating driver name, email, and certificate number
-            $filename = $driverName . '_' . $driverEmail . '_' . $certificateNo . '.' . $request->file('driver_certificate_copy')->extension();
-
-            // Store the new certificate in the specified directory
-            $certificatePath = $request->file('driver_certificate_copy')->storeAs(
-                'vehicle-speed-governor-copies',
-                $filename,
-                'public'
-            );
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR: ', $validator->errors()->toArray());
+            return redirect()->back()->with('error', $validator->errors()->first())->withInput();
         }
 
-        // Update the SpeedGovernorCertificate details
+        // Retrieve the existing speed governor certificate
+        $speedGovernorCertificate = VehicleSpeedGovernorCertificate::findOrFail($certificateId);
+
+        // Get the authenticated user and the associated driver
+        $authUser = Auth::user();
+        $driver = Driver::where('user_id', $authUser->id)->first();
+
+        if (!$driver) {
+            Log::error('Driver not found for the authenticated user.');
+            return redirect()->back()->with('error', 'Driver not found.')->withInput();
+        }
+
+        $driverVehicle = Vehicle::where('driver_id', $driver->id)->first();
+
+        if (!$driverVehicle) {
+            Log::error('Driver Vehicle not found for the authenticated user.');
+            return redirect()->back()->with('error', 'Driver Vehicle not found.')->withInput();
+        }
+
+        $driverVehicleSpeedGovernorDocPath = $speedGovernorCertificate->certificate_copy;
+
+        // Handle file upload if a new file is provided
+        if ($request->hasFile('driver_speed_governor_certificate_copy')) {
+            // Delete the old file if it exists
+            if ($driverVehicleSpeedGovernorDocPath && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $driverVehicleSpeedGovernorDocPath)) {
+                unlink('/home/kknuicdz/public_html_metroberry_app/' . $driverVehicleSpeedGovernorDocPath);
+            }
+
+            $file = $request->file('driver_speed_governor_certificate_copy');
+            $fileName = "{$authUser->name}-{$driverVehicle->model}-{$driverVehicle->plate_number}-{$data['driver_speed_governor_certificate_no']}.{$file->getClientOriginalExtension()}";
+            $driverVehicleSpeedGovernorDocPath = 'uploads/speed-governor-cert-copies/' . $fileName;
+            $destinationPath = '/home/kknuicdz/public_html_metroberry_app/' . dirname($driverVehicleSpeedGovernorDocPath);
+
+            // Ensure the destination directory exists
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+
+            $file->move($destinationPath, $fileName);
+        }
+
+        Log::info('The Driver vehicle Insurance Policy Document path to be uploaded: ', [$driverVehicleSpeedGovernorDocPath]);
+
+        // Update the SpeedGovernorCertificate
         $speedGovernorCertificate->update([
-            'driver_certificate_no' => $certificateNo,
-            'certificate_copy' => $certificatePath,
-            'class_no' => $request->driver_class_no,
+            'certificate_no' => $request->driver_speed_governor_certificate_no,
+            'certificate_copy' => $driverVehicleSpeedGovernorDocPath,
+            'class_no' => $request->driver_speed_governor_class_no,
             'date_of_installation' => $request->driver_speed_governor_date_of_installation,
             'expiry_date' => $request->driver_speed_governor_expiry_date,
             'type_of_governor' => $request->driver_speed_governor_type,
-            'vehicle_id' => $request->driver_vehicle_id,
+            'driver_id' => $driver->id,
+            'vehicle_id' => $request->driver_speed_governor_vehicle_id,
         ]);
 
         // Redirect with success message
         return redirect()->route('driver.vehicle.docs.registration')
             ->with('success', 'Speed Governor Certificate successfully updated.');
     }
+
 
 
 }

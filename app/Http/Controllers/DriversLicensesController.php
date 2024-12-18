@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\DriversLicensesExport;
+use Exception;
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Driver;
 use Illuminate\Http\Request;
 use App\Models\DriversLicenses;
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DriversLicensesExport;
+use Illuminate\Support\Facades\Validator;
 
 class DriversLicensesController extends Controller
 {
@@ -43,6 +44,7 @@ class DriversLicensesController extends Controller
         try {
             $data = $request->all();
 
+            // Validate input data
             $validator = Validator::make($data, [
                 'driver' => 'required|numeric|exists:drivers,id',
                 'license_no' => 'required|string|unique:drivers_licenses,driving_license_no',
@@ -59,6 +61,16 @@ class DriversLicensesController extends Controller
             }
 
             $licenseNumber = $data['license_no'];
+
+            // Fetch driver details
+            $dl_driver_id = $request->driver;
+            $driver = Driver::findOrFail($dl_driver_id);
+            $driverUserId = $driver->user_id;
+            $driverUser = User::findOrFail($driverUserId);
+            $driver_name = $driverUser->name;
+            $driver_email = $driverUser->email;
+            $driver_phone = $driverUser->phone;
+
             $frontLicensePath = null;
             $backLicensePath = null;
 
@@ -66,43 +78,50 @@ class DriversLicensesController extends Controller
             if ($request->hasFile('front_page_id')) {
                 $frontLicenseFile = $request->file('front_page_id');
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
-                $frontLicenseFileName = "{$licenseNumber}-front-id.{$frontLicenseExtension}";
-                // Move the file to the specified directory
-                $frontLicensePath = './public/public_html_metroberry_app/uploads/front-license-pics/' . $frontLicenseFileName;
-                $frontLicenseFile->move('./public/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName);
+                $frontLicenseFileName = "{$licenseNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-front-id.{$frontLicenseExtension}";
+
+                // Define the directory path and create it if necessary
+                $frontLicensePath = public_path('uploads/front-license-pics/' . $frontLicenseFileName);
+                $frontLicenseFile->move(public_path('uploads/front-license-pics'), $frontLicenseFileName);
             }
 
             // Handle the back license image upload
             if ($request->hasFile('back_page_id')) {
                 $backLicenseFile = $request->file('back_page_id');
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
-                $backLicenseFileName = "{$licenseNumber}-back-id.{$backLicenseExtension}";
-                // Move the file to the specified directory
-                $backLicensePath = './public/public_html_metroberry_app/uploads/back-license-pics/' . $backLicenseFileName;
-                $backLicenseFile->move('./public/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName);
+                $backLicenseFileName = "{$licenseNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-back-id.{$backLicenseExtension}";
+
+                // Define the directory path and create it if necessary
+                $backLicensePath = public_path('uploads/back-license-pics/' . $backLicenseFileName);
+                $backLicenseFile->move(public_path('uploads/back-license-pics'), $backLicenseFileName);
             }
 
+            // Begin database transaction
             DB::beginTransaction();
 
+            // Create the new driver's license record
             DriversLicenses::create([
                 'driver_id' => $data['driver'],
                 'driving_license_no' => $licenseNumber,
                 'driving_license_date_of_issue' => $data['issue_date'],
                 'driving_license_date_of_expiry' => $data['expiry_date'],
-                'driving_license_avatar_front' => $frontLicensePath,
-                'driving_license_avatar_back' => $backLicensePath,
+                'driving_license_avatar_front' => 'uploads/front-license-pics/' . $frontLicenseFileName,
+                'driving_license_avatar_back' => 'uploads/back-license-pics/' . $backLicenseFileName,
             ]);
 
+            // Commit the transaction
             DB::commit();
 
             return redirect()->route('driver.license')->with('success', 'License created successfully');
         } catch (Exception $e) {
+            // Rollback transaction if there was an error
             DB::rollBack();
             Log::error('CREATE LICENSE ERROR');
             Log::error($e);
             return redirect()->back()->with('error', $e->getMessage())->withInput();
         }
     }
+
 
 
 
@@ -151,6 +170,16 @@ class DriversLicensesController extends Controller
             $frontLicensePath = $license->driving_license_avatar_front; // Preserve the old path
             $backLicensePath = $license->driving_license_avatar_back; // Preserve the old path
 
+
+            // Get driver details
+            $dl_driver_id = $license->driver_id;  // Assuming this is correct column for driver_id
+            $driver = Driver::findOrFail($dl_driver_id);
+            $driverUserId = $driver->user_id;
+            $driverUser = User::findOrFail($driverUserId);
+            $driver_name = $driverUser->name;
+            $driver_email = $driverUser->email;
+            $driver_phone = $driverUser->phone;
+
             // Handle new front license image upload
             if ($request->hasFile('driving_license_avatar_front')) {
                 // If there's an existing front image, delete it
@@ -160,7 +189,7 @@ class DriversLicensesController extends Controller
                 // Store the new front image
                 $frontLicenseFile = $request->file('driving_license_avatar_front');
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
-                $frontLicenseFileName = "{$license->driving_license_no}-front-id.{$frontLicenseExtension}";
+                $frontLicenseFileName = "{$license->driving_license_no}-{$driver_name}-{$driver_email}-{$driver_phone}-driver-license-front.{$frontLicenseExtension}";
                 $frontLicensePath = 'uploads/front-license-pics/' . $frontLicenseFileName; // Path to store
                 $frontLicenseFile->move('./public/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName); // Move file
             }
@@ -174,7 +203,7 @@ class DriversLicensesController extends Controller
                 // Store the new back image
                 $backLicenseFile = $request->file('driving_license_avatar_back');
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
-                $backLicenseFileName = "{$license->driving_license_no}-back-id.{$backLicenseExtension}";
+                $backLicenseFileName = "{$license->driving_license_no}-{$driver_name}-{$driver_email}-{$driver_phone}-driver-license-back.{$backLicenseExtension}";
                 $backLicensePath = 'uploads/back-license-pics/' . $backLicenseFileName; // Path to store
                 $backLicenseFile->move('./public/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName); // Move file
             }
