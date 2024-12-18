@@ -41,6 +41,7 @@ use App\Http\Controllers\MaintenanceServicePaymentController;
 use App\Http\Controllers\NTSAInspectionCertificateController;
 use App\Http\Controllers\ExpenseController;
 use App\Models\Vehicle;
+use App\Http\Controllers\VehicleSpeedGovernorCertificateController;
 
 // All Routes
 
@@ -640,6 +641,82 @@ Route::get('vehicle/certificate/{id}/renew', [NTSAInspectionCertificateControlle
 Route::post('vehicle/certificate/{id}/renew', [NTSAInspectionCertificateController::class, 'renewPost'])
     ->name('vehicle.certificate.renew')
     ->middleware('auth', 'can:edit vehicle inspection certificate');
+
+
+/**
+ * Vehicle's Speed Governor Routes
+ *
+ */
+
+// View Vehicle Speed Governor Certificates
+Route::get('vehicle/speed-governor', [VehicleSpeedGovernorCertificateController::class, 'index'])
+    ->name('vehicle.speed.governor')
+    ->middleware('auth', 'can:view vehicle speed governors');
+
+// Create Vehicle Speed Governor Certificate
+Route::get('vehicle/speed-governor/create', [VehicleSpeedGovernorCertificateController::class, 'create'])
+    ->name('vehicle.speed.governor.create')
+    ->middleware('auth', 'can:create vehicle speed governor');
+
+Route::post('vehicle/speed-governor/create', [VehicleSpeedGovernorCertificateController::class, 'store'])
+    ->name('vehicle.speed.governor.create')
+    ->middleware('auth', 'can:create vehicle speed governor');
+
+// Edit Vehicle Speed Governor Certificate
+Route::get('vehicle/speed-governor/{id}/edit', [VehicleSpeedGovernorCertificateController::class, 'edit'])
+    ->name('vehicle.speed.governor.edit')
+    ->middleware('auth', 'can:edit vehicle speed governor');
+
+Route::put('vehicle/speed-governor/{id}/edit', [VehicleSpeedGovernorCertificateController::class, 'update'])
+    ->name('vehicle.speed.governor.edit')
+    ->middleware('auth', 'can:edit vehicle speed governor');
+
+Route::get('vehicle/speed-governor/{id}/activate', [VehicleSpeedGovernorCertificateController::class, 'activateForm'])
+    ->name('vehicle.speed.governor.activate')
+    ->middleware('auth', 'can:activate vehicle speed governor');
+
+Route::put('vehicle/speed-governor/{id}/activate', [VehicleSpeedGovernorCertificateController::class, 'activate'])
+    ->name('vehicle.speed.governor.activate')
+    ->middleware('auth', 'can:activate vehicle speed governor');
+
+Route::get('vehicle/speed-governor/{id}/deactivate', [VehicleSpeedGovernorCertificateController::class, 'deactivateForm'])
+    ->name('vehicle.speed.governor.deactivate')
+    ->middleware('auth', 'can:deactivate vehicle speed governor');
+
+Route::put('vehicle/speed-governor/{id}/deactivate', [VehicleSpeedGovernorCertificateController::class, 'deactivate'])
+    ->name('vehicle.speed.governor.deactivate')
+    ->middleware('auth', 'can:deactivate vehicle speed governor');
+
+// Delete Vehicle Speed Governor Certificate
+Route::get('vehicle/speed-governor/{id}/delete', [VehicleSpeedGovernorCertificateController::class, 'delete'])
+    ->name('vehicle.speed.governor.delete')
+    ->middleware('auth', 'can:delete vehicle speed governor');
+
+Route::delete('vehicle/speed-governor/{id}/delete', [VehicleSpeedGovernorCertificateController::class, 'destroy'])
+    ->name('vehicle.speed.governor.delete')
+    ->middleware('auth', 'can:delete vehicle speed governor');
+
+Route::get('vehicle/speed-governor/export', [VehicleSpeedGovernorCertificateController::class, 'export'])
+    ->name('vehicle.speed.governor.export')
+    ->middleware('auth', 'can:export vehicle speed governors');
+
+Route::get('vehicle/speed-governor/import', [VehicleSpeedGovernorCertificateController::class, 'import'])
+    ->name('vehicle.speed.governor.import')
+    ->middleware('auth', 'can:import vehicle speed governors');
+
+Route::post('vehicle/speed-governor/import', [VehicleSpeedGovernorCertificateController::class, 'importStore'])
+    ->name('vehicle.speed.governor.import')
+    ->middleware('auth', 'can:import vehicle speed governors');
+
+// Renew Speed Governor Certificate
+Route::get('vehicle/speed-governor/{id}/renew', [VehicleSpeedGovernorCertificateController::class, 'renew'])
+    ->name('vehicle.speed.governor.renew')
+    ->middleware('auth', 'can:edit vehicle speed governor');
+
+Route::post('vehicle/speed-governor/{id}/renew', [VehicleSpeedGovernorCertificateController::class, 'renewPost'])
+    ->name('vehicle.speed.governor.renew')
+    ->middleware('auth', 'can:edit vehicle speed governor');
+
 
 
 /**

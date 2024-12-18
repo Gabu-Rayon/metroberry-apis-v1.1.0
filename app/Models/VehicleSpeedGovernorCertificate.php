@@ -10,16 +10,17 @@ class VehicleSpeedGovernorCertificate extends Model
     use HasFactory;
 
     protected $fillable = [
-        'certificate_no',
         'vehicle_id',
+        'certificate_no',
         'class_no',
         'type_of_governor',
         'date_of_installation',
         'expiry_date',
         'certificate_copy',
+        'chasis_no',
+        'status',
     ];
 
-    // Define relationship with Vehicle model
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);

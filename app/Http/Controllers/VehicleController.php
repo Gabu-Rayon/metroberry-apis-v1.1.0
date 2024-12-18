@@ -150,7 +150,7 @@ class VehicleController extends Controller
             return redirect()->route('vehicle')->with('success', 'Vehicle added successfully.');
         } catch (Exception $e) {
             // Log the error message
-            Log::error('Error adding vehicle: ' . $e->getMessage());
+            Log::error('Error adding vehicle: ' . $e);
 
             return back()->with('error', 'An error occurred while adding the vehicle. Please try again.')->withInput();
         }

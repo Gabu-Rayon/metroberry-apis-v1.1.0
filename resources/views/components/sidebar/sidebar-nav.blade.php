@@ -54,6 +54,12 @@
                             'route' => route('vehicle.inspection.certificate'),
                         ]
                         : null,
+                    \Auth::user()->can('manage vehicle speed governors')
+                        ? [
+                            'label' => 'Speed Governors',
+                            'route' => route('vehicle.speed.governor'),
+                        ]
+                        : null,
                 ]),
             ])
         @endif

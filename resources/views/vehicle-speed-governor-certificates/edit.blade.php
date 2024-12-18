@@ -1,19 +1,10 @@
-<form action="{{ route('vehicle.inspection.certificate.edit', $certificate->id) }}" method="POST"
+<form action="{{ route('vehicle.speed.governor.edit', $certificate->id) }}" method="POST"
     class="needs-validation modal-content" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div class="card-header my-3 p-2 border-bottom">
-        <h4>Edit Inspection Certificate</h4>
+        <h4>Edit Speed Governor Certificate</h4>
     </div>
-
-    {{-- 'certificate_no',
-        'vehicle_id',
-        'class_no',
-        'type_of_governor',
-        'date_of_installation',
-        'expiry_date',
-        'certificate_copy',
-         --}}
 
     <div class="modal-body">
         <div class="row">
@@ -44,27 +35,37 @@
                         <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <input name="ntsa_inspection_certificate_date_of_issue" class="form-control" type="date"
-                            id="ntsa_inspection_certificate_date_of_issue" required
-                            value="{{ $certificate->ntsa_inspection_certificate_date_of_issue }}" />
+                        <input name="date_of_installation" class="form-control" type="date"
+                            id="date_of_installation" required
+                            value="{{ $certificate->date_of_installation }}" />
                     </div>
                 </div>
 
                 <div class="form-group row my-2">
                     <label for="certificate_copy" class="col-sm-5 col-form-label">
                         Certificate Copy
-                        <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <input name="avatar" class="form-control" type="file" accept="image/*" id="avatar"
-                            required />
-                        @if ($certificate->ntsa_inspection_certificate_avatar)
-                            <a href="{{ asset($certificate->ntsa_inspection_certificate_avatar) }}"
+                        <input name="avatar" class="form-control" type="file" accept="image/*" id="avatar" />
+                        @if ($certificate->copy)
+                            <a href="{{ asset($certificate->copy) }}"
                                 target="_blank">
-                                <img src="{{ asset($certificate->ntsa_inspection_certificate_avatar) }}"
+                                <img src="{{ asset($certificate->copy) }}"
                                     alt="Certificate Copy" class="img-fluid mt-2" />
                             </a>
                         @endif
+                    </div>
+                </div>
+
+                <div class="form-group row my-2">
+                    <label for="chasis_no" class="col-sm-5 col-form-label">
+                        Chasis No
+                        <i class="text-danger">*</i>
+                    </label>
+                    <div class="col-sm-7">
+                        <input name="chasis_no" class="form-control" type="text"
+                            placeholder="Chasis No" id="chasis_no" required
+                            value="{{ $certificate->chasis_no }}">
                     </div>
                 </div>
 
@@ -73,26 +74,50 @@
             <div class="col-md-12 col-lg-6">
 
                 <div class="form-group row my-2">
-                    <label for="ntsa_inspection_certificate_no" class="col-sm-5 col-form-label">
+                    <label for="certificate_no" class="col-sm-5 col-form-label">
                         Certificate No
                         <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <input name="ntsa_inspection_certificate_no" class="form-control" type="text"
-                            placeholder="Certificate No" id="ntsa_inspection_certificate_no" required
-                            value="{{ $certificate->ntsa_inspection_certificate_no }}">
+                        <input name="certificate_no" class="form-control" type="text"
+                            placeholder="Certificate No" id="certificate_no" required
+                            value="{{ $certificate->certificate_no }}">
                     </div>
                 </div>
 
                 <div class="form-group row my-2">
-                    <label for="ntsa_inspection_certificate_date_of_expiry" class="col-sm-5 col-form-label">
+                    <label for="expiry_date" class="col-sm-5 col-form-label">
                         Date of Expiry
                         <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <input name="ntsa_inspection_certificate_date_of_expiry" class="form-control" type="date"
-                            id="ntsa_inspection_certificate_date_of_expiry" required
-                            value="{{ $certificate->ntsa_inspection_certificate_date_of_expiry }}" />
+                        <input name="expiry_date" class="form-control" type="date"
+                            id="expiry_date" required
+                            value="{{ $certificate->expiry_date }}" />
+                    </div>
+                </div>
+
+                <div class="form-group row my-2">
+                    <label for="class_no" class="col-sm-5 col-form-label">
+                        Class
+                        <i class="text-danger">*</i>
+                    </label>
+                    <div class="col-sm-7">
+                        <input name="class_no" class="form-control" type="text"
+                            placeholder="Class" id="class_no" required
+                            value="{{ $certificate->class_no }}">
+                    </div>
+                </div>
+
+                <div class="form-group row my-2">
+                    <label for="type_of_governor" class="col-sm-5 col-form-label">
+                        Type
+                        <i class="text-danger">*</i>
+                    </label>
+                    <div class="col-sm-7">
+                        <input name="type_of_governor" class="form-control" type="text"
+                            placeholder="Type" id="type_of_governor" required
+                            value="{{ $certificate->type_of_governor }}">
                     </div>
                 </div>
 

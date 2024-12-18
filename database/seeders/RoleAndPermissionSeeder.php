@@ -323,6 +323,19 @@ class PermissionsByActions
         'export incomes',
         'import incomes',
     ];
+
+    public const SPEED_GOVERNOR_PERMISSIONS = [
+        'manage vehicle speed governors',
+        'view vehicle speed governors',
+        'show vehicle speed governor',
+        'create vehicle speed governor',
+        'edit vehicle speed governor',
+        'delete vehicle speed governor',
+        'activate vehicle speed governor',
+        'deactivate vehicle speed governor',
+        'export vehicle speed governors',
+        'import vehicle speed governors',
+    ];
 }
 
 class Permissions
@@ -361,6 +374,7 @@ Permissions::$admin_permissions = array_merge(
     PermissionsByActions::BANK_ACCOUNT_MANAGEMENT_PERMISSIONS,
     PermissionsByActions::EXPENSE_MANAGEMENT_PERMISSIONS,
     PermissionsByActions::INCOME_MANAGEMENT_PERMISSIONS,
+    PermissionsByActions::SPEED_GOVERNOR_PERMISSIONS,
 );
 
 Permissions::$organisation_permissions = [
@@ -501,6 +515,7 @@ class RoleAndPermissionSeeder extends Seeder
             PermissionsByActions::BANK_ACCOUNT_MANAGEMENT_PERMISSIONS,
             PermissionsByActions::EXPENSE_MANAGEMENT_PERMISSIONS,
             PermissionsByActions::INCOME_MANAGEMENT_PERMISSIONS,
+            PermissionsByActions::SPEED_GOVERNOR_PERMISSIONS,
         );
 
         /**

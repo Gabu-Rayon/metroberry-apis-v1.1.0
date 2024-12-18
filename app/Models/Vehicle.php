@@ -124,4 +124,9 @@ class Vehicle extends Model
     {
         return $this->hasOne(VehicleSpeedGovernorCertificate::class, 'vehicle_id');
     }
+
+    public function speedGovernorCertificates()
+    {
+        return $this->hasOne(VehicleSpeedGovernorCertificate::class);
+    }
 }
