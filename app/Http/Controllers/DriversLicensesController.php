@@ -46,6 +46,7 @@ class DriversLicensesController extends Controller
             $validator = Validator::make($data, [
                 'driver' => 'required|numeric|exists:drivers,id',
                 'license_no' => 'required|string|unique:drivers_licenses,driving_license_no',
+                'first_date_of_issue' => 'required|date|before:' . now()->subYears(5)->toDateString(),
                 'issue_date' => 'required|date',
                 'expiry_date' => 'required|date|after:issue_date',
                 'front_page_id' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
@@ -91,6 +92,7 @@ class DriversLicensesController extends Controller
                 'driving_license_date_of_expiry' => $data['expiry_date'],
                 'driving_license_avatar_front' => $frontLicensePath,
                 'driving_license_avatar_back' => $backLicensePath,
+                'first_date_of_issue' => $data['first_date_of_issue'],
             ]);
 
             DB::commit();

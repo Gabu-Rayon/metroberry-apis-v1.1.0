@@ -165,6 +165,11 @@
                                     required value="{{ old('driving_license_no') }}">
                             </div>
                             <div class="mb-3">
+                                <label for="first_date_of_issue" class="form-label">First Date of Issue</label>
+                                <input type="date" id="first_date_of_issue" name="first_date_of_issue" class="form-control"
+                                    value="{{ old('first_date_of_issue') }}" required>
+                            </div>
+                            <div class="mb-3">
                                 <label for="issue_date" class="form-label">Issue Date</label>
                                 <input type="date" id="issue_date" name="issue_date" class="form-control"
                                     value="{{ old('issue_date') }}" required>
