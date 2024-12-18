@@ -128,7 +128,7 @@
 
     <div class="modal fade" id="certificateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form action="speed-governor/create" method="POST" class="needs-validation modal-content"
+            <form action="{{ route('vehicle.speed.governor.create') }}" method="POST" class="needs-validation modal-content"
                 enctype="multipart/form-data">
                 @csrf
                 <div class="card-header my-3 p-2 border-bottom">

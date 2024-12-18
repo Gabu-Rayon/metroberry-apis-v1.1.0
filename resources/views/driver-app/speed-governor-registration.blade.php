@@ -130,13 +130,31 @@
                             </label>
                         </div>
 
+                         <!--Input Field Container End-->
+                        <div class="form-group">
+                            <label class="width-100">
+                                <span class="label-title">Class A*(4 seater) </span>
+                                <span class="car-info-wrap display-block">
+                                    <select class="custom-select font-weight-light car-info"
+                                        name="driver_speed_governor_class_no">
+                                        <option value="A"
+                                            {{ old('driver_speed_governor_class_no', $driver->vehicle->speedGovernorCertificate->class_no ?? '') == 'A' ? 'selected' : '' }}>
+                                            A</option>
+                                        <option value="B"
+                                            {{ old('driver_speed_governor_class_no', $driver->vehicle->speedGovernorCertificate->class_no ?? '') == 'B' ? 'selected' : '' }}>
+                                            B</option>
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+
                         <!--Input Field Container Start-->
                         <div class="form-group form-control-margin">
-                            <label class="label-title">Class No</label>
+                            <label class="label-title">Chasis No</label>
                             <div class="input-group">
-                                <input class="form-control form-control-with-padding" type="text" name="driver_speed_governor_class_no"
+                                <input class="form-control form-control-with-padding" type="text" name="driver_vehicle_chasis_no"
                                     autocomplete="on" placeholder="Driver Class No"
-                                    value="{{ old('driver_speed_governor_class_no', $driver->vehicle->speedGovernorCertificate->class_no ?? '') }}" />
+                                    value="{{ old('driver_vehicle_chasis_no', $driver->vehicle->speedGovernorCertificate->chasis_no ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
                                 </div>

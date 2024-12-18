@@ -1475,6 +1475,7 @@ class DriverAppController extends Controller
             'driver_speed_governor_expiry_date' => 'required|date|after:driver_speed_governor_date_of_installation',
             'driver_speed_governor_type' => 'required|string|max:255',
             'driver_speed_governor_vehicle_id' => 'required|exists:vehicles,id',
+            'driver_vehicle_chasis_no' => 'required|string|Max:255'
         ]);
 
         if ($validator->fails()) {
@@ -1524,8 +1525,10 @@ class DriverAppController extends Controller
             'date_of_installation' => $request->driver_speed_governor_date_of_installation,
             'expiry_date' => $request->driver_speed_governor_expiry_date,
             'type_of_governor' => $request->driver_speed_governor_type,
+                 'chasis_no' => $request->driver_vehicle_chasis_no,
             'driver_id' => $driver->id,
             'vehicle_id' => $request->driver_speed_governor_vehicle_id,
+            'status' => 'inactive',
         ]);
 
         // Save the Speed Governor Certificate
@@ -1552,6 +1555,7 @@ class DriverAppController extends Controller
             'driver_speed_governor_expiry_date' => 'required|date|after:driver_speed_governor_date_of_installation',
             'driver_speed_governor_type' => 'required|string|max:255',
             'driver_speed_governor_vehicle_id' => 'required|exists:vehicles,id',
+            'driver_vehicle_chasis_no'=>'required|string|Max:255'
         ]);
 
         if ($validator->fails()) {
@@ -1610,8 +1614,11 @@ class DriverAppController extends Controller
             'date_of_installation' => $request->driver_speed_governor_date_of_installation,
             'expiry_date' => $request->driver_speed_governor_expiry_date,
             'type_of_governor' => $request->driver_speed_governor_type,
+            'chasis_no' => $request->driver_vehicle_chasis_no,
             'driver_id' => $driver->id,
             'vehicle_id' => $request->driver_speed_governor_vehicle_id,
+            'status' => 'inactive',
+
         ]);
 
         // Redirect with success message
