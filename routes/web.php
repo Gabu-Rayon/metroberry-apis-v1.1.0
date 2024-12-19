@@ -563,6 +563,24 @@ Route::get('vehicle/insurance/import', [VehicleInsuranceController::class, 'impo
     ->name('vehicle.insurance.import')
     ->middleware('auth', 'can:import vehicle insurances');
 
+
+
+Route::get('vehicle/insurance/{id}/verify', [VehicleInsuranceController::class, 'verifyForm'])
+    ->name('vehicle.insurance.verify')
+    ->middleware('auth', 'can:activate vehicle insurance');
+
+Route::put('vehicle/insurance/{id}/verify', [VehicleInsuranceController::class, 'verify'])
+    ->name('vehicle.insurance.verify')
+    ->middleware('auth', 'can:activate vehicle insurance');
+
+Route::get('vehicle/insurance/{id}/suspend', [VehicleInsuranceController::class, 'suspendForm'])
+    ->name('vehicle.insurance.suspend')
+    ->middleware('auth', 'can:deactivate vehicle insurance');
+
+Route::put('vehicle/insurance/{id}/suspend', [VehicleInsuranceController::class, 'suspend'])
+    ->name('vehicle.insurance.suspend')
+    ->middleware('auth', 'can:deactivate vehicle insurance');
+
 // Renew Insurance
 Route::get('vehicle/insurance/{id}/renew', [VehicleInsuranceController::class, 'renew'])
     ->name('vehicle.insurance.renew')

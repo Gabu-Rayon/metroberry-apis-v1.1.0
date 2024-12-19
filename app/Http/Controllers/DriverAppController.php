@@ -909,10 +909,10 @@ class DriverAppController extends Controller
 
         // Fetch the driver data based on the user_id in the drivers table
         $driver = Driver::where('user_id', $user->id)->firstOrFail();
-        
+
 
         return view('driver-app.vehicle-registration', compact('organisations', 'vehicleClasses', 'VehicleManufacturers', 'driver', 'vehicleFuelTypes'));
-   
+
     }
 
 
@@ -951,7 +951,7 @@ class DriverAppController extends Controller
         $driverName = $authUser->name;
         $driverPlateNumber = $data['driver_vehicle_plate_number'];
 
-        
+
         // Handle avatar upload
         if ($request->hasFile('driver_vehicle_avatar')) {
             $avatarFile = $request->file('driver_vehicle_avatar');
@@ -1120,10 +1120,10 @@ class DriverAppController extends Controller
         $vehicle = $driver->vehicle;
 
         $vehicleInsurance = VehicleInsurance::where('vehicle_id', $vehicle->id)->get();
-        $vehiclesInsuranceCompanies = InsuranceCompany::all();
+        $vehiclesInsuranceCompanies = InsuranceCompany::where('status', 1)->orWhere('status', true)->get();
         $vehicleInsuranceRecurringPeriod = InsuranceRecurringPeriod::all();
 
-        return view('driver-app.vehicle-insurance-registration', compact('driver', 'vehicleInsurance','vehiclesInsuranceCompanies','vehicleInsuranceRecurringPeriod', 'vehicle'));
+        return view('driver-app.vehicle-insurance-registration', compact('driver', 'vehicleInsurance', 'vehiclesInsuranceCompanies', 'vehicleInsuranceRecurringPeriod', 'vehicle'));
 
     }
 
@@ -1317,96 +1317,123 @@ class DriverAppController extends Controller
 
     public function ntsaInspectionCertificateStore(Request $request)
     {
+        Log::info('Data for Add new Driver NTSA Inspection Certificate: ');
+        Log::info($request->all());
+
         // Validate the incoming request data
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'driver_ntsa_inspection_certificate_no' => 'required|string|max:255',
             'driver_ntsa_inspection_certificate_date_of_issue' => 'required|date',
             'driver_ntsa_inspection_certificate_date_of_expiry' => 'required|date|after_or_equal:driver_ntsa_inspection_certificate_date_of_issue',
             'driver_ntsa_certificate_copy' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'driver_vehicle_id' => 'required|exists:vehicles,id',
+            'cost' => 'required|numeric',
         ]);
 
-        // Retrieve the driver info from the authenticated user's driver record
-        $driver = auth()->user()->driver;
-        $user = $driver->user; // Assuming 'user' relationship exists in the 'driver' model
-
-        // Prepare the custom file name
-        $driverName = $user->name;
-        $driverEmail = $user->email;
-        $ntsaCertificateNo = $request->input('driver_ntsa_inspection_certificate_no');
-
-        $fileName = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '.' . $request->file('driver_ntsa_certificate_copy')->getClientOriginalExtension();
-
-        $driverNTSAInspectionCertDocPath = null;
-
-        if ($request->hasFile('driver_ntsa_certificate_copy')) {
-            $file = $request->file('driver_ntsa_certificate_copy');
-            $driverNTSAInspectionCertDocPath = 'uploads/ntsa-insp-cert-copies/' . $fileName;
-            $destinationPath = '/home/kknuicdz/public_html_metroberry_app/' . dirname($driverNTSAInspectionCertDocPath);
-
-            // Ensure the destination directory exists
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
+        try {
+            if ($validator->fails()) {
+                Log::error('VALIDATION ERROR: ', $validator->errors()->toArray());
+                return redirect()->back()->with('error', $validator->errors()->first())->withInput();
             }
 
-            $file->move($destinationPath, $fileName);
+            // Retrieve the authenticated user and their driver record
+            $authUser = Auth::user();
+            $driver = Driver::where('user_id', $authUser->id)->first();
+            $ntsaCertificateNo = $request->input('driver_ntsa_inspection_certificate_no');
+
+            if (!$driver) {
+                Log::error('Driver not found for the authenticated user.');
+                return redirect()->back()->with('error', 'Driver not found.')->withInput();
+            }
+
+            // Define the path for storing the insurance policy document
+            $driverNTSAInspectionCertDocPath = null;
+
+            if ($request->hasFile('driver_ntsa_certificate_copy')) {
+                $file = $request->file('driver_ntsa_certificate_copy');
+                $fileName = "{$authUser->name}-{$authUser->email}-{$ntsaCertificateNo}.{$file->getClientOriginalExtension()}";
+                $driverNTSAInspectionCertDocPath = 'uploads/ntsa-insp-cert-copies/' . $fileName;
+
+                $destinationPath = '/home/kknuicdz/public_html_metroberry_app/' . dirname($driverNTSAInspectionCertDocPath);
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+
+                $file->move($destinationPath, $fileName);
+            }
+
+            Log::info('The Driver NTSA Inspection Certificate Document path to be uploaded: ', [$driverNTSAInspectionCertDocPath]);
+
+            // Store the inspection certificate in the database
+            $inspectionCertificate = new NTSAInspectionCertificate([
+                'vehicle_id' => $request->input('driver_vehicle_id'),
+                'creator_id' => auth()->id(),
+                'ntsa_inspection_certificate_no' => $request->input('driver_ntsa_inspection_certificate_no'),
+                'ntsa_inspection_certificate_date_of_issue' => $request->input('driver_ntsa_inspection_certificate_date_of_issue'),
+                'ntsa_inspection_certificate_date_of_expiry' => $request->input('driver_ntsa_inspection_certificate_date_of_expiry'),
+                'ntsa_inspection_certificate_avatar' => $driverNTSAInspectionCertDocPath,
+                'cost' => $request->input('cost'),
+                'verified' => false,
+            ]);
+
+            // Save the inspection certificate
+            $inspectionCertificate->save();
+
+            // Return success response or redirect
+            return redirect()->route('driver.vehicle.docs.registration')->with('success', 'NTSA Inspection Certificate added successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error while adding NTSA Inspection Certificate: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'There was an error while adding the NTSA Inspection Certificate. Please try again.']);
         }
-
-        Log::info('The Driver vehicle Insurance Policy Document path to be uploaded: ', [$driverNTSAInspectionCertDocPath]);
-
-        // Store the inspection certificate in the database
-        $inspectionCertificate = new NTSAInspectionCertificate();
-        $inspectionCertificate->driver_id = $driver->id; // Assuming 'driver' relationship exists on user
-        $inspectionCertificate->vehicle_id = $request->input('driver_vehicle_id');
-        $inspectionCertificate->ntsa_inspection_certificate_no = $ntsaCertificateNo;
-        $inspectionCertificate->ntsa_inspection_certificate_date_of_issue = $request->input('driver_ntsa_inspection_certificate_date_of_issue');
-        $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry = $request->input('driver_ntsa_inspection_certificate_date_of_expiry');
-        $inspectionCertificate->ntsa_inspection_certificate_avatar = $driverNTSAInspectionCertDocPath;
-        $inspectionCertificate->save();
-
-        // Return success response or redirect
-        return redirect()->route('driver.vehicle.docs.registration')->with('success', 'NTSA Inspection Certificate Added successfully!');
     }
-
-
 
     public function ntsaInspectionCertificateUpdate(Request $request, $id)
     {
+        Log::info('Data For Updating new NTSA Inspection Cert : ');
+        Log::info($request->all());
+
         // Validate the incoming request data
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'driver_ntsa_inspection_certificate_no' => 'required|string|max:255',
             'driver_ntsa_inspection_certificate_date_of_issue' => 'required|date',
             'driver_ntsa_inspection_certificate_date_of_expiry' => 'required|date|after_or_equal:driver_ntsa_inspection_certificate_date_of_issue',
             'driver_ntsa_certificate_copy' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'driver_vehicle_id' => 'required|exists:vehicles,id',
+            'cost' => 'required|numeric',
         ]);
+
+        if ($validator->fails()) {
+            Log::error('VALIDATION ERROR: ', $validator->errors()->toArray());
+            return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+        }
 
         // Find the existing inspection certificate
         $inspectionCertificate = NTSAInspectionCertificate::findOrFail($id);
 
-        // Retrieve the driver info from the authenticated user's driver record
-        $driver = auth()->user()->driver;
-        $user = $driver->user; // Assuming 'user' relationship exists in the 'driver' model
+        // Retrieve the authenticated user and their driver record
+        $authUser = Auth::user();
+        $driver = Driver::where('user_id', $authUser->id)->first();
 
-        // Prepare the custom file name
-        $driverName = $user->name;
-        $driverEmail = $user->email;
+        if (!$driver) {
+            Log::error('Driver not found for the authenticated user.');
+            return redirect()->back()->with('error', 'Driver not found.')->withInput();
+        }
+
         $ntsaCertificateNo = $request->input('driver_ntsa_inspection_certificate_no');
-
         $driverNTSAInspectionCertDocPath = $inspectionCertificate->ntsa_inspection_certificate_avatar;
 
+        // Handle the file upload if a new file is provided
         if ($request->hasFile('driver_ntsa_certificate_copy')) {
-            // Delete the old file if it exists
+            // Unlink the old file if it exists
             if ($driverNTSAInspectionCertDocPath && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $driverNTSAInspectionCertDocPath)) {
                 unlink('/home/kknuicdz/public_html_metroberry_app/' . $driverNTSAInspectionCertDocPath);
             }
 
             $file = $request->file('driver_ntsa_certificate_copy');
-            $fileName = $driverName . '-' . $driverEmail . '-' . $ntsaCertificateNo . '.' . $file->getClientOriginalExtension();
+            $fileName = "{$authUser->name}-{$authUser->email}-{$ntsaCertificateNo}.{$file->getClientOriginalExtension()}";
             $driverNTSAInspectionCertDocPath = 'uploads/ntsa-insp-cert-copies/' . $fileName;
-            $destinationPath = '/home/kknuicdz/public_html_metroberry_app/' . dirname($driverNTSAInspectionCertDocPath);
 
-            // Ensure the destination directory exists
+            $destinationPath = '/home/kknuicdz/public_html_metroberry_app/' . dirname($driverNTSAInspectionCertDocPath);
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
             }
@@ -1414,19 +1441,24 @@ class DriverAppController extends Controller
             $file->move($destinationPath, $fileName);
         }
 
-        Log::info('The Driver vehicle Insurance Policy Document path to be uploaded: ', [$driverNTSAInspectionCertDocPath]);
+        Log::info('The Driver NTSA Inspection Certificate Document path to be uploaded: ', [$driverNTSAInspectionCertDocPath]);
 
         // Update the certificate data
-        $inspectionCertificate->vehicle_id = $request->input('driver_vehicle_id');
-        $inspectionCertificate->ntsa_inspection_certificate_no = $request->input('driver_ntsa_inspection_certificate_no');
-        $inspectionCertificate->ntsa_inspection_certificate_date_of_issue = $request->input('driver_ntsa_inspection_certificate_date_of_issue');
-        $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry = $request->input('driver_ntsa_inspection_certificate_date_of_expiry');
-        $inspectionCertificate->ntsa_inspection_certificate_avatar = $driverNTSAInspectionCertDocPath;
-        $inspectionCertificate->save();
+        $inspectionCertificate->update([
+            'vehicle_id' => $request->input('driver_vehicle_id'),
+            'creator_id' => auth()->id(),
+            'ntsa_inspection_certificate_no' => $request->input('driver_ntsa_inspection_certificate_no'),
+            'ntsa_inspection_certificate_date_of_issue' => $request->input('driver_ntsa_inspection_certificate_date_of_issue'),
+            'ntsa_inspection_certificate_date_of_expiry' => $request->input('driver_ntsa_inspection_certificate_date_of_expiry'),
+            'ntsa_inspection_certificate_avatar' => $driverNTSAInspectionCertDocPath,
+            'cost' => $request->input('cost'),
+            'verified' => false,
+        ]);
 
         // Return success response or redirect
         return redirect()->route('driver.vehicle.docs.registration')->with('success', 'NTSA Inspection Certificate updated successfully!');
     }
+
 
 
     /***
@@ -1457,7 +1489,7 @@ class DriverAppController extends Controller
         $speedGovernorCertificate = VehicleSpeedGovernorCertificate::where('vehicle_id', $vehicle->id)->get();
 
         // Pass the data to the view
-        return view('driver-app.speed-governor-registration', compact('driver', 'vehicle','speedGovernorCertificate'));
+        return view('driver-app.speed-governor-registration', compact('driver', 'vehicle', 'speedGovernorCertificate'));
     }
 
     public function speedGovernorRegistrationStore(Request $request)
@@ -1525,7 +1557,7 @@ class DriverAppController extends Controller
             'date_of_installation' => $request->driver_speed_governor_date_of_installation,
             'expiry_date' => $request->driver_speed_governor_expiry_date,
             'type_of_governor' => $request->driver_speed_governor_type,
-                 'chasis_no' => $request->driver_vehicle_chasis_no,
+            'chasis_no' => $request->driver_vehicle_chasis_no,
             'driver_id' => $driver->id,
             'vehicle_id' => $request->driver_speed_governor_vehicle_id,
             'status' => 'inactive',
@@ -1555,7 +1587,7 @@ class DriverAppController extends Controller
             'driver_speed_governor_expiry_date' => 'required|date|after:driver_speed_governor_date_of_installation',
             'driver_speed_governor_type' => 'required|string|max:255',
             'driver_speed_governor_vehicle_id' => 'required|exists:vehicles,id',
-            'driver_vehicle_chasis_no'=>'required|string|Max:255'
+            'driver_vehicle_chasis_no' => 'required|string|Max:255'
         ]);
 
         if ($validator->fails()) {
@@ -1618,7 +1650,6 @@ class DriverAppController extends Controller
             'driver_id' => $driver->id,
             'vehicle_id' => $request->driver_speed_governor_vehicle_id,
             'status' => 'inactive',
-
         ]);
 
         // Redirect with success message

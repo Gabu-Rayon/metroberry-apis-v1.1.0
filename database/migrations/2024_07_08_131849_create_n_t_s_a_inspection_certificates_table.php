@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('ntsa_inspection_certificate_date_of_issue');
             $table->date('ntsa_inspection_certificate_date_of_expiry');
             $table->string('ntsa_inspection_certificate_avatar')->nullable();
+            $table->decimal('cost', 10, 2)->nullable();
             $table->boolean('verified')->default(false);
 
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('cascade');

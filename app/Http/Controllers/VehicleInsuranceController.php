@@ -313,6 +313,8 @@ class VehicleInsuranceController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * 
+     * 
      */
     /**
      * Show the form for deleting the specified resource.
@@ -450,6 +452,76 @@ class VehicleInsuranceController extends Controller
             return back()->with('error', 'Something went wrong.');
         }
     }
+
+    public function verifyForm($id)
+    {
+        $vehicleInsurance = VehicleInsurance::findOrfail($id);
+        return view('vehicle.insurance.verify', compact('vehicleInsurance'));
+    }
+
+
+    public function verify($id)
+    {
+        try{
+          $vehicleInsurance = VehicleInsurance::findOrfail($id);
+
+            if ($vehicleInsurance->status == true) {
+                return redirect()->back()->with('error', 'Vehicle Insurance is already Active');
+            }
+
+            DB::beginTransaction();
+
+            $vehicleInsurance->status = true;
+
+            $vehicleInsurance->save();
+
+            DB::commit();
+
+            return redirect()->route('vehicle.insurance.index')->with('success', 'Vehicle Insurance Suspend !');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('VEHICLE Insurance DRIVER ERROR');
+            Log::error($e);
+            return redirect()->back()->with('error', 'An error occurred');
+        }
+    }
+
+
+
+    public function suspendForm($id)
+    {
+        $vehicleInsurance = VehicleInsurance::findOrfail($id);
+        return view('vehicle.insurance.suspend', compact('vehicleInsurance'));
+    }
+
+
+    public function suspend($id)
+    {
+        try {
+
+            $vehicleInsurance = VehicleInsurance::findOrfail($id);
+
+            if ($vehicleInsurance->status == false) {
+                return redirect()->back()->with('error', 'Vehicle Insurance is already inactive');
+            }
+
+            DB::beginTransaction();
+
+            $vehicleInsurance->status = false;
+
+            $vehicleInsurance->save();
+
+            DB::commit();
+
+            return redirect()->route('vehicle.insurance.index')->with('success', 'Vehicle Insurance Suspend !');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('VEHICLE DRIVER ERROR');
+            Log::error($e);
+            return redirect()->back()->with('error', 'An error occurred');
+        }
+    }
+
 
 
 }

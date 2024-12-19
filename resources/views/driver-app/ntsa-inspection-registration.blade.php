@@ -151,8 +151,8 @@
                             <label class="label-title">Expiry Date</label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
-                                    name="driver_inspection_certificate_date_of_expiry" autocomplete="on"
-                                    value="{{ old('driver_inspection_certificate_date_of_expiry', $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry ?? '') }}" />
+                                    name="driver_ntsa_inspection_certificate_date_of_expiry" autocomplete="on"
+                                    value="{{ old('driver_ntsa_inspection_certificate_date_of_expiry', $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-calendar-check icon-inherited-color"></span>
                                 </div>

@@ -176,7 +176,7 @@
                                         @foreach ($vehicleClasses as $vehicleClass)
                                             <option value="{{ $vehicleClass->id }}"
                                                 {{ old('driver_vehicle_class', $driver->vehicle->class ?? '') == $vehicleClass->name ? 'selected' : '' }}>
-                                                {{ $vehicleClass->name }}
+                                                {{ $vehicleClass->name }}({{ $vehicleClass->max_passengers }} seater)
                                             </option>
                                         @endforeach
                                     </select>

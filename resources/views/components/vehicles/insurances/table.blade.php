@@ -43,6 +43,25 @@
                                 <i class="fas fa-trash"></i>
                             </a>
                         @endif
+
+                        <span class='m-1'></span>
+                        @if (!$certificate->verified)
+                            @if (Auth::user()->can('activate vehicle insurance'))
+                                <a href="javascript:void(0);" class="btn btn-sm btn-secondary"
+                                    onclick="axiosModal('{{ route('vehicle.inspection.certificate.verify', $insurance->id) }}')"
+                                    title="Verify">
+                                    <i class="fas fa-toggle-off"></i>
+                                </a>
+                            @endif
+                        @else
+                            @if (Auth::user()->can('deactivate vehicle insurance'))
+                                <a href="javascript:void(0);" class="btn btn-sm btn-success"
+                                    onclick="axiosModal('{{ route('vehicle.inspection.certificate.suspend', $insurance->id) }}')"
+                                    title="Suspend">
+                                    <i class="fas fa-toggle-on"></i>
+                                </a>
+                            @endif
+                        @endif
                         @php($expired = \Carbon\Carbon::parse($insurance->insurance_date_of_expiry)->isPast())
                         @if ($expired)
                             <span class="m-1"></span>
