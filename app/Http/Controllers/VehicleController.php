@@ -118,7 +118,7 @@ class VehicleController extends Controller
                 }
 
                 // Generate a unique name for the avatar image
-                $avatarName = $request->plate_number . $request->model. '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
+                $avatarName = $request->plate_number . $request->model . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
 
                 // Move the uploaded file to the absolute directory
                 $request->file('vehicle_avatar')->move($avatarDirectory, $avatarName);
@@ -293,6 +293,14 @@ class VehicleController extends Controller
                 'vehicle_class' => 'required|string'
             ]);
 
+            //get the fuel type name
+            $fuelTypeId = $request->fuel_type;
+            $fuelType = FuelType::findOrFail($fuelTypeId);
+            $fuelTypeName = $fuelType->name;
+
+            Log::info('fUEL TYPE NAME IS : ');
+            Log::info($fuelTypeName);
+
             if ($validator->fails()) {
                 Log::info('VALIDATION ERROR Here');
                 Log::info($validator->errors());
@@ -316,7 +324,7 @@ class VehicleController extends Controller
                 }
 
                 // Generate a unique name for the avatar image
-                $avatarName = $vehicle->plate_number .  $vehicle->model . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
+                $avatarName = $vehicle->plate_number . $vehicle->model . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
 
                 // Move the uploaded file to the specified directory
                 $request->file('vehicle_avatar')->move($avatarPath, $avatarName);
@@ -332,7 +340,9 @@ class VehicleController extends Controller
             $vehicle->color = $request->color;
             $vehicle->seats = $request->seats;
             $vehicle->plate_number = $request->plate_number;
-            $vehicle->fuel_type = $request->fuel_type;
+            $vehicle->fuel_type_id = $request->fuel_type;
+            //pass the fuel type name
+            $vehicle->fuel_type = $fuelTypeName;
             $vehicle->engine_size = $request->engine_size;
             $vehicle->organisation_id = $request->organisation_id;
             $vehicle->class = $request->vehicle_class;
@@ -541,18 +551,18 @@ class VehicleController extends Controller
 
             $today = now()->toDateString();
             if ($today < $insurance->insurance_date_of_issue || $today > $insurance->insurance_date_of_expiry) {
-                return redirect()->back()->with('error', 'Insurance is not valid today');
+                return redirect()->back()->with('error', 'Vehicle Insurance is not valid today');
             }
 
             if ($insurance->status != 1) {
-                return redirect()->back()->with('error', 'Insurance is not active');
+                return redirect()->back()->with('error','Vehicle Insurance is not Verified !');
             }
 
             // Validate inspection certificates
             $inspectionCertificates = $vehicle->inspectionCertificates;
-            if ($inspectionCertificates->isEmpty()) {
-                return redirect()->back()->with('error', 'Vehicle has no inspection certificate');
-            }
+            if (is_null($inspectionCertificates) || $inspectionCertificates->isEmpty()) {
+                return redirect()->back()->with('error', 'Vehicle has no  NTSA inspection certificate');
+            } 
 
             $validCertificateFound = false;
             foreach ($inspectionCertificates as $certificate) {
@@ -563,7 +573,7 @@ class VehicleController extends Controller
             }
 
             if (!$validCertificateFound) {
-                return redirect()->back()->with('error', 'No valid and active inspection certificate found');
+                return redirect()->back()->with('error', 'No verified and active  NTSA inspection certificate found');
             }
 
             // Activate the vehicle

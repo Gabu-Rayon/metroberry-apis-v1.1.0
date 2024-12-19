@@ -45,10 +45,10 @@
                         @endif
 
                         <span class='m-1'></span>
-                        @if (!$certificate->verified)
+                        @if ($insurance->status != 1)
                             @if (Auth::user()->can('activate vehicle insurance'))
                                 <a href="javascript:void(0);" class="btn btn-sm btn-secondary"
-                                    onclick="axiosModal('{{ route('vehicle.inspection.certificate.verify', $insurance->id) }}')"
+                                    onclick="axiosModal('{{ route('vehicle.insurance.verify', $insurance->id) }}')"
                                     title="Verify">
                                     <i class="fas fa-toggle-off"></i>
                                 </a>
@@ -56,7 +56,7 @@
                         @else
                             @if (Auth::user()->can('deactivate vehicle insurance'))
                                 <a href="javascript:void(0);" class="btn btn-sm btn-success"
-                                    onclick="axiosModal('{{ route('vehicle.inspection.certificate.suspend', $insurance->id) }}')"
+                                    onclick="axiosModal('{{ route('vehicle.insurance.suspend', $insurance->id) }}')"
                                     title="Suspend">
                                     <i class="fas fa-toggle-on"></i>
                                 </a>

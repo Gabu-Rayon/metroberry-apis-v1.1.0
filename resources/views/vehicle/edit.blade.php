@@ -34,21 +34,21 @@
                      </div>
                  </div>
                  @php
-                     $vehicle_fuel_type = $fuel_types->findOrFail($vehicle->fuel_type);
+                     $vehicle_fuel_type = $fuel_types->findOrFail($vehicle->fuel_type_id);
                  @endphp
                  <div class="form-group row my-2">
-                    <label for="fuel_type" class="col-sm-5 col-form-label">Fuel Type</label>
-                    <div class="col-sm-7">
-                        <select class="form-control basic-single select2" name="fuel_type" id="fuel_type">
-                            @foreach ($fuel_types as $fuel_type)
-                                <option value="{{ $fuel_type->id }}"
-                                    {{ old('organisation_id', $vehicle->fuel_type) == $vehicle_fuel_type->id ? 'selected' : '' }}>
-                                    {{ $fuel_type->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+                     <label for="fuel_type" class="col-sm-5 col-form-label">Fuel Type</label>
+                     <div class="col-sm-7">
+                         <select class="form-control basic-single select2" name="fuel_type" id="fuel_type">
+                             @foreach ($fuel_types as $fuel_type)
+                                 <option value="{{ $fuel_type->id }}"
+                                     {{ old('organisation_id', $vehicle->fuel_type) == $vehicle_fuel_type->id ? 'selected' : '' }}>
+                                     {{ $fuel_type->name }}
+                                 </option>
+                             @endforeach
+                         </select>
+                     </div>
+                 </div>
 
                  <div class="form-group row my-2">
                      <label for="organisation_id" class="col-sm-5 col-form-label">Select Vehicle Organisation</label>
@@ -83,20 +83,20 @@
 
              <div class="col-md-12 col-lg-6">
 
-                <div class="form-group row my-2">
-                    <label for="manufacturer_id" class="col-sm-5 col-form-label">Vehicle Make</label>
-                    <div class="col-sm-7">
-                        <select class="form-control basic-single select2" name="manufacturer_id" id="manufacturer_id">
-                            <option value="">None</option>
-                            @foreach ($manufacturers as $manufacturer)
-                                <option value="{{ $manufacturer->id }}"
-                                    {{ old('manufacturer_id', $vehicle->manufacturer_id) == $manufacturer->id ? 'selected' : '' }}>
-                                    {{ $manufacturer->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+                 <div class="form-group row my-2">
+                     <label for="manufacturer_id" class="col-sm-5 col-form-label">Vehicle Make</label>
+                     <div class="col-sm-7">
+                         <select class="form-control basic-single select2" name="manufacturer_id" id="manufacturer_id">
+                             <option value="">None</option>
+                             @foreach ($manufacturers as $manufacturer)
+                                 <option value="{{ $manufacturer->id }}"
+                                     {{ old('manufacturer_id', $vehicle->manufacturer_id) == $manufacturer->id ? 'selected' : '' }}>
+                                     {{ $manufacturer->name }}
+                                 </option>
+                             @endforeach
+                         </select>
+                     </div>
+                 </div>
 
                  <div class="form-group row my-2">
                      <label for="color" class="col-sm-5 col-form-label">Vehicle Color <i
@@ -116,28 +116,29 @@
                  </div>
 
                  <div class="form-group row my-2">
-                    <label for="engine_size" class="col-sm-5 col-form-label">Engine Size <i
-                            class="text-danger">*</i></label>
-                    <div class="col-sm-7">
-                        <input name="engine_size" class="form-control" type="number" placeholder="Enter Engine Size"
-                            id="engine_size" value="{{ old('engine_size', $vehicle->engine_size) }}" required>
-                    </div>
-                </div>
+                     <label for="engine_size" class="col-sm-5 col-form-label">Engine Size <i
+                             class="text-danger">*</i></label>
+                     <div class="col-sm-7">
+                         <input name="engine_size" class="form-control" type="number"
+                             placeholder="Enter Engine Size" id="engine_size"
+                             value="{{ old('engine_size', $vehicle->engine_size) }}" required>
+                     </div>
+                 </div>
 
-                <div class="form-group row my-2">
-                    <label for="driver_id" class="col-sm-5 col-form-label">Assigned Driver</label>
-                    <div class="col-sm-7">
-                        <select class="form-control" name="driver_id" id="driver_id">
-                            <option value="">None</option>
-                            @foreach ($drivers as $driver)
-                                <option value="{{ $driver->id }}"
-                                    {{ old('driver_id', $vehicle->driver_id) == $driver->id ? 'selected' : '' }}>
-                                    {{ $driver->user->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+                 <div class="form-group row my-2">
+                     <label for="driver_id" class="col-sm-5 col-form-label">Assigned Driver</label>
+                     <div class="col-sm-7">
+                         <select class="form-control" name="driver_id" id="driver_id">
+                             <option value="">None</option>
+                             @foreach ($drivers as $driver)
+                                 <option value="{{ $driver->id }}"
+                                     {{ old('driver_id', $vehicle->driver_id) == $driver->id ? 'selected' : '' }}>
+                                     {{ $driver->user->name }}
+                                 </option>
+                             @endforeach
+                         </select>
+                     </div>
+                 </div>
 
                  <div class="form-group row my-2">
                      <label for="vehicle_avatar" class="col-sm-5 col-form-label">Vehicle Avatar</label>

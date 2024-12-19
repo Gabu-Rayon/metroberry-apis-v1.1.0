@@ -455,8 +455,8 @@ class VehicleInsuranceController extends Controller
 
     public function verifyForm($id)
     {
-        $vehicleInsurance = VehicleInsurance::findOrfail($id);
-        return view('vehicle.insurance.verify', compact('vehicleInsurance'));
+        $insurance = VehicleInsurance::findOrfail($id);
+        return view('vehicle.insurance.verify', compact('insurance'));
     }
 
 
@@ -477,7 +477,7 @@ class VehicleInsuranceController extends Controller
 
             DB::commit();
 
-            return redirect()->route('vehicle.insurance.index')->with('success', 'Vehicle Insurance Suspend !');
+            return redirect()->route('vehicle.insurance.index')->with('success', 'Vehicle Insurance Verified!');
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('VEHICLE Insurance DRIVER ERROR');
@@ -490,8 +490,8 @@ class VehicleInsuranceController extends Controller
 
     public function suspendForm($id)
     {
-        $vehicleInsurance = VehicleInsurance::findOrfail($id);
-        return view('vehicle.insurance.suspend', compact('vehicleInsurance'));
+        $insurance = VehicleInsurance::findOrfail($id);
+        return view('vehicle.insurance.suspend', compact('insurance'));
     }
 
 
