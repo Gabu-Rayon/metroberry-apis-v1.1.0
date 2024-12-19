@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('engine_size');
             $table->string('avatar')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('inactive')->nullable();
-
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $table->timestamps();
