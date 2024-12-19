@@ -35,7 +35,20 @@
             <!--Page Title & Icons End-->
 
             <div class="rest-container">
-                <div class="address-title">Vehicle Insurance</div>
+                <div class="address-title">
+                    <span>Vehicle Insurance</span>
+
+                    @if ($vehicleInsurance)
+                        @if ($vehicleInsurance->status == 'active')
+                            <span class="badge badge-pill fs-6 badge-success">Active</span>
+                        @else
+                            <span class="badge badge-pill fs-6 badge-danger">Inactive</span>
+                        @endif
+                    @else
+                        <span class="badge badge-pill fs-6 badge-danger">Inactive</span>
+                    @endif
+
+                </div>
                 @if (session('success'))
                     <div id="success-message" class="alert alert-success" style="display: none;">
                         {{ session('success') }}
