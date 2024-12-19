@@ -33,6 +33,7 @@
                 @else
                     <span>Vehicle Registration/(Assigned)</span>
                 @endif
+
                 <a href="#">
                     <span class="float-right menu-open closed">
                         <img src="{{ asset('mobile-app-assets/icons/menu.svg') }}" alt="Menu Hamburger Icon" />
@@ -42,7 +43,17 @@
             <!--Page Title & Icons End-->
 
             <div class="rest-container">
-                <div class="address-title">Vehicle Registration</div>
+                <div class="address-title">
+                    <span>Vehicle Registration</span>
+                    
+                    @if ($driver->vehicle->status == 'inactive')
+                        <span class="badge badge-pill fs-6 badge-danger">Inactive</span>
+                    @else
+                        <span class="badge badge-pill fs-6 badge-success">Active</span>
+                    @endif
+
+                </div>
+
                 @if (session('success'))
                     <div id="success-message" class="alert alert-success" style="display: none;">
                         {{ session('success') }}

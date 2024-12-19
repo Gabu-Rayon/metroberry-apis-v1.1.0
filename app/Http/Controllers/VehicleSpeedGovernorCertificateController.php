@@ -59,7 +59,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
             $vehicle_plate_number = $vehicle->plate_number;    
 
             // Define the directory for storing the copy
-            $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
+            $avatarDirectory = './public/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
 
             if (!File::exists($avatarDirectory)) {
                 File::makeDirectory($avatarDirectory, 0755, true);
@@ -143,7 +143,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
             $vehicle_model = $vehicle->model;
             $vehicle_plate_number = $vehicle->plate_number;
             // Define the directory for storing the copy
-            $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
+            $avatarDirectory = './public/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
 
             if (!File::exists($avatarDirectory)) {
                 File::makeDirectory($avatarDirectory, 0755, true);
@@ -287,7 +287,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
             $certificate->vehicle->status = 'inactive';
             $certificate->vehicle->save();
 
-            $avatarPath = '/home/kknuicdz/public_html_metroberry_app/' . $certificate->copy;
+            $avatarPath = './public/public_html_metroberry_app/' . $certificate->copy;
 
             if (File::exists($avatarPath)) {
                 File::delete($avatarPath);
