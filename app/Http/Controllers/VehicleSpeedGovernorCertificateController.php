@@ -33,7 +33,10 @@ class VehicleSpeedGovernorCertificateController extends Controller
             $data = $request->all();
 
             Log::info('Data For Creating a New Vehicle Speed Governor Certificate: ' . json_encode($data));
-
+            
+            Log::info('DATA');
+            Log::info($data);
+            
             $validator = Validator::make($data, [
                 'vehicle_id' => 'required|exists:vehicles,id',
                 'class_no' => 'required|in:A,B',
@@ -44,6 +47,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
                 'chasis_no' => 'required',
                 'copy' => 'required|file|mimes:png,jpg,jpeg,webp',
             ]);
+
 
             if ($validator->fails()) {
                 Log::info('VALIDATION FAILED');

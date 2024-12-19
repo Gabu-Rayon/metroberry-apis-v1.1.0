@@ -560,16 +560,13 @@ class VehicleController extends Controller
 
             // Validate inspection certificates
             $inspectionCertificates = $vehicle->inspectionCertificates;
-            if (is_null($inspectionCertificates) || $inspectionCertificates->isEmpty()) {
+            if (is_null($inspectionCertificates)) {
                 return redirect()->back()->with('error', 'Vehicle has no  NTSA inspection certificate');
             } 
 
             $validCertificateFound = false;
-            foreach ($inspectionCertificates as $certificate) {
-                if ($today >= $certificate->ntsa_inspection_certificate_date_of_issue && $today <= $certificate->ntsa_inspection_certificate_date_of_expiry && $certificate->verified == 1) {
-                    $validCertificateFound = true;
-                    break;
-                }
+            if ($today >= $inspectionCertificates->ntsa_inspection_certificate_date_of_issue && $today <= $inspectionCertificates->ntsa_inspection_certificate_date_of_expiry && $inspectionCertificates->verified == 1) {
+                $validCertificateFound = true;
             }
 
             if (!$validCertificateFound) {

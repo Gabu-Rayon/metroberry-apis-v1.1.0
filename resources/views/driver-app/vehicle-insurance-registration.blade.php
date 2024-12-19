@@ -12,6 +12,8 @@
         $vehicleInsurance = $driver->vehicle->insurance ?? null;
     @endphp
 
+    
+
     <div class="row h-100">
         <div class="col-xs-12 col-sm-12">
             <!--Page Title & Icons Start-->
@@ -39,7 +41,7 @@
                     <span>Vehicle Insurance</span>
 
                     @if ($vehicleInsurance)
-                        @if ($vehicleInsurance->status == 'active')
+                        @if ($vehicleInsurance->status)
                             <span class="badge badge-pill fs-6 badge-success">Active</span>
                         @else
                             <span class="badge badge-pill fs-6 badge-danger">Inactive</span>
