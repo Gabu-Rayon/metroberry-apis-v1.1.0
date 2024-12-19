@@ -80,13 +80,13 @@
   ),
   'simplesoftwareio/simple-qrcode' => 
   array (
-    'providers' => 
-    array (
-      0 => 'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider',
-    ),
     'aliases' => 
     array (
       'QrCode' => 'SimpleSoftwareIO\\QrCode\\Facades\\QrCode',
+    ),
+    'providers' => 
+    array (
+      0 => 'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider',
     ),
   ),
   'spatie/laravel-permission' => 
@@ -98,13 +98,13 @@
   ),
   'yajra/laravel-datatables-oracle' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Yajra\\DataTables\\DataTablesServiceProvider',
-    ),
     'aliases' => 
     array (
       'DataTables' => 'Yajra\\DataTables\\Facades\\DataTables',
+    ),
+    'providers' => 
+    array (
+      0 => 'Yajra\\DataTables\\DataTablesServiceProvider',
     ),
   ),
 );

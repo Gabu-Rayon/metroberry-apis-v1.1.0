@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('color');
             $table->integer('seats');
             $table->enum('class', ['A', 'B', 'C','D','E']);
-            $table->string('fuel_type');
             $table->string('engine_size');
             $table->string('avatar')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('inactive')->nullable();
