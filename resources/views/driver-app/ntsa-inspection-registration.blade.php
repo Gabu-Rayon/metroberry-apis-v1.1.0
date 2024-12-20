@@ -42,7 +42,20 @@
             <!-- Page Title & Icons End -->
 
             <div class="rest-container">
-                <div class="address-title">NTSA Inspection Certificate Registration</div>
+                <div class="address-title">
+                    <span>Inspection Certificate</span>
+
+                    @if ($driver->vehicle->inspectionCertificates)
+                        @if ($driver->vehicle->inspectionCertificates->verified)
+                            <span class="badge badge-pill fs-6 badge-success">Active</span>
+                        @else
+                            <span class="badge badge-pill fs-6 badge-danger">Inactive</span>
+                        @endif
+                    @else
+                        <span class="badge badge-pill fs-6 badge-danger">Inactive</span>
+                    @endif
+
+                </div>
                 @if (session('success'))
                     <div id="success-message" class="alert alert-success" style="display: block;">
                         {{ session('success') }}

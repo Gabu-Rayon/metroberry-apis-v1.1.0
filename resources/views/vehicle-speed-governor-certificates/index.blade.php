@@ -154,16 +154,17 @@
                             </div>
 
                             <div class="form-group row my-2">
-                                <label for="class_no" class="col-sm-5 col-form-label">Select Class</label>
+                                <label for="class_no" class="col-sm-5 col-form-label">Class</label>
                                 <div class="col-sm-7">
                                     <select class="form-control basic-single select2" name="class_no"
                                         id="class_no" tabindex="-1" aria-hidden="true">
-                                        <option value="">Please Select Class</option>
-                                       <option value="A" {{ old('class_no') == 'A' ? 'selected' : '' }}>Class A</option>
-                                        <option value="B" {{ old('class_no') == 'B' ? 'selected' : '' }}>Class B</option>
+                                        <option value="">Select Class</option>
+                                        <option value="A" {{ old('class_no') == 'A' ? 'selected' : '' }}>A</option>
+                                        <option value="B" {{ old('class_no') == 'B' ? 'selected' : '' }}>B</option>
                                     </select>
                                 </div>
                             </div>
+
 
                             <div class="form-group row my-2">
                                 <label for="installation_date" class="col-sm-5 col-form-label">

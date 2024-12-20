@@ -49,6 +49,7 @@ class NTSAInspectionCertificateController extends Controller
                 'ntsa_inspection_certificate_no' => 'required|string|unique:ntsa_inspection_certificates,ntsa_inspection_certificate_no',
                 'ntsa_inspection_certificate_date_of_expiry' => 'required|date',
                 'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'cost' => 'required|numeric',
             ]);
 
             if ($validator->fails()) {
@@ -57,12 +58,15 @@ class NTSAInspectionCertificateController extends Controller
                 return back()->with('error', $validator->errors()->first())->withInput();
             }
 
+            Log::info('NTSA INSPECTION CERTIFICATE DATA');
+            Log::info($data);
+
             DB::beginTransaction();
 
             $avatarPath = null;
             $certNo = $data['ntsa_inspection_certificate_no'];
 
-            $vehicle = Vehicle::findOrFail($request->vehicle_id);
+        $vehicle = Vehicle::findOrFail($request->vehicle);
             $plate_number = $vehicle->plate_number;
             $vehicle_model = $vehicle->model;
 
@@ -90,7 +94,8 @@ class NTSAInspectionCertificateController extends Controller
                 'ntsa_inspection_certificate_no' => $certNo,
                 'ntsa_inspection_certificate_date_of_issue' => $data['ntsa_inspection_certificate_date_of_issue'],
                 'ntsa_inspection_certificate_date_of_expiry' => $data['ntsa_inspection_certificate_date_of_expiry'],
-                'ntsa_inspection_certificate_avatar' => 'uploads/ntsa-insp-cert-copies/' . $avatarFileName, // Store relative path for DB
+                'ntsa_inspection_certificate_avatar' => 'uploads/ntsa-insp-cert-copies/' . $avatarFileName,
+                'cost' => $data['cost'],
             ]);
 
             // Uncomment and adjust if you want to log an expense related to this certificate

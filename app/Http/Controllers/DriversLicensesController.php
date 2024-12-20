@@ -108,6 +108,7 @@ class DriversLicensesController extends Controller
                 'driving_license_date_of_expiry' => $data['expiry_date'],
                 'driving_license_avatar_front' => 'uploads/front-license-pics/' . $frontLicenseFileName,
                 'driving_license_avatar_back' => 'uploads/back-license-pics/' . $backLicenseFileName,
+                'first_date_of_issue' => $data['first_date_of_issue'],
             ]);
 
             // Commit the transaction

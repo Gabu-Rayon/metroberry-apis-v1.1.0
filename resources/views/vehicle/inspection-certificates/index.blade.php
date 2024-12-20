@@ -251,6 +251,16 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group row my-2">
+                                    <label for="cost" class="col-sm-5 col-form-label">
+                                        Cost
+                                        <i class="text-danger">*</i>
+                                    </label>
+                                    <div class="col-sm-7">
+                                        <input name="cost" class="form-control" type="number" id="cost" required />
+                                    </div>
+                                </div>
+
                             </div>
 
                             <div class="col-md-12 col-lg-6">
