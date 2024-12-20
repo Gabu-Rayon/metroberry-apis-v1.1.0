@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\VehicleImport;
 use Exception;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Driver;
 use App\Models\Vehicle;
+use App\Models\FuelType;
 use App\Models\Organisation;
 use App\Models\VehicleClass;
 use Illuminate\Http\Request;
+use App\Imports\VehicleImport;
 use Illuminate\Support\Facades\DB;
+use App\Models\VehicleManufacturer;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
-use App\Models\VehicleManufacturer;
-use App\Models\FuelType;
 
 class VehicleController extends Controller
 {
@@ -532,16 +533,17 @@ class VehicleController extends Controller
     public function activate($id)
     {
         try {
-            // Fetch the vehicle with its insurance and inspection certificates details
-            $vehicle = Vehicle::with(['insurance', 'inspectionCertificates'])->findOrFail($id);
+            // Fetch the vehicle with its insurance, inspection certificates, and speed governor certificates details
+            $vehicle = Vehicle::with(['insurance', 'inspectionCertificate', 'speedGovernorCertificate'])->findOrFail($id);
 
-            Log::info('VEHICLE');
-            Log::info($vehicle);
+            Log::info('Fetched vehicle details', ['vehicle' => $vehicle]);
 
             // Check if the vehicle is already active
             if ($vehicle->status == 'active') {
                 return redirect()->back()->with('error', 'Vehicle is already active');
             }
+
+            $today = now()->toDateString();
 
             // Validate insurance details
             $insurance = $vehicle->insurance;
@@ -549,33 +551,84 @@ class VehicleController extends Controller
                 return redirect()->back()->with('error', 'Vehicle has no insurance');
             }
 
-            $today = now()->toDateString();
             if ($today < $insurance->insurance_date_of_issue || $today > $insurance->insurance_date_of_expiry) {
-                return redirect()->back()->with('error', 'Vehicle Insurance is not valid today');
+                return redirect()->back()->with('error', 'Vehicle Insurance has Expiry !');
             }
 
             if ($insurance->status != 1) {
-                return redirect()->back()->with('error','Vehicle Insurance is not Verified !');
+                return redirect()->back()->with('error', 'Vehicle Insurance is not Verified!');
             }
 
             // Validate inspection certificates
-            $inspectionCertificates = $vehicle->inspectionCertificates;
-            if (is_null($inspectionCertificates) || $inspectionCertificates->isEmpty()) {
-                return redirect()->back()->with('error', 'Vehicle has no  NTSA inspection certificate');
-            } 
+            $inspectionCertificate = $vehicle->inspectionCertificate;
+            if (!$inspectionCertificate) {
+                return redirect()->back()->with('error', 'Vehicle has no NTSA Inspection Certificate Certificate');
+            }
 
-            $validCertificateFound = false;
-            foreach ($inspectionCertificates as $certificate) {
-                if ($today >= $certificate->ntsa_inspection_certificate_date_of_issue && $today <= $certificate->ntsa_inspection_certificate_date_of_expiry && $certificate->verified == 1) {
-                    $validCertificateFound = true;
-                    break;
+            if ($today < $inspectionCertificate->ntsa_inspection_certificate_date_of_issue || $today > $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry) {
+                return redirect()->back()->with('error', 'Vehicle NTSA Inspection Certificate has Expiry !');
+            }
+
+            if ($inspectionCertificate->verified != 1) {
+                return redirect()->back()->with('error', 'Vehicle NTSA Inspection Certificate is not Verified!');
+            }
+
+
+            // Validate Speed Governor certificates
+            $speedGovernorCertificate = $vehicle->speedGovernorCertificate;
+            if (!$speedGovernorCertificate) {
+                return redirect()->back()->with('error', 'Vehicle has no Speed Governor Certificate');
+            }
+
+            if ($today < $speedGovernorCertificate->date_of_installation || $today > $speedGovernorCertificate->expiry_date) {
+                return redirect()->back()->with('error', 'Vehicle Speed Governor Certificate has Expiry !');
+            }
+
+            if ($speedGovernorCertificate->status != 'active') {
+                return redirect()->back()->with('error', 'Vehicle Speed Governor Certificate is not Verified!');
+            }
+
+
+            // Check if the vehicle was created by a driver
+            $createdBy = User::find($vehicle->created_by);
+            if ($createdBy && $createdBy->role == 'driver') {
+                // Validate driverLicense
+                $driverLicense = $createdBy->driverLicense;
+                if (!$driverLicense) {
+                    return redirect()->back()->with('error', 'Driver has not Added Their License');
                 }
-            }
 
-            if (!$validCertificateFound) {
-                return redirect()->back()->with('error', 'No verified and active  NTSA inspection certificate found');
-            }
+                if ($driverLicense->verified != 1) {
+                    return redirect()->back()->with('error', 'Driver License is not Verified!');
+                }
 
+
+                $licenseIssueDate = $driverLicense->license_date_of_issue;
+                if ($today < $licenseIssueDate) {
+                    return redirect()->back()->with('error', 'Driver has Not added License yet !');
+                }
+
+                // Check if the driver license is at least 5 years old
+                $licenseAge = now()->diffInYears($licenseIssueDate);
+                if ($licenseAge < 5) {
+                    return redirect()->back()->with('error', 'Driver License is less than 5 years old!');
+                }
+
+                // Validate PsvBadge
+                $psvBadge = $createdBy->psvBadge;
+                if (!$psvBadge) {
+                    return redirect()->back()->with('error', 'Driver has not added PSV Badge!');
+                }
+
+                if ($today < $psvBadge->psv_badge_date_of_issue || $today > $psvBadge->psv_badge_date_of_expiry) {
+                    return redirect()->back()->with('error', 'Driver PSV Badge has Expired!');
+                }
+
+                if ($psvBadge->verified != 1) {
+                    return redirect()->back()->with('error', 'Driver PSV Badge is not Verified!');
+                }
+                
+            }
             // Activate the vehicle
             DB::beginTransaction();
 
@@ -587,8 +640,7 @@ class VehicleController extends Controller
             return redirect()->route('vehicle')->with('success', 'Vehicle activated successfully');
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('ACTIVATE VEHICLE ERROR');
-            Log::error($e);
+            Log::error('Error activating vehicle', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'An error occurred while activating the vehicle');
         }
     }

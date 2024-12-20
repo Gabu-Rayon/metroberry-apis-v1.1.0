@@ -105,11 +105,15 @@ class Vehicle extends Model
         return $this->hasMany(VehicleRefueling::class);
     }
 
-    public function inspectionCertificates()
+    public function inspectionCertificate()
     {
         return $this->hasOne(NTSAInspectionCertificate::class);
     }
 
+    public function inspectionCertificates()
+    {
+        return $this->hasOne(NTSAInspectionCertificate::class);
+    }
     public function manufacturer()
     {
         return $this->belongsTo(VehicleManufacturer::class, 'manufacturer_id');
