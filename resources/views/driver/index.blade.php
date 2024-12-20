@@ -316,14 +316,14 @@
                                 </div>
 
                                 <div class="form-group row my-2">
-                                    <label for="national_id" class="col-sm-5 col-form-label">
+                                    <label for="national_id_no" class="col-sm-5 col-form-label">
                                         ID number
                                         <i class="text-danger">*</i>
                                     </label>
                                     <div class="col-sm-7">
-                                        <input name="national_id" class="form-control" type="text"
-                                            placeholder="National ID number" id="national_id"
-                                            value="{{ old('national_id') }}" </div>
+                                        <input name="national_id_no" class="form-control" type="text"
+                                            placeholder="National ID number" id="national_id_no"
+                                            value="{{ old('national_id_no') }}" </div>
                                     </div>
 
                                     <div class="form-group row my-2">

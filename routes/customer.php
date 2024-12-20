@@ -39,10 +39,12 @@ Route::get('customer/homepage', [CustomerAppController::class, 'customerIndexPag
 
 
 Route::get('customer/booking/trip', [CustomerAppController::class, 'customerBookingPage'])
-    ->name('customer.book.trip.page');
+    ->name('customer.book.trip.page')
+    ->middleware('auth');
 
 Route::post('customer/booking/trip/store', [CustomerAppController::class, 'customerBookingTrip'])
-    ->name('customer.book.trip.store');
+    ->name('customer.book.trip.store')
+    ->middleware('auth');
 
 Route::post('route/locations/get/all', [CustomerAppController::class, 'getAllRouteWayPoints'])
     ->name('route.location.waypoints');

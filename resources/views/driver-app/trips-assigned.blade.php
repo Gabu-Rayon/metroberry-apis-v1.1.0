@@ -205,10 +205,20 @@
                                                                     <span
                                                                         class="fas fa-location-arrow location-icon-rotate map-input-icon"></span>
                                                                     <div class="map-input display-flex">
+                                                                    @php
+                                                                        $location =
+                                                                            $trip->drop_off_location === 'Home'
+                                                                                ? $trip->customer->user->address
+                                                                                : ($trip->drop_off_location === 'Office'
+                                                                                    ? $trip->customer->organisation->user->address
+                                                                                    : $trip->route->route_locations
+                                                                                        ->where('id', $trip->drop_off_location)
+                                                                                        ->first()->name);
+                                                                    @endphp
                                                                         <input class="controls flex-1 font-weight-light"
                                                                             type="text"
                                                                             placeholder="Enter an origin location"
-                                                                            value="{{ $trip->drop_off_location }}"
+                                                                            value="{{ $location }}"
                                                                             disabled>
                                                                     </div>
                                                                 </div>
@@ -221,7 +231,17 @@
                                                                                 alt="Current Location Icon"></span>
                                                                         <div
                                                                             class="map-input display-flex controls flex-1 align-items-center">
-                                                                            {{ $trip->pick_up_location }}
+                                                                            @php
+                                                                                $location =
+                                                                                    $trip->pick_up_location === 'Home'
+                                                                                        ? $trip->customer->user->address
+                                                                                        : ($trip->pick_up_location === 'Office'
+                                                                                            ? $trip->customer->organisation->user->address
+                                                                                            : $trip->route->route_locations
+                                                                                                ->where('id', $trip->pick_up_location)
+                                                                                                ->first()->name);
+                                                                            @endphp
+                                                                            {{ $location }}
                                                                         </div>
                                                                         <span class="dotted-line"></span>
                                                                     </div>
@@ -229,6 +249,16 @@
                                                             </div>
                                                         </div>
                                                         <!--Trip Details Address Container End-->
+
+                                                        <!--Trip Complete / Cancel Buttons Container-->
+
+                                                        <div class="trip-buttons-container">
+                                                            <a href="{{ route('trip.complete', $trip->id) }}"
+                                                                class="btn btn-success m-2 float-end text-uppercase">Complete</a>
+                                                            <a href="{{ route('trip.cancel', $trip->id) }}"
+                                                                class="btn btn-danger m-2 float-end text-uppercase">Cancel</a>
+                                                        </div>
+                                                        
                                                     </div>
                                                 </div>
                                             @endforeach

@@ -163,13 +163,16 @@ class DriverController extends Controller
         try {
             $data = $request->all();
 
+            Log::info('DATA');
+            Log::info($data);
+
             $validator = Validator::make($data, [
                 'name' => 'required|string',
                 'phone' => 'required|string',
                 'organisation' => 'required|string',
                 'email' => 'required|email|unique:users,email',
                 'address' => 'nullable|string',
-                'national_id' => 'required|digits:8|unique:drivers|unique:customers',
+                'national_id_no' => 'required|digits:8|unique:drivers|unique:customers',
                 'front_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
                 'back_page_id' => 'required|file|mimes:jpg,jpeg,png,webp',
                 'password' => 'required|string',
@@ -244,7 +247,7 @@ class DriverController extends Controller
                 'created_by' => Auth::user()->id,
                 'user_id' => $user->id,
                 'organisation_id' => $organisation->id,
-                'national_id_no' => $data['national_id'],
+                'national_id_no' => $data['national_id_no'],
                 'national_id_front_avatar' => $frontIdPath,
                 'national_id_behind_avatar' => $backIdPath,
             ]);

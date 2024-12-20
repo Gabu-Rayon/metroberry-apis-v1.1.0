@@ -352,8 +352,8 @@ class EmployeeController extends Controller
             // Handle front page ID upload
             if ($request->hasFile('front_page_id')) {
                 // Check if the model already has a file and delete the old one
-                $oldFrontIdPath = './public/public_html_metroberry_app/' . $customer->front_page_id; // Assuming field name matches the file input
-                if ($customer->front_page_id && file_exists($oldFrontIdPath)) {
+                $oldFrontIdPath = './public/public_html_metroberry_app/' . $customer->national_id_front_avatar; // Assuming field name matches the file input
+                if ($customer->national_id_front_avatar && file_exists($oldFrontIdPath)) {
                     unlink($oldFrontIdPath); // Delete the old file
                 }
 
@@ -363,14 +363,14 @@ class EmployeeController extends Controller
 
                 // Move the new file to the specified directory
                 $frontIdFile->move('./public/public_html_metroberry_app/uploads/front-page-ids', $frontIdFileName);
-                $customer->front_page_id = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
+                $customer->national_id_front_avatar = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
             }
 
             // Handle back page ID upload
             if ($request->hasFile('back_page_id')) {
                 // Check if the model already has a file and delete the old one
-                $oldBackIdPath = './public/public_html_metroberry_app/' . $customer->back_page_id; // Assuming field name matches the file input
-                if ($customer->back_page_id && file_exists($oldBackIdPath)) {
+                $oldBackIdPath = './public/public_html_metroberry_app/' . $customer->national_id_behind_avatar; // Assuming field name matches the file input
+                if ($customer->national_id_behind_avatar && file_exists($oldBackIdPath)) {
                     unlink($oldBackIdPath); // Delete the old file
                 }
 
@@ -380,7 +380,7 @@ class EmployeeController extends Controller
 
                 // Move the new file to the specified directory
                 $backIdFile->move('./public/public_html_metroberry_app/uploads/back-page-ids', $backIdFileName);
-                $customer->back_page_id = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
+                $customer->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
             }
 
             // Update organisation details
