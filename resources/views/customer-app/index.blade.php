@@ -8,11 +8,25 @@
     </div>
     <!--Loading Container End-->
 
-    <div class="row h-100">
+
+    <div class="row h-100">        
+        
         <div class="col-xs-12 col-sm-12 remaining-height">
 
+            
             <!--Page Title & Icons Start-->
             <div class="text-center header-icons-container">
+                @if (session('success'))
+                    <div id="success-message" class="position-absolute alert alert-success" style="display: none;">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div id="error-message" class="position-absolute alert alert-danger" style="display: none;">
+                        {{ session('error') }}
+                    </div>
+                @endif
                 <span class="title">Homepage : Booked Trips</span>
                 <a href="#">
                     <span class="float-right menu-open closed">
@@ -47,11 +61,6 @@
                             </div>
                         @endif
 
-                        @if (session('error'))
-                            <div id="error-message" class="alert alert-danger" style="display: none;">
-                                {{ session('error') }}
-                            </div>
-                        @endif
                         @foreach ($trips as $trip)
                             <!--Support Button End-->
                             <div class="history-items-container history-items-padding">

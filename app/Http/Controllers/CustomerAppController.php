@@ -252,6 +252,10 @@ class CustomerAppController extends Controller
             return redirect()->back()->with('error', 'Access Denied. Only customers can access this page.');
         }
 
+        if ($user->customer->status !== 'active') {
+            return redirect()->back()->with('error', 'Your account is not active. Please contact support.');
+        }
+
         // Fetch the customer data based on the user_id in the customers table
         $customer = Customer::where('user_id', $user->id)->firstOrFail();
 
@@ -278,9 +282,14 @@ class CustomerAppController extends Controller
         try {
             // Get all data from the request
             $data = $request->all();
+            $user = Auth::user();
 
             // Log the incoming booking data for debugging
             Log::info('Customer booking trip data: ', $data);
+
+            if ($user->customer->status !== 'active') {
+                return redirect()->back()->with('error', 'Your account is not active. Please contact support.');
+            }
 
             // Validate incoming data
             $validator = Validator::make($data, [
