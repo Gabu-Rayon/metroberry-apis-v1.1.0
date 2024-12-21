@@ -24,11 +24,9 @@ return new class extends Migration
             $table->string('color');
             $table->integer('seats');
             $table->enum('class', ['A', 'B', 'C','D','E']);
-            $table->string('fuel_type')->nullable;
             $table->string('engine_size');
             $table->string('avatar')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('inactive')->nullable();
-
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $table->foreign('manufacturer_id')->references('id')->on('vehicle_manufacturers')->onDelete('cascade');
