@@ -217,7 +217,6 @@ class RefuellingStationController extends Controller
         }
     }
 
-
     /**
      * Display the specified resource.
      */
