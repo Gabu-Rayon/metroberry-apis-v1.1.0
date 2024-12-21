@@ -111,7 +111,7 @@ class VehicleController extends Controller
             // Handle the file upload
             if ($request->hasFile('vehicle_avatar')) {
                 // Define the absolute path where you want to save the avatar
-                $avatarDirectory = './public/public_html_metroberry_app/uploads/vehicle-avatars/';
+                $avatarDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/vehicle-avatars/';
 
                 // Create the directory if it doesn't exist
                 if (!File::exists($avatarDirectory)) {
@@ -317,7 +317,7 @@ class VehicleController extends Controller
             // Check if the vehicle_avatar file exists in the request
             if ($request->hasFile('vehicle_avatar')) {
                 // Define the path where you want to save the avatar
-                $avatarPath = './public/public_html_metroberry_app/uploads/vehicle-avatars/';
+                $avatarPath = '/home/kknuicdz/public/public_html_metroberry_app/uploads/vehicle-avatars/';
 
                 // Create the directory if it doesn't exist
                 if (!File::exists($avatarPath)) {
@@ -399,7 +399,7 @@ class VehicleController extends Controller
             $vehicle = Vehicle::findOrFail($id);
 
             // Define the absolute path to the vehicle avatar
-            $avatarPath = './public/public_html_metroberry_app/' . $vehicle->avatar;
+            $avatarPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $vehicle->avatar;
 
             // Check if the avatar file exists and delete it
             if (File::exists($avatarPath)) {
@@ -461,63 +461,6 @@ class VehicleController extends Controller
         }
     }
 
-
-    public function activate_vehicle($id)
-    {
-        try {
-            $vehicle = Vehicle::find($id);
-
-            if (!$vehicle) {
-                return response()->json([
-                    'error' => 'Vehicle not found'
-                ], 404);
-            }
-
-            $vehicle->status = 'active';
-            $vehicle->save();
-
-            return response()->json([
-                'message' => 'Vehicle activated successfully',
-                'vehicle' => $vehicle
-            ], 200);
-        } catch (Exception $e) {
-            Log::error('ERROR ACTIVATING VEHICLE');
-            Log::error($e);
-            return response()->json([
-                'message' => 'Error occurred while activating vehicle',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function deactivate_vehicle($id)
-    {
-        try {
-            $vehicle = Vehicle::find($id);
-
-            if (!$vehicle) {
-                return response()->json([
-                    'error' => 'Vehicle not found'
-                ], 404);
-            }
-
-            $vehicle->status = 'inactive';
-            $vehicle->save();
-
-            return response()->json([
-                'message' => 'Vehicle deactivated successfully',
-                'vehicle' => $vehicle
-            ], 200);
-        } catch (Exception $e) {
-            Log::error('ERROR DEACTIVATING VEHICLE');
-            Log::error($e);
-            return response()->json([
-                'message' => 'Error occurred while deactivating vehicle',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
     public function vehicleInsurance()
     {
         return view('vehicle.insurance');
@@ -552,27 +495,26 @@ class VehicleController extends Controller
             }
 
             if ($today < $insurance->insurance_date_of_issue || $today > $insurance->insurance_date_of_expiry) {
-                return redirect()->back()->with('error', 'Vehicle Insurance has Expiry !');
+                return redirect()->back()->with('error', 'Vehicle Insurance has expired!');
             }
 
             if ($insurance->status != 1) {
-                return redirect()->back()->with('error', 'Vehicle Insurance is not Verified!');
+                return redirect()->back()->with('error', 'Vehicle Insurance is not verified!');
             }
 
             // Validate inspection certificates
             $inspectionCertificate = $vehicle->inspectionCertificate;
             if (!$inspectionCertificate) {
-                return redirect()->back()->with('error', 'Vehicle has no NTSA Inspection Certificate Certificate');
+                return redirect()->back()->with('error', 'Vehicle has no NTSA Inspection Certificate');
             }
 
             if ($today < $inspectionCertificate->ntsa_inspection_certificate_date_of_issue || $today > $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry) {
-                return redirect()->back()->with('error', 'Vehicle NTSA Inspection Certificate has Expiry !');
+                return redirect()->back()->with('error', 'Vehicle NTSA Inspection Certificate has expired!');
             }
 
             if ($inspectionCertificate->verified != 1) {
-                return redirect()->back()->with('error', 'Vehicle NTSA Inspection Certificate is not Verified!');
+                return redirect()->back()->with('error', 'Vehicle NTSA Inspection Certificate is not verified!');
             }
-
 
             // Validate Speed Governor certificates
             $speedGovernorCertificate = $vehicle->speedGovernorCertificate;
@@ -581,54 +523,64 @@ class VehicleController extends Controller
             }
 
             if ($today < $speedGovernorCertificate->date_of_installation || $today > $speedGovernorCertificate->expiry_date) {
-                return redirect()->back()->with('error', 'Vehicle Speed Governor Certificate has Expiry !');
+                return redirect()->back()->with('error', 'Vehicle Speed Governor Certificate has expired!');
             }
 
             if ($speedGovernorCertificate->status != 'active') {
-                return redirect()->back()->with('error', 'Vehicle Speed Governor Certificate is not Verified!');
+                return redirect()->back()->with('error', 'Vehicle Speed Governor Certificate is not verified!');
             }
-
 
             // Check if the vehicle was created by a driver
             $createdBy = User::find($vehicle->created_by);
             if ($createdBy && $createdBy->role == 'driver') {
+
+                Log::info('Creator of this vehicle is: ' . $createdBy->name);
+
                 // Validate driverLicense
-                $driverLicense = $createdBy->driverLicense;
+                $driverLicense = $createdBy->driver->driverLicense;
+
                 if (!$driverLicense) {
-                    return redirect()->back()->with('error', 'Driver has not Added Their License');
+                    return redirect()->back()->with('error', 'Driver has not added their license');
                 }
 
                 if ($driverLicense->verified != 1) {
-                    return redirect()->back()->with('error', 'Driver License is not Verified!');
+                    return redirect()->back()->with('error', 'Driver license is not verified!');
                 }
 
-
-                $licenseIssueDate = $driverLicense->license_date_of_issue;
-                if ($today < $licenseIssueDate) {
-                    return redirect()->back()->with('error', 'Driver has Not added License yet !');
+                // Check if the driver license has expired
+                $licenseExpiryDate = $driverLicense->driving_license_date_of_expiry;
+                if ($today > $licenseExpiryDate) {
+                    return redirect()->back()->with('error', 'Driver license has expired!');
                 }
 
                 // Check if the driver license is at least 5 years old
-                $licenseAge = now()->diffInYears($licenseIssueDate);
-                if ($licenseAge < 5) {
-                    return redirect()->back()->with('error', 'Driver License is less than 5 years old!');
+                $issueDate = Carbon::parse($driverLicense->first_date_of_issue);
+                $fiveYearsAgo = Carbon::now()->subYears(5);
+
+                if ($issueDate->greaterThan($fiveYearsAgo)) {
+                    return redirect()->back()->with('error', 'Driver license issue date is less than 5 years old');
                 }
 
                 // Validate PsvBadge
-                $psvBadge = $createdBy->psvBadge;
+                $psvBadge = $createdBy->driver->psvBadge;
                 if (!$psvBadge) {
                     return redirect()->back()->with('error', 'Driver has not added PSV Badge!');
                 }
 
                 if ($today < $psvBadge->psv_badge_date_of_issue || $today > $psvBadge->psv_badge_date_of_expiry) {
-                    return redirect()->back()->with('error', 'Driver PSV Badge has Expired!');
+                    return redirect()->back()->with('error', 'Driver PSV Badge has expired!');
                 }
 
                 if ($psvBadge->verified != 1) {
-                    return redirect()->back()->with('error', 'Driver PSV Badge is not Verified!');
+                    return redirect()->back()->with('error', 'Driver PSV Badge is not verified!');
                 }
-                
+
+                // Validate driver activation status
+                if ($createdBy->driver->status != 'active') {
+                    return redirect()->back()->with('error', 'Driver account is not activated!');
+                }
             }
+
             // Activate the vehicle
             DB::beginTransaction();
 
@@ -644,6 +596,7 @@ class VehicleController extends Controller
             return redirect()->back()->with('error', 'An error occurred while activating the vehicle');
         }
     }
+
 
 
 

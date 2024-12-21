@@ -25,18 +25,18 @@ class VehicleSpeedGovernorCertificateController extends Controller
         $vehicles = Vehicle::doesntHave('speedGovernorCertificates')->get();
         return view('vehicle-speed-governor-certificates.index', compact('speed_governors', 'vehicles'));
     }
-    
-    
+
+
     public function store(Request $request)
     {
         try {
             $data = $request->all();
 
             Log::info('Data For Creating a New Vehicle Speed Governor Certificate: ' . json_encode($data));
-            
+
             Log::info('DATA');
             Log::info($data);
-            
+
             $validator = Validator::make($data, [
                 'vehicle_id' => 'required|exists:vehicles,id',
                 'class_no' => 'required|in:A,B',
@@ -60,10 +60,10 @@ class VehicleSpeedGovernorCertificateController extends Controller
             // Fetch vehicle details
             $vehicle = Vehicle::findOrFail($data['vehicle_id']);
             $vehicle_model = $vehicle->model;
-            $vehicle_plate_number = $vehicle->plate_number;    
+            $vehicle_plate_number = $vehicle->plate_number;
 
             // Define the directory for storing the copy
-            $avatarDirectory = './public/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
+            $avatarDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
 
             if (!File::exists($avatarDirectory)) {
                 File::makeDirectory($avatarDirectory, 0755, true);
@@ -147,7 +147,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
             $vehicle_model = $vehicle->model;
             $vehicle_plate_number = $vehicle->plate_number;
             // Define the directory for storing the copy
-            $avatarDirectory = './public/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
+            $avatarDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
 
             if (!File::exists($avatarDirectory)) {
                 File::makeDirectory($avatarDirectory, 0755, true);
@@ -200,14 +200,16 @@ class VehicleSpeedGovernorCertificateController extends Controller
             return back()->with('error', 'Something went wrong.');
         }
     }
-    
 
-    public function activateForm(string $id) {
+
+    public function activateForm(string $id)
+    {
         $certificate = VehicleSpeedGovernorCertificate::find($id);
         return view('vehicle-speed-governor-certificates.activate', compact('certificate'));
     }
 
-    public function activate(string $id) {
+    public function activate(string $id)
+    {
         try {
             $certificate = VehicleSpeedGovernorCertificate::findOrFail($id);
             $expired = strtotime($certificate->expiry_date) < strtotime(date('Y-m-d'));
@@ -238,12 +240,14 @@ class VehicleSpeedGovernorCertificateController extends Controller
         }
     }
 
-    public function deactivateForm(string $id) {
+    public function deactivateForm(string $id)
+    {
         $certificate = VehicleSpeedGovernorCertificate::find($id);
         return view('vehicle-speed-governor-certificates.deactivate', compact('certificate'));
     }
 
-    public function deactivate(string $id) {
+    public function deactivate(string $id)
+    {
         try {
             $certificate = VehicleSpeedGovernorCertificate::findOrFail($id);
             $expired = strtotime($certificate->expiry_date) < strtotime(date('Y-m-d'));
@@ -291,7 +295,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
             $certificate->vehicle->status = 'inactive';
             $certificate->vehicle->save();
 
-            $avatarPath = './public/public_html_metroberry_app/' . $certificate->copy;
+            $avatarPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $certificate->copy;
 
             if (File::exists($avatarPath)) {
                 File::delete($avatarPath);

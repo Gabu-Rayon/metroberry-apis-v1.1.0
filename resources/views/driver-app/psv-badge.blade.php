@@ -35,7 +35,19 @@
             <!--Page Title & Icons End-->
 
             <div class="rest-container">
-                <div class="address-title">Psv Badge</div>
+                <div class="address-title">Psv Badge
+
+                    @if ($driver->psvBadge)
+                        @if ($driver->psvBadge->verified != 0)
+                            <span class="badge badge-pill fs-4 badge-success">Active</span>
+                        @else
+                            <span class="badge badge-pill fs-4 badge-danger">Inactive</span>
+                        @endif
+                    @else
+                        <span class="badge badge-pill fs-4 badge-danger">Inactive</span>
+                    @endif
+
+                </div>
 
                 <!--Driver's License Fields Container Start-->
                 <div class="all-container all-container-with-classes">

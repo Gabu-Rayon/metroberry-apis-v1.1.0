@@ -68,6 +68,7 @@
                                                         <th title="Name">License No</th>
                                                         <th title="Address">Driver</th>
                                                         <th title="Email">Issue Date</th>
+                                                          <th title="Email">Renewal Date</th>
                                                         <th title="Phone">Expiry Date</th>
                                                         <th title="Status">Status</th>
                                                         <th title="Action" width="80">Action</th>
@@ -78,7 +79,8 @@
                                                         <tr>
                                                             <td>{{ $license->driving_license_no }}</td>
                                                             <td>{{ $license->driver->user->name }}</td>
-                                                            <td>{{ $license->driving_license_date_of_issue }}</td>
+                                                            <td>{{ $license->first_date_of_issue }}</td>
+                                                            <td>{{ $license->driving_license_renewal_date_issue }}</td>
                                                             <td>{{ $license->driving_license_date_of_expiry }}</td>
                                                             <td>
                                                                 @php
@@ -211,14 +213,14 @@
                                 </div>
 
                                 <div class="form-group row my-2">
-                                    <label for="issue_date" class="col-sm-5 col-form-label">
-                                        Issue Date
+                                    <label for="driving_license_renewal_date_issue" class="col-sm-5 col-form-label">
+                                        Renewal Date
                                         <i class="text-danger">*</i>
                                     </label>
                                     <div class="col-sm-7">
-                                        <input name="issue_date" class="form-control" type="date"
+                                        <input name="driving_license_renewal_date_issue" class="form-control" type="date"
                                             placeholder="Issue Date" id="issue_date" required
-                                            value="{{ old('issue_date') }}" />
+                                            value="{{ old('driving_license_renewal_date_issue') }}" />
                                     </div>
                                 </div>
 

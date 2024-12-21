@@ -23,7 +23,7 @@
 
             <!--Page Title & Icons Start-->
             <div class="header-icons-container text-center">
-                <a href="{{ route('driver.dashboard') }}">
+                <a href="{{ route('trips.history.page') }}">
                     <span class="float-left">
                         <img src="{{ asset('mobile-app-assets/icons/back.svg') }}" alt="Back Icon" />
                     </span>
@@ -41,242 +41,148 @@
             <div class="rest-container">
                 <div class="all-history-items remaining-height">
                     <div class="change-request-status">
-                        @if ($driver->status == 'inactive')
-                            <div
-                                class="request-notification-container map-notification offline-notification map-notification-warning">
-                                Your account is inactive
-                                <div class="font-weight-light">Contact your administrator</div>
-                            </div>
-                        @else
-                            @if (!$driver->driverLicense?->verified && !$driver->psvBadge?->verified)
-                                <div
-                                    class="request-notification-container map-notification offline-notification map-notification-warning">
-                                    <h5>Some of your documents are invalid.</h5>
-                                    <div class="font-weight-light">Contact your administrator</div>
-                                </div>
-                            @else
-                                @if ($driver->driverLicense)
-                                    @if (!$driver->driverLicense->verified)
-                                        <div
-                                            class="request-notification-container map-notification offline-notification map-notification-warning">
-                                            Your license has not been verified.
-                                            <div class="font-weight-light">Contact your administrator</div>
-                                        </div>
-                                    @else
-                                        <div
-                                            class="request-notification-container map-notification offline-notification map-notification-warning">
-                                            Your license has been verified.
-                                        </div>
-                                    @endif
-                                @else
-                                    <div
-                                        class="request-notification-container map-notification meters-left-450 map-notification-warning">
-                                        <span class="font-weight-dark m-3 my-3">Kindly upload your Driver's License</span>
-                                        <form action="{{ route('driver.license') }}" method="POST"
-                                            enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="mb-3">
-                                                <label for="driving_license_no" class="form-label">License No.</label>
-                                                <input type="text" id="driving_license_no" name="driving_license_no"
-                                                    class="form-control" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="issue_date" class="form-label">Issue Date</label>
-                                                <input type="date" id="issue_date" name="issue_date" class="form-control"
-                                                    required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="expiry_date" class="form-label">Expiry Date</label>
-                                                <input type="date" id="expiry_date" name="expiry_date"
-                                                    class="form-control" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="license_front_avatar" class="form-label">License Front
-                                                    Picture</label>
-                                                <input type="file" id="license_front_avatar" name="license_front_avatar"
-                                                    required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="license_back_avatar" class="form-label">License Back
-                                                    Picture</label>
-                                                <input type="file" id="license_back_avatar" name="license_back_avatar"
-                                                    required>
-                                            </div>
-                                            <button type="submit"
-                                                class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
-                                        </form>
+
+
+
+                        <!-- Trips Assigned -->
+                        <div
+                            class="request-notification-container map-notification meters-left-450 map-notification-warning">
+                            <h3>Assigned Trips</h3>
+                            <div class="all-history-items remaining-height">
+                                <!-- Check if there are trips booked -->
+                                @if ($trips->isEmpty())
+                                    <div class="text-center">
+                                        <p>No Assigned trips found.</p>
                                     </div>
-                                @endif
-
-                                @if ($driver->psvBadge)
-                                    @if (!$driver->psvBadge->verified)
-                                        <div
-                                            class="request-notification-container map-notification offline-notification map-notification-warning">
-                                            Your PSV Badge has not been verified.
-                                            <div class="font-weight-light">Contact your administrator</div>
-                                        </div>
-                                    @else
-                                        <div
-                                            class="request-notification-container map-notification offline-notification map-notification-warning">
-                                            Your PSV Badge has been verified.
-                                        </div>
-                                    @endif
                                 @else
-                                    <div
-                                        class="request-notification-container map-notification meters-left-450 map-notification-warning">
-                                        <span class="font-weight-dark m-3 my-3">Kindly upload your PSV Badge</span>
-                                        <form action="{{ route('driver.psvbadge') }}" method="POST"
-                                            enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="mb-3">
-                                                <label for="psv_badge_no" class="form-label">Badge No.</label>
-                                                <input type="text" id="psv_badge_no" name="psv_badge_no"
-                                                    class="form-control" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="psv_issue_date" class="form-label">Issue Date</label>
-                                                <input type="date" id="psv_issue_date" name="psv_issue_date"
-                                                    class="form-control" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="psv_expiry_date" class="form-label">Expiry Date</label>
-                                                <input type="date" id="psv_expiry_date" name="psv_expiry_date"
-                                                    class="form-control" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="badge_copy" class="form-label">Copy</label>
-                                                <input type="file" id="badge_copy" name="badge_copy" required>
-                                            </div>
-                                            <button type="submit"
-                                                class="btn btn-primary w-50 m-2 float-end text-uppercase">Submit</button>
-                                        </form>
-                                    </div>
-                                @endif
-
-                                <!-- Trips Assigned -->
-                                <div
-                                    class="request-notification-container map-notification meters-left-450 map-notification-warning">
-                                    <h3>Assigned Trips</h3>
-                                    <div class="all-history-items remaining-height">
-                                        <!-- Check if there are trips booked -->
-                                        @if ($trips->isEmpty())
-                                            <div class="text-center">
-                                                <p>No Assigned trips found.</p>
-                                            </div>
-                                        @else
-                                            <!-- Loop through booked trips -->
-                                            @foreach ($trips as $trip)
-                                                <div class="history-items-container history-items-padding">
-                                                    <div class="history-item">
-                                                        <!--Date and Price Container Start-->
-                                                        <div class="border-bottom-primary thin">
-                                                            <div class="status-container">
-                                                                <div class="date float-left">
-                                                                    Date :
-                                                                    {{ \Carbon\Carbon::parse($trip->trip_date)->format('d M Y') }},
-                                                                    @if ($driver->time_format === '12-hour')
-                                                                        Time :
-                                                                        {{ \Carbon\Carbon::parse($trip->pick_up_time)->format('h:i A') }}
-                                                                        <!-- 12-hour format -->
-                                                                    @else
-                                                                        Time :
-                                                                        {{ \Carbon\Carbon::parse($trip->pick_up_time)->format('H:i') }}
-                                                                        <!-- 24-hour format -->
-                                                                    @endif
-                                                                </div>
-                                                                <br>
-                                                                <div class="status-none float-right text-uppercase">
-                                                                    Charges Kes {{ number_format($trip->total_price, 2) }}
-                                                                    <!-- Format charges -->
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </div>
+                                    <!-- Loop through booked trips -->
+                                    @foreach ($trips as $trip)
+                                        <div class="history-items-container history-items-padding">
+                                            <div class="history-item">
+                                                <!--Date and Price Container Start-->
+                                                <div class="border-bottom-primary thin">
+                                                    <div class="status-container">
+                                                        <div class="date float-left">
+                                                            Date :
+                                                            {{ \Carbon\Carbon::parse($trip->trip_date)->format('d M Y') }},
+                                                            @if ($driver->time_format === '12-hour')
+                                                                Time :
+                                                                {{ \Carbon\Carbon::parse($trip->pick_up_time)->format('h:i A') }}
+                                                                <!-- 12-hour format -->
+                                                            @else
+                                                                Time :
+                                                                {{ \Carbon\Carbon::parse($trip->pick_up_time)->format('H:i') }}
+                                                                <!-- 24-hour format -->
+                                                            @endif
                                                         </div>
-                                                        <div class="addresses-container position-relative">
-                                                            Customer : {{ $trip->customer->user->name }}
-                                                            <br>
-                                                            Route : {{ $trip->route->name }}
+                                                        <br>
+                                                        <div class="status-none float-right text-uppercase">
+                                                            Charges Kes {{ number_format($trip->total_price, 2) }}
+                                                            <!-- Format charges -->
                                                         </div>
-                                                        <!--Trips Details Address Container Start-->
-                                                        <div class="addresses-container position-relative">
-                                                            <div class="height-auto">
-                                                                <div
-                                                                    class="w-100 map-input-container map-input-container-top">
-                                                                    <span
-                                                                        class="fas fa-location-arrow location-icon-rotate map-input-icon"></span>
-                                                                    <div class="map-input display-flex">
-                                                                    @php
-                                                                        $location =
-                                                                            $trip->drop_off_location === 'Home'
-                                                                                ? $trip->customer->user->address
-                                                                                : ($trip->drop_off_location === 'Office'
-                                                                                    ? $trip->customer->organisation->user->address
-                                                                                    : $trip->route->route_locations
-                                                                                        ->where('id', $trip->drop_off_location)
-                                                                                        ->first()->name);
-                                                                    @endphp
-                                                                        <input class="controls flex-1 font-weight-light"
-                                                                            type="text"
-                                                                            placeholder="Enter an origin location"
-                                                                            value="{{ $location }}"
-                                                                            disabled>
-                                                                    </div>
-                                                                </div>
-                                                                <a href="#"
-                                                                    class="href-decoration-none">
-                                                                    <div
-                                                                        class="w-100 map-input-container map-input-container-bottom">
-                                                                        <span class="map-input-icon"><img
-                                                                                src="{{ asset('mobile-app-assets/icons/circle.svg') }}"
-                                                                                alt="Current Location Icon"></span>
-                                                                        <div
-                                                                            class="map-input display-flex controls flex-1 align-items-center">
-                                                                            @php
-                                                                                $location =
-                                                                                    $trip->pick_up_location === 'Home'
-                                                                                        ? $trip->customer->user->address
-                                                                                        : ($trip->pick_up_location === 'Office'
-                                                                                            ? $trip->customer->organisation->user->address
-                                                                                            : $trip->route->route_locations
-                                                                                                ->where('id', $trip->pick_up_location)
-                                                                                                ->first()->name);
-                                                                            @endphp
-                                                                            {{ $location }}
-                                                                        </div>
-                                                                        <span class="dotted-line"></span>
-                                                                    </div>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                        <!--Trip Details Address Container End-->
-
-                                                        <!--Trip Complete / Cancel Buttons Container-->
-
-                                                        <div class="trip-buttons-container">
-                                                            <a href="{{ route('trip.complete', $trip->id) }}"
-                                                                class="btn btn-success m-2 float-end text-uppercase">Complete</a>
-                                                            <a href="{{ route('trip.cancel', $trip->id) }}"
-                                                                class="btn btn-danger m-2 float-end text-uppercase">Cancel</a>
-                                                        </div>
-                                                        
+                                                        <div class="clearfix"></div>
                                                     </div>
                                                 </div>
-                                            @endforeach
-                                        @endif
-                                    </div>
-                                </div>
-                                <!-- End of Assgined Completed -->
-                            @endif
-                        @endif
+                                                <div class="addresses-container position-relative">
+                                                    Customer : {{ $trip->customer->user->name }}
+                                                    <br>
+                                                    Route : {{ $trip->route->name }}
+                                                </div>
+                                                <!--Trips Details Address Container Start-->
+                                                <div class="addresses-container position-relative">
+                                                    <div class="height-auto">
+                                                        <div class="w-100 map-input-container map-input-container-top">
+                                                            <span
+                                                                class="fas fa-location-arrow location-icon-rotate map-input-icon"></span>
+                                                            <div class="map-input display-flex">
+                                                                @php
+                                                                    $location =
+                                                                        $trip->drop_off_location === 'Home'
+                                                                            ? $trip->customer->user->address
+                                                                            : ($trip->drop_off_location === 'Office'
+                                                                                ? $trip->customer->organisation->user
+                                                                                    ->address
+                                                                                : $trip->route->route_locations
+                                                                                    ->where(
+                                                                                        'id',
+                                                                                        $trip->drop_off_location,
+                                                                                    )
+                                                                                    ->first()->name);
+                                                                @endphp
+                                                                <input class="controls flex-1 font-weight-light"
+                                                                    type="text" placeholder="Enter an origin location"
+                                                                    value="{{ $location }}" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <a href="#" class="href-decoration-none">
+                                                            <div
+                                                                class="w-100 map-input-container map-input-container-bottom">
+                                                                <span class="map-input-icon"><img
+                                                                        src="{{ asset('mobile-app-assets/icons/circle.svg') }}"
+                                                                        alt="Current Location Icon"></span>
+                                                                <div
+                                                                    class="map-input display-flex controls flex-1 align-items-center">
+                                                                    @php
+                                                                        $location =
+                                                                            $trip->pick_up_location === 'Home'
+                                                                                ? $trip->customer->user->address
+                                                                                : ($trip->pick_up_location === 'Office'
+                                                                                    ? $trip->customer->organisation
+                                                                                        ->user->address
+                                                                                    : $trip->route->route_locations
+                                                                                        ->where(
+                                                                                            'id',
+                                                                                            $trip->pick_up_location,
+                                                                                        )
+                                                                                        ->first()->name);
+                                                                    @endphp
+                                                                    {{ $location }}
+                                                                </div>
+                                                                <span class="dotted-line"></span>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <!--Trip Details Address Container End-->
+
+                                                <!--Trip Complete / Cancel Buttons Container-->
+
+                                                <div class="trip-buttons-container">
+                                                    <a href="{{ route('trip.complete', $trip->id) }}"
+                                                        class="btn btn-success m-2 float-end text-uppercase">Complete</a>
+                                                    <a href="{{ route('trip.cancel', $trip->id) }}"
+                                                        class="btn btn-danger m-2 float-end text-uppercase">Cancel</a>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                        <!-- End of Assgined Completed -->
                     </div>
                 </div>
-            </div>
+            </div>      
 
             <!--Main Menu Start-->
             @include('components.driver-mobile-app.main-menu')
             <!--Main Menu End-->
 
         </div>
+
+         <!--Terms And Conditions Agreement Container Start-->
+        <div class="text-center col-xs-12 col-sm-12 sms-rate-text font-roboto flex-end margin-bottom-30">
+            <div class="container-sms-rate-text width-100 font-11">
+                <span class="light-gray font-weight-light">
+                </span>
+                <br />
+                <a href="#" class="dark-link">
+                    <span class="font-weight-light">Metroberry Tours & Travel</span>
+                </a>
+            </div>
+        </div>
+        <!--Terms And Conditions Agreement Container End-->
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     @endsection

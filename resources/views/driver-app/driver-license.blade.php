@@ -35,7 +35,19 @@
             <!--Page Title & Icons End-->
 
             <div class="rest-container">
-                <div class="address-title">Driver's License</div>
+                <div class="address-title">Driver's License
+
+                    @if ($driver->driverLicense)
+                        @if ($driver->driverLicense->verified != 0)
+                            <span class="badge badge-pill fs-4 badge-success">Active</span>
+                        @else
+                            <span class="badge badge-pill fs-4 badge-danger">Inactive</span>
+                        @endif
+                    @else
+                        <span class="badge badge-pill fs-4 badge-danger">Inactive</span>
+                    @endif
+
+                </div>
 
                 <!--Driver's License Fields Container Start-->
                 <div class="all-container all-container-with-classes">
@@ -69,14 +81,27 @@
                         </div>
                         <!--Input Field Container End-->
 
+
                         <!--Input Field Container Start-->
                         <div class="form-group form-control-margin">
-                            <label class="label-title">Date of issue : <span class="text-primary">
-                                    {{ $driver->driverLicense->driving_license_date_of_issue ?? null }}</span></label>
+                            <label class="label-title">First Date of issue : <span class="text-primary">
+                                    {{ $driver->driverLicense->first_date_of_issue ?? null }}</span></label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
-                                    name="driving_license_date_of_issue" autocomplete="off"
-                                    placeholder="Driver License Number" value="#" />
+                                    name="first_date_of_issue" autocomplete="off" placeholder="Driver First Date of Issue"
+                                    value="#" />
+                            </div>
+                        </div>
+                        <!--Input Field Container End-->
+
+                        <!--Input Field Container Start-->
+                        <div class="form-group form-control-margin">
+                            <label class="label-title">Renewal Date : <span class="text-primary">
+                                    {{ $driver->driverLicense->driving_license_renewal_date_issue ?? null }}</span></label>
+                            <div class="input-group">
+                                <input class="form-control form-control-with-padding" type="date"
+                                    name="driving_license_renewal_date_issue" autocomplete="off"
+                                    placeholder="Driver License Date  of Renewal" value="#" />
                             </div>
                         </div>
                         <!--Input Field Container End-->
@@ -85,7 +110,7 @@
                         <div class="form-group form-control-margin">
                             <label class="label-title">Expiry Date : <span
                                     class="text-primary">{{ $driver->driverLicense->driving_license_date_of_expiry ?? null }}</span>
-                                    </label>
+                            </label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="date"
                                     name="driving_license_date_of_expiry" autocomplete="off"

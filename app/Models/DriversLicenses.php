@@ -13,7 +13,7 @@ class DriversLicenses extends Model
         'driver_id',
         'driving_license_no',
         'first_date_of_issue',
-        'driving_license_date_of_issue',
+        'driving_license_renewal_date_issue',
         'driving_license_date_of_expiry',
         'driving_license_avatar_front',
         'driving_license_avatar_back',

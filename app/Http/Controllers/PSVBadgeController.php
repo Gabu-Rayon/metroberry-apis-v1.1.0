@@ -75,7 +75,7 @@ class PSVBadgeController extends Controller
                 $badgeExtension = $badgeFile->getClientOriginalExtension();
                 $badgeFileName = "{$badgeNumber}-{$driver_name}-{$driver_email}-{$driver_phone}.{$badgeExtension}";
                 // Store the avatar directly in the specified directory
-                $badgeFilePath = './public/public_html_metroberry_app/uploads/psvbadge-avatars/';
+                $badgeFilePath = '/home/kknuicdz/public/public_html_metroberry_app/uploads/psvbadge-avatars/';
                 $badgeFile->move($badgeFilePath, $badgeFileName);
                 $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName;
             }
@@ -150,7 +150,7 @@ class PSVBadgeController extends Controller
             $badgeNumber = $psvbadge->psv_badge_no;
 
             // Get driver details
-            $psvbadge_driver_id = $psvbadge->driver_id; 
+            $psvbadge_driver_id = $psvbadge->driver_id;
             $driver = Driver::findOrFail($psvbadge_driver_id);
             $driverUserId = $driver->user_id;
             $driverUser = User::findOrFail($driverUserId);
@@ -172,14 +172,14 @@ class PSVBadgeController extends Controller
                 $badgeFileName = "{$badgeNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-back-id.{$badgeExtension}";
 
                 // Define the path in the specified directory
-                $publicPath = public_path('uploads/psvbadge-avatars');  
+                $publicPath = public_path('uploads/psvbadge-avatars');
                 if (!file_exists($publicPath)) {
                     mkdir($publicPath, 0755, true);
                 }
 
                 // Move the file to the specified directory
                 $badgeFile->move($publicPath, $badgeFileName);
-                $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName; 
+                $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName;
             }
 
             // Update PSV Badge record
@@ -215,7 +215,7 @@ class PSVBadgeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-   
+
 
     public function destroy($id)
     {
@@ -230,7 +230,7 @@ class PSVBadgeController extends Controller
             DB::beginTransaction();
 
             // Get the avatar path and delete the file if it exists
-            $avatarPath = './public/public_html_metroberry_app/' . $psvbadge->psv_badge_avatar;
+            $avatarPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $psvbadge->psv_badge_avatar;
             if (file_exists($avatarPath)) {
                 unlink($avatarPath); // Delete the file
             }

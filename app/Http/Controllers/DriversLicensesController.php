@@ -49,7 +49,7 @@ class DriversLicensesController extends Controller
                 'driver' => 'required|numeric|exists:drivers,id',
                 'license_no' => 'required|string|unique:drivers_licenses,driving_license_no',
                 'first_date_of_issue' => 'required|date|before:' . now()->subYears(5)->toDateString(),
-                'issue_date' => 'required|date',
+                'driving_license_renewal_date_issue' => 'required|date',
                 'expiry_date' => 'required|date|after:issue_date',
                 'front_page_id' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
                 'back_page_id' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
@@ -104,11 +104,12 @@ class DriversLicensesController extends Controller
             DriversLicenses::create([
                 'driver_id' => $data['driver'],
                 'driving_license_no' => $licenseNumber,
-                'driving_license_date_of_issue' => $data['issue_date'],
+                'driving_license_renewal_date_issue' => $data['driving_license_renewal_date_issue'],
+                'first_date_of_issue' => $data['issue_date'],
                 'driving_license_date_of_expiry' => $data['expiry_date'],
                 'driving_license_avatar_front' => 'uploads/front-license-pics/' . $frontLicenseFileName,
                 'driving_license_avatar_back' => 'uploads/back-license-pics/' . $backLicenseFileName,
-                'first_date_of_issue' => $data['first_date_of_issue'],
+
             ]);
 
             // Commit the transaction
@@ -147,7 +148,7 @@ class DriversLicensesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    
+
 
     public function update(Request $request, $id)
     {
@@ -157,7 +158,8 @@ class DriversLicensesController extends Controller
 
             $validator = Validator::make($data, [
                 'license_no' => 'required|string',
-                'driving_license_date_of_issue' => 'required|date',
+                'first_date_of_issue' => 'required|date|before:' . now()->subYears(5)->toDateString(),
+                'driving_license_renewal_date_issue' => 'required|date',
                 'driving_license_date_of_expiry' => 'required|date|after:driving_license_date_of_issue',
                 'driving_license_avatar_front' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
                 'driving_license_avatar_back' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
@@ -185,36 +187,37 @@ class DriversLicensesController extends Controller
             // Handle new front license image upload
             if ($request->hasFile('driving_license_avatar_front')) {
                 // If there's an existing front image, delete it
-                if ($frontLicensePath && file_exists('./public/public_html_metroberry_app/' . $frontLicensePath)) {
-                    unlink('./public/public_html_metroberry_app/' . $frontLicensePath);
+                if ($frontLicensePath && file_exists('/home/kknuicdz/public/public_html_metroberry_app/' . $frontLicensePath)) {
+                    unlink('/home/kknuicdz/public/public_html_metroberry_app/' . $frontLicensePath);
                 }
                 // Store the new front image
                 $frontLicenseFile = $request->file('driving_license_avatar_front');
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
                 $frontLicenseFileName = "{$license->driving_license_no}-{$driver_name}-{$driver_email}-{$driver_phone}-driver-license-front.{$frontLicenseExtension}";
                 $frontLicensePath = 'uploads/front-license-pics/' . $frontLicenseFileName; // Path to store
-                $frontLicenseFile->move('./public/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName); // Move file
+                $frontLicenseFile->move('/home/kknuicdz/public/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName); // Move file
             }
 
             // Handle new back license image upload
             if ($request->hasFile('driving_license_avatar_back')) {
                 // If there's an existing back image, delete it
-                if ($backLicensePath && file_exists('./public/public_html_metroberry_app/' . $backLicensePath)) {
-                    unlink('./public/public_html_metroberry_app/' . $backLicensePath);
+                if ($backLicensePath && file_exists('/home/kknuicdz/public/public_html_metroberry_app/' . $backLicensePath)) {
+                    unlink('/home/kknuicdz/public/public_html_metroberry_app/' . $backLicensePath);
                 }
                 // Store the new back image
                 $backLicenseFile = $request->file('driving_license_avatar_back');
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
                 $backLicenseFileName = "{$license->driving_license_no}-{$driver_name}-{$driver_email}-{$driver_phone}-driver-license-back.{$backLicenseExtension}";
                 $backLicensePath = 'uploads/back-license-pics/' . $backLicenseFileName; // Path to store
-                $backLicenseFile->move('./public/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName); // Move file
+                $backLicenseFile->move('/home/kknuicdz/public/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName); // Move file
             }
 
             DB::beginTransaction();
 
             // Update license details
             $license->update([
-                'driving_license_date_of_issue' => $data['driving_license_date_of_issue'],
+                'first_date_of_issue' => $data['first_date_of_issue'],
+                'driving_license_renewal_date_issue' => $data['driving_license_renewal_date_issue'],
                 'driving_license_date_of_expiry' => $data['driving_license_date_of_expiry'],
                 'driving_license_avatar_front' => $frontLicensePath,
                 'driving_license_avatar_back' => $backLicensePath,
@@ -245,7 +248,7 @@ class DriversLicensesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-  
+
 
 
     public function destroy($id)
@@ -259,13 +262,13 @@ class DriversLicensesController extends Controller
             DB::beginTransaction();
 
             // Delete the front avatar if it exists
-            if ($license->driving_license_avatar_front && file_exists('./public/public_html_metroberry_app/' . $license->driving_license_avatar_front)) {
-                unlink('./public/public_html_metroberry_app/' . $license->driving_license_avatar_front); // Delete the front avatar
+            if ($license->driving_license_avatar_front && file_exists('/home/kknuicdz/public/public_html_metroberry_app/' . $license->driving_license_avatar_front)) {
+                unlink('/home/kknuicdz/public/public_html_metroberry_app/' . $license->driving_license_avatar_front); // Delete the front avatar
             }
 
             // Delete the back avatar if it exists
-            if ($license->driving_license_avatar_back && file_exists('./public/public_html_metroberry_app/' . $license->driving_license_avatar_back)) {
-                unlink('./public/public_html_metroberry_app/' . $license->driving_license_avatar_back); // Delete the back avatar
+            if ($license->driving_license_avatar_back && file_exists('/home/kknuicdz/public/public_html_metroberry_app/' . $license->driving_license_avatar_back)) {
+                unlink('/home/kknuicdz/public/public_html_metroberry_app/' . $license->driving_license_avatar_back); // Delete the back avatar
             }
 
             // Delete the license
@@ -320,6 +323,17 @@ class DriversLicensesController extends Controller
             if ($license->verified) {
                 return redirect()->back()->with('error', 'License already verified');
             }
+
+            $today = Carbon::today();
+
+            // Check if the driver license issue date is less than 5 years old
+            $issueDate = Carbon::parse($license->first_date_of_issue);
+            $fiveYearsAgo = $today->subYears(5);
+
+            if ($issueDate > $fiveYearsAgo) {
+                return redirect()->back()->with('error', 'Driver license issue date is less than 5 years old');
+            }
+
 
             if ($license->driving_license_date_of_expiry < Carbon::today()) {
                 return redirect()->back()->with('error', 'License has expired');

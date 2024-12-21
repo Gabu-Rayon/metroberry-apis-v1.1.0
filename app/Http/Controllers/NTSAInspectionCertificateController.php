@@ -37,7 +37,7 @@ class NTSAInspectionCertificateController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    
+
     public function store(Request $request)
     {
         try {
@@ -66,7 +66,7 @@ class NTSAInspectionCertificateController extends Controller
             $avatarPath = null;
             $certNo = $data['ntsa_inspection_certificate_no'];
 
-        $vehicle = Vehicle::findOrFail($request->vehicle);
+            $vehicle = Vehicle::findOrFail($request->vehicle);
             $plate_number = $vehicle->plate_number;
             $vehicle_model = $vehicle->model;
 
@@ -76,7 +76,7 @@ class NTSAInspectionCertificateController extends Controller
             $avatarFileName = "{$certNo}-{$plate_number}-{$vehicle_model}-inspection-certificate.{$avatarExtension}";
 
             // Define the path where the avatar will be stored
-            $baseUploadPath = './public/public_html_metroberry_app/uploads';
+            $baseUploadPath = '/home/kknuicdz/public/public_html_metroberry_app/uploads';
             $avatarPath = "{$baseUploadPath}/ntsa-insp-cert-copies/{$avatarFileName}";
 
             // Create the directory if it doesn't exist
@@ -141,7 +141,7 @@ class NTSAInspectionCertificateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    
+
     public function update(Request $request, $id)
     {
         try {
@@ -167,7 +167,7 @@ class NTSAInspectionCertificateController extends Controller
 
             $avatarPath = $certificate->ntsa_inspection_certificate_avatar; // Keep the existing path initially
             $certNo = $data['ntsa_inspection_certificate_no'];
-            
+
             $vehicle = Vehicle::findOrFail($request->vehicle_id);
             $plate_number = $vehicle->plate_number;
             $vehicle_model = $vehicle->model;
@@ -186,7 +186,7 @@ class NTSAInspectionCertificateController extends Controller
                 $avatarFileName = "{$certNo}-{$plate_number}-{$vehicle_model}-avatar.{$avatarExtension}";
 
                 // Define the path for the new avatar
-                $baseUploadPath = './public/public_html_metroberry_app/uploads';
+                $baseUploadPath = '/home/kknuicdz/public/public_html_metroberry_app/uploads';
                 $avatarPath = "{$baseUploadPath}/ntsa-insp-cert-copies/{$avatarFileName}";
 
                 // Create the directory if it doesn't exist
@@ -321,7 +321,7 @@ class NTSAInspectionCertificateController extends Controller
             $certificate->vehicle->save();
 
             // Define the path to the avatar
-            $avatarPath = './public/public_html_metroberry_app/' . $certificate->ntsa_inspection_certificate_avatar;
+            $avatarPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $certificate->ntsa_inspection_certificate_avatar;
 
             // Delete the associated image from the specified directory
             if (File::exists($avatarPath)) {

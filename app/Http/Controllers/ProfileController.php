@@ -26,7 +26,7 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
- 
+
 
     public function edit(Request $request): View
     {
@@ -67,7 +67,7 @@ class ProfileController extends Controller
                 }
             }
 
-            $avatarDirectory = './public/public_html_metroberry_app/avatars';
+            $avatarDirectory = '/home/kknuicdz/public/public_html_metroberry_app/avatars';
 
             // Create the directory if it doesn't exist
             if (!file_exists($avatarDirectory)) {

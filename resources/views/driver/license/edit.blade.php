@@ -20,13 +20,23 @@
                 </div>
 
                 <div class="form-group row my-2">
-                    <label for="driving_license_date_of_issue" class="col-sm-5 col-form-label">
-                        Issue Date
+                    <label for="first_date_of_issue" class="col-sm-5 col-form-label">
+                        First Date of Issue
                     </label>
                     <div class="col-sm-7">
-                        <input name="driving_license_date_of_issue" required class="form-control" type="date"
-                            placeholder="Issue Date" id="driving_license_date_of_issue"
-                            value="{{ $license->driving_license_date_of_issue }}" />
+                        <input name="first_date_of_issue" required class="form-control" type="date"
+                            placeholder="Issue Date" id="first_date_of_issue"
+                            value="{{ $license->first_date_of_issue }}" />
+                    </div>
+                </div>
+                 <div class="form-group row my-2">
+                    <label for="driving_license_renewal_date_issue" class="col-sm-5 col-form-label">
+                        Renewal Date 
+                    </label>
+                    <div class="col-sm-7">
+                        <input name="driving_license_renewal_date_issue" required class="form-control" type="date"
+                            placeholder="Issue Date" id="driving_license_renewal_date_issue"
+                            value="{{ $license->driving_license_renewal_date_issue }}" />
                     </div>
                 </div>
 

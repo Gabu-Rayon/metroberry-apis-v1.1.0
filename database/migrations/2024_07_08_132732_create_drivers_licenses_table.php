@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('driver_id');
             $table->string('driving_license_no');
             $table->date('first_date_of_issue');
-            $table->date('driving_license_date_of_issue');
+            $table->date('driving_license_renewal_date_issue');
             $table->date('driving_license_date_of_expiry');
             $table->string('driving_license_avatar_front')->nullable();
             $table->string('driving_license_avatar_back')->nullable();

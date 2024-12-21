@@ -157,7 +157,7 @@
                         <span class="font-weight-dark m-3 my-3">
                             Kindly upload your Driver's License
                         </span>
-                        <form action="{{ route('driver.license') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('driver.add.license') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="mb-3">
                                 <label for="driving_license_no" class="form-label">License No.</label>
@@ -166,13 +166,14 @@
                             </div>
                             <div class="mb-3">
                                 <label for="first_date_of_issue" class="form-label">First Date of Issue</label>
-                                <input type="date" id="first_date_of_issue" name="first_date_of_issue" class="form-control"
-                                    value="{{ old('first_date_of_issue') }}" required>
+                                <input type="date" id="first_date_of_issue" name="first_date_of_issue"
+                                    class="form-control" value="{{ old('first_date_of_issue') }}" required>
                             </div>
                             <div class="mb-3">
-                                <label for="issue_date" class="form-label">Issue Date</label>
-                                <input type="date" id="issue_date" name="issue_date" class="form-control"
-                                    value="{{ old('issue_date') }}" required>
+                                <label for="issue_date" class="form-label">Renewal Date</label>
+                                <input type="date" id="issue_date" name="driving_license_renewal_date_issue"
+                                    class="form-control" value="{{ old('driving_license_renewal_date_issue') }}"
+                                    required>
                             </div>
                             <div class="mb-3">
                                 <label for="expiry_date" class="form-label">Expiry Date</label>
@@ -418,6 +419,19 @@
                 <!-- End of Assgined Completed -->
             </div>
         </div>
+
+        <!--Terms And Conditions Agreement Container Start-->
+        <div class="text-center col-xs-12 col-sm-12 sms-rate-text font-roboto flex-end margin-bottom-30">
+            <div class="container-sms-rate-text width-100 font-11">
+                <span class="light-gray font-weight-light">
+                </span>
+                <br />
+                <a href="#" class="dark-link">
+                    <span class="font-weight-light">Metroberry Tours & Travel</span>
+                </a>
+            </div>
+        </div>
+        <!--Terms And Conditions Agreement Container End-->
 
         <!--Main Menu Start-->
         @include('components.driver-mobile-app.main-menu')

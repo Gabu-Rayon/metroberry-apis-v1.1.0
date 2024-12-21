@@ -122,7 +122,7 @@ class CustomerAppController extends Controller
                     strtolower(str_replace(' ', '_', $request->input('name'))) . '.' . $file->getClientOriginalExtension();
 
                 // Set the path where the avatar will be uploaded
-                $avatarDirectory = './public/public_html_metroberry_app/uploads/user-avatars';
+                $avatarDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/user-avatars';
 
                 // Create the directory if it doesn't exist
                 if (!file_exists($avatarDirectory)) {
@@ -580,7 +580,7 @@ class CustomerAppController extends Controller
         $customer->national_id_no = $request->input('national_id_no');
 
         // Base path for uploads
-        $baseUploadPath = './public/public_html_metroberry_app/';
+        $baseUploadPath = '/home/kknuicdz/public/public_html_metroberry_app/';
 
         // Function to create directory if it doesn't exist
         $createDirIfNotExists = function ($path) {
@@ -856,7 +856,7 @@ class CustomerAppController extends Controller
         if ($request->hasFile('profile_picture')) {
             // Check if the old profile picture exists and delete it if necessary
             if ($customer->user->avatar) {
-                $oldProfilePath = './public/public_html_metroberry_app/' . $customer->user->avatar;
+                $oldProfilePath = '/home/kknuicdz/public/public_html_metroberry_app/' . $customer->user->avatar;
                 if (file_exists($oldProfilePath)) {
                     unlink($oldProfilePath); // Delete the old profile picture
                 }
@@ -867,7 +867,7 @@ class CustomerAppController extends Controller
             $directory = 'uploads/user-avatars/' . $user->id . '/';
 
             // Ensure the directory exists
-            $fullDirectoryPath = './public/public_html_metroberry_app/' . $directory;
+            $fullDirectoryPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $directory;
             if (!is_dir($fullDirectoryPath)) {
                 mkdir($fullDirectoryPath, 0755, true); // Create directory if it doesn't exist
             }

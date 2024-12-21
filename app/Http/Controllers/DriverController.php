@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Driver;
 use App\Models\Vehicle;
@@ -13,12 +14,12 @@ use App\Imports\DriverImport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\File;
 
 class DriverController extends Controller
 {
@@ -207,7 +208,7 @@ class DriverController extends Controller
                 $frontIdExtension = $frontIdFile->getClientOriginalExtension();
                 $frontIdFileName = "{$name}-{$email}-{$phone}-front-id.{$frontIdExtension}";
                 $frontIdPath = 'uploads/front-page-ids/' . $frontIdFileName;
-                $frontIdFile->move('./public/public_html_metroberry_app/' . dirname($frontIdPath), $frontIdFileName);
+                $frontIdFile->move('/home/kknuicdz/public/public_html_metroberry_app/' . dirname($frontIdPath), $frontIdFileName);
             }
 
             // Handle back ID upload
@@ -217,7 +218,7 @@ class DriverController extends Controller
                 $backIdExtension = $backIdFile->getClientOriginalExtension();
                 $backIdFileName = "{$name}-{$email}-{$phone}-back-id.{$backIdExtension}";
                 $backIdPath = 'uploads/back-page-ids/' . $backIdFileName;
-                $backIdFile->move('./public/public_html_metroberry_app/' . dirname($backIdPath), $backIdFileName);
+                $backIdFile->move('/home/kknuicdz/public/public_html_metroberry_app/' . dirname($backIdPath), $backIdFileName);
             }
 
 
@@ -227,7 +228,7 @@ class DriverController extends Controller
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
                 $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
-                $avatarFile->move('./public/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
+                $avatarFile->move('/home/kknuicdz/public/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
             }
 
             $user = User::create([
@@ -312,7 +313,7 @@ class DriverController extends Controller
         return view('driver.edit', compact('driver', 'organisations'));
     }
 
-   
+
     public function update(Request $request, $id)
     {
         try {
@@ -374,7 +375,7 @@ class DriverController extends Controller
             if ($request->hasFile('avatar')) {
                 // Check if the user already has an avatar and delete it
                 if ($user->avatar) {
-                    $oldAvatarPath = './public/public_html_metroberry_app/' . $user->avatar;
+                    $oldAvatarPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $user->avatar;
                     if (file_exists($oldAvatarPath)) {
                         unlink($oldAvatarPath); // Delete the old avatar
                     }
@@ -385,7 +386,7 @@ class DriverController extends Controller
                 $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
 
                 // Define the directory for the avatar
-                $avatarDirectory = './public/public_html_metroberry_app/uploads/user-avatars';
+                $avatarDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/user-avatars';
 
                 // Ensure the directory exists
                 if (!is_dir($avatarDirectory)) {
@@ -401,7 +402,7 @@ class DriverController extends Controller
             if ($request->hasFile('front_page_id')) {
                 // Check if the driver already has a front ID and delete it
                 if ($driver->national_id_front_avatar) {
-                    $oldFrontIdPath = './public/public_html_metroberry_app/' . $driver->national_id_front_avatar;
+                    $oldFrontIdPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $driver->national_id_front_avatar;
                     if (file_exists($oldFrontIdPath)) {
                         unlink($oldFrontIdPath); // Delete the old front ID
                     }
@@ -412,7 +413,7 @@ class DriverController extends Controller
                 $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
 
                 // Define the directory for the front ID
-                $frontIdDirectory = './public/public_html_metroberry_app/uploads/front-page-ids';
+                $frontIdDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/front-page-ids';
 
                 // Ensure the directory exists
                 if (!is_dir($frontIdDirectory)) {
@@ -428,7 +429,7 @@ class DriverController extends Controller
             if ($request->hasFile('back_page_id')) {
                 // Check if the driver already has a back ID and delete it
                 if ($driver->national_id_behind_avatar) {
-                    $oldBackIdPath = './public/public_html_metroberry_app/' . $driver->national_id_behind_avatar;
+                    $oldBackIdPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $driver->national_id_behind_avatar;
                     if (file_exists($oldBackIdPath)) {
                         unlink($oldBackIdPath); // Delete the old back ID
                     }
@@ -439,7 +440,7 @@ class DriverController extends Controller
                 $backIdFileName = "{$name}-{$email}-{$phone}-back-id.{$backIdExtension}";
 
                 // Define the directory for the back ID
-                $backIdDirectory = './public/public_html_metroberry_app/uploads/back-page-ids';
+                $backIdDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/back-page-ids';
 
                 // Ensure the directory exists
                 if (!is_dir($backIdDirectory)) {
@@ -546,13 +547,15 @@ class DriverController extends Controller
     public function activate($id)
     {
         try {
+            $driver = Driver::findOrFail($id);
 
-            $driver = Driver::with('driverLicense')->findOrFail($id);
-
-            Log::info('ACTIVATE DRIVER');
+            Log::info('DRIVER to ACTIVATE : ');
             Log::info($driver);
 
-            Log::info('DRIVER LICENSE');
+            Log::info('DRIVER PSV Badge is : ');
+            Log::info($driver->psvBadge);
+
+            Log::info('DRIVER LICENSE Is : ');
             Log::info($driver->driverLicense);
 
             if ($driver->status == 'active') {
@@ -563,7 +566,19 @@ class DriverController extends Controller
                 return redirect()->back()->with('error', 'Driver does not have a license');
             }
 
-            if ($driver->driverLicense->driving_license_date_of_expiry < date('Y-m-d')) {
+            // Check if the driver license issue date is less than 5 years old
+            if (!is_null($driver->driverLicense->first_date_of_issue)) {
+                $issueDate = Carbon::parse($driver->driverLicense->first_date_of_issue);
+                $fiveYearsAgo = Carbon::now()->subYears(5);
+
+                if ($issueDate > $fiveYearsAgo) {
+                    return redirect()->back()->with('error', 'Driver license issue date is less than 5 years old');
+                }
+            } else {
+                return redirect()->back()->with('error', 'Driver license first date of issue is not available');
+            }
+
+            if (Carbon::parse($driver->driverLicense->driving_license_date_of_expiry) < Carbon::today()) {
                 return redirect()->back()->with('error', 'Driver license has expired');
             }
 
@@ -571,7 +586,7 @@ class DriverController extends Controller
                 return redirect()->back()->with('error', 'Driver license documents are missing');
             }
 
-            if ($driver->driverLicense->verified == false) {
+            if (!$driver->driverLicense->verified) {
                 return redirect()->back()->with('error', 'Driver license has not been verified');
             }
 
@@ -579,7 +594,7 @@ class DriverController extends Controller
                 return redirect()->back()->with('error', 'Driver does not have a PSV Badge');
             }
 
-            if ($driver->psvBadge->psv_badge_date_of_expiry < date('Y-m-d')) {
+            if (Carbon::parse($driver->psvBadge->psv_badge_date_of_expiry) < Carbon::today()) {
                 return redirect()->back()->with('error', 'Driver PSV Badge has expired');
             }
 
@@ -587,14 +602,13 @@ class DriverController extends Controller
                 return redirect()->back()->with('error', 'Driver PSV Badge documents are missing');
             }
 
-            if ($driver->psvBadge->verified == false) {
+            if (!$driver->psvBadge->verified) {
                 return redirect()->back()->with('error', 'Driver PSV Badge has not been verified');
             }
 
             DB::beginTransaction();
 
             $driver->status = 'active';
-
             $driver->save();
 
             DB::commit();
@@ -724,7 +738,7 @@ class DriverController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-       public function destroy(string $id)
+    public function destroy(string $id)
     {
         try {
             $driver = Driver::find($id);
@@ -741,21 +755,21 @@ class DriverController extends Controller
 
             // Delete associated files
             if ($user->avatar) {
-                $oldAvatarPath = './public/public_html_metroberry_app/' . $user->avatar;
+                $oldAvatarPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $user->avatar;
                 if (file_exists($oldAvatarPath)) {
                     unlink($oldAvatarPath); // Delete the old avatar
                 }
             }
 
             if ($driver->national_id_front_avatar) {
-                $oldFrontIdPath = './public/public_html_metroberry_app/' . $driver->national_id_front_avatar;
+                $oldFrontIdPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $driver->national_id_front_avatar;
                 if (file_exists($oldFrontIdPath)) {
                     unlink($oldFrontIdPath); // Delete the old front ID
                 }
             }
 
             if ($driver->national_id_behind_avatar) {
-                $oldBackIdPath = './public/public_html_metroberry_app/' . $driver->national_id_behind_avatar;
+                $oldBackIdPath = '/home/kknuicdz/public/public_html_metroberry_app/' . $driver->national_id_behind_avatar;
                 if (file_exists($oldBackIdPath)) {
                     unlink($oldBackIdPath); // Delete the old back ID
                 }
