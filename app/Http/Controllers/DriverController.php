@@ -386,7 +386,7 @@ class DriverController extends Controller
                 $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
 
                 // Define the directory for the avatar
-                $avatarDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/user-avatars';
+                $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/user-avatars';
 
                 // Ensure the directory exists
                 if (!is_dir($avatarDirectory)) {
@@ -413,7 +413,7 @@ class DriverController extends Controller
                 $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
 
                 // Define the directory for the front ID
-                $frontIdDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/front-page-ids';
+                $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/front-page-ids';
 
                 // Ensure the directory exists
                 if (!is_dir($frontIdDirectory)) {
@@ -440,7 +440,7 @@ class DriverController extends Controller
                 $backIdFileName = "{$name}-{$email}-{$phone}-back-id.{$backIdExtension}";
 
                 // Define the directory for the back ID
-                $backIdDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/back-page-ids';
+                $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/back-page-ids';
 
                 // Ensure the directory exists
                 if (!is_dir($backIdDirectory)) {

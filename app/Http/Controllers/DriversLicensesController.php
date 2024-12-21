@@ -195,7 +195,7 @@ class DriversLicensesController extends Controller
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
                 $frontLicenseFileName = "{$license->driving_license_no}-{$driver_name}-{$driver_email}-{$driver_phone}-driver-license-front.{$frontLicenseExtension}";
                 $frontLicensePath = 'uploads/front-license-pics/' . $frontLicenseFileName; // Path to store
-                $frontLicenseFile->move('/home/kknuicdz/public/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName); // Move file
+                $frontLicenseFile->move('/home/kknuicdz/public_html_metroberry_app/front-license-pics', $frontLicenseFileName); // Move file
             }
 
             // Handle new back license image upload
@@ -209,7 +209,7 @@ class DriversLicensesController extends Controller
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
                 $backLicenseFileName = "{$license->driving_license_no}-{$driver_name}-{$driver_email}-{$driver_phone}-driver-license-back.{$backLicenseExtension}";
                 $backLicensePath = 'uploads/back-license-pics/' . $backLicenseFileName; // Path to store
-                $backLicenseFile->move('/home/kknuicdz/public/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName); // Move file
+                $backLicenseFile->move('/home/kknuicdz/public_html_metroberry_app/back-license-pics', $backLicenseFileName); // Move file
             }
 
             DB::beginTransaction();

@@ -345,7 +345,7 @@ class EmployeeController extends Controller
                 $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
 
                 // Move the new file to the specified directory
-                $avatarFile->move('/home/kknuicdz/public/public_html_metroberry_app/uploads/user-avatars', $avatarFileName);
+                $avatarFile->move('/home/kknuicdz/public_html_metroberry_app/user-avatars', $avatarFileName);
                 $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
             }
 
@@ -362,7 +362,7 @@ class EmployeeController extends Controller
                 $frontIdFileName = "{$name}-{$email}-{$phone}-front-page-id.{$frontIdExtension}";
 
                 // Move the new file to the specified directory
-                $frontIdFile->move('/home/kknuicdz/public/public_html_metroberry_app/uploads/front-page-ids', $frontIdFileName);
+                $frontIdFile->move('/home/kknuicdz/public_html_metroberry_app/front-page-ids', $frontIdFileName);
                 $customer->national_id_front_avatar = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
             }
 
@@ -379,7 +379,7 @@ class EmployeeController extends Controller
                 $backIdFileName = "{$name}-{$email}-{$phone}-back-page-back-id.{$backIdExtension}";
 
                 // Move the new file to the specified directory
-                $backIdFile->move('/home/kknuicdz/public/public_html_metroberry_app/uploads/back-page-ids', $backIdFileName);
+                $backIdFile->move('/home/kknuicdz/public_html_metroberry_app/back-page-ids', $backIdFileName);
                 $customer->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
             }
 

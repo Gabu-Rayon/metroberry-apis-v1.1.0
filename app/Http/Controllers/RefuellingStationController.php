@@ -40,7 +40,7 @@ class RefuellingStationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
- 
+
     public function store(Request $request)
     {
         try {
@@ -77,7 +77,7 @@ class RefuellingStationController extends Controller
             $certificateOfOperationsFile = $request->file('certificate_of_operations');
             $certificateOfOperationsExtension = $certificateOfOperationsFile->getClientOriginalExtension();
             $certificateOfOperationsFileName = "{$name}-{$email}-{$phone}-cert-op.{$certificateOfOperationsExtension}";
-            $certificateOfOperationsFilePath = '/home/kknuicdz/public/public_html_metroberry_app/uploads/cert-ops';
+            $certificateOfOperationsFilePath = '/home/kknuicdz/public_html_metroberry_app/cert-ops';
             $certificateOfOperationsFile->move($certificateOfOperationsFilePath, $certificateOfOperationsFileName);
             $certificateOfOperationsPath = 'uploads/cert-ops/' . $certificateOfOperationsFileName;
 
@@ -86,7 +86,7 @@ class RefuellingStationController extends Controller
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
-                $avatarFilePath = '/home/kknuicdz/public/public_html_metroberry_app/uploads/user-avatars';
+                $avatarFilePath = '/home/kknuicdz/public_html_metroberry_app/user-avatars';
                 $avatarFile->move($avatarFilePath, $avatarFileName);
                 $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
             }
@@ -155,7 +155,7 @@ class RefuellingStationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-  
+
 
 
     public function update(Request $request, $id)
@@ -194,7 +194,7 @@ class RefuellingStationController extends Controller
                 $certificateOfOperationsFile = $request->file('certificate_of_operations');
                 $certificateOfOperationsExtension = $certificateOfOperationsFile->getClientOriginalExtension();
                 $certificateOfOperationsFileName = "{$name}-{$email}-{$phone}-cert-op.{$certificateOfOperationsExtension}";
-                $certificateOfOperationsFilePath = '/home/kknuicdz/public/public_html_metroberry_app/uploads/cert-ops';
+                $certificateOfOperationsFilePath = '/home/kknuicdz/public_html_metroberry_app/cert-ops';
                 $certificateOfOperationsFile->move($certificateOfOperationsFilePath, $certificateOfOperationsFileName);
                 $certificateOfOperationsPath = 'uploads/cert-ops/' . $certificateOfOperationsFileName;
 
@@ -213,7 +213,7 @@ class RefuellingStationController extends Controller
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
-                $avatarFilePath = '/home/kknuicdz/public/public_html_metroberry_app/uploads/user-avatars';
+                $avatarFilePath = '/home/kknuicdz/public_html_metroberry_app/user-avatars';
                 $avatarFile->move($avatarFilePath, $avatarFileName);
                 $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
 

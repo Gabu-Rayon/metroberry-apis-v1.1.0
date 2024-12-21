@@ -122,7 +122,7 @@ class CustomerAppController extends Controller
                     strtolower(str_replace(' ', '_', $request->input('name'))) . '.' . $file->getClientOriginalExtension();
 
                 // Set the path where the avatar will be uploaded
-                $avatarDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/user-avatars';
+                $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/user-avatars';
 
                 // Create the directory if it doesn't exist
                 if (!file_exists($avatarDirectory)) {

@@ -126,7 +126,7 @@ class VehicleInsuranceController extends Controller
                 // Construct the filename using plate number, vehicle model, and insurance policy number
                 $filename = $plate_number . '_' . $vehicle_model . '_' . $insurance_policy_no . '.' . $file->getClientOriginalExtension();
 
-                $directory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
+                $directory = '/home/kknuicdz/public_html_metroberry_app/vehicle_insurance_policy_document/';
                 $policyDocument = 'uploads/vehicle_insurance_policy_document/' . $filename;
 
                 // Create the directory if it doesn't exist
@@ -256,7 +256,7 @@ class VehicleInsuranceController extends Controller
                 $filename = $plate_number . '_' . $vehicle_model . '_' . $insurance_policy_no . '.' . $file->getClientOriginalExtension();
 
                 // Define the directory path
-                $directory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/policy_documents/';
+                $directory = '/home/kknuicdz/public_html_metroberry_app/policy_documents/';
                 $filePath = 'uploads/policy_documents/' . $filename;
 
                 // Create the directory if it doesn't exist
@@ -414,7 +414,7 @@ class VehicleInsuranceController extends Controller
             if ($request->hasFile('policy_document')) {
                 $file = $request->file('policy_document');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $directory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/policy_documents/';
+                $directory = '/home/kknuicdz/public_html_metroberry_app/policy_documents/';
                 $filePath = $directory . $filename;
 
                 // Move the file to the specified directory

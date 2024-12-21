@@ -173,15 +173,15 @@ class DriverAppController extends Controller
             $driver = Driver::findOrFail($id);
 
             // Define the directories for the ID uploads
-            $frontIdDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/front-page-ids';
-            $backIdDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/back-page-ids';
+            $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/front-page-ids';
+            $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/back-page-ids';
 
             if (app()->environment('local')) {
                 $frontIdDirectory = public_path('uploads/front-page-ids');
                 $backIdDirectory = public_path('uploads/back-page-ids');
             } else {
-                $frontIdDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/front-page-ids';
-                $backIdDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/back-page-ids';
+                $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/front-page-ids';
+                $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/back-page-ids';
                 if (!is_dir($frontIdDirectory)) {
                     mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
                 }
@@ -239,11 +239,11 @@ class DriverAppController extends Controller
 
             $frontIdDirectory = app()->environment('local')
                 ? public_path('uploads/front-page-ids')
-                : '/home/kknuicdz/public/public_html_metroberry_app/uploads/front-page-ids';
+                : '/home/kknuicdz/public_html_metroberry_app/front-page-ids';
 
             $backIdDirectory = app()->environment('local')
                 ? public_path('uploads/back-page-ids')
-                : '/home/kknuicdz/public/public_html_metroberry_app/uploads/back-page-ids';
+                : '/home/kknuicdz/public_html_metroberry_app/back-page-ids';
 
             foreach ([$frontIdDirectory, $backIdDirectory] as $directory) {
                 if (!is_dir($directory)) {
@@ -313,8 +313,8 @@ class DriverAppController extends Controller
             DB::beginTransaction();
 
             // Define directories for license uploads
-            $frontLicenseDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/front-license-pics';
-            $backLicenseDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/back-license-pics';
+            $frontLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/front-license-pics';
+            $backLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/back-license-pics';
 
             $license_front_avatar = $request->file('license_front_avatar');
             $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();
@@ -389,8 +389,8 @@ class DriverAppController extends Controller
             $license = Auth::user()->driver->license;
 
             // Define directories for license uploads
-            $frontLicenseDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/front-license-pics';
-            $backLicenseDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/back-license-pics';
+            $frontLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/front-license-pics';
+            $backLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/back-license-pics';
 
             // Ensure the directories exist
             if (!is_dir($frontLicenseDirectory)) {
@@ -486,12 +486,12 @@ class DriverAppController extends Controller
             DB::beginTransaction();
 
             // Define the directory for storing PSV badge images
-            $psvBadgeDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/psvbadge-avatars';
+            $psvBadgeDirectory = '/home/kknuicdz/public_html_metroberry_app/psvbadge-avatars';
 
             if (app()->environment('local')) {
                 $psvBadgeDirectory = public_path('uploads/psvbadge-avatars');
             } else {
-                $psvBadgeDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/psvbadge-avatars';
+                $psvBadgeDirectory = '/home/kknuicdz/public_html_metroberry_app/psvbadge-avatars';
                 if (!is_dir($psvBadgeDirectory)) {
                     mkdir($psvBadgeDirectory, 0755, true); // Create directory if it doesn't exist
                 }
@@ -569,7 +569,7 @@ class DriverAppController extends Controller
             // Handle file upload if a new file is provided
             if ($request->hasFile('badge_copy')) {
                 // Define the directory for storing PSV badge images
-                $psvBadgeDirectory = '/home/kknuicdz/public/public_html_metroberry_app/uploads/psvbadge-avatars';
+                $psvBadgeDirectory = '/home/kknuicdz/public_html_metroberry_app/psvbadge-avatars';
 
                 // Ensure the directory exists
                 if (!is_dir($psvBadgeDirectory)) {
@@ -855,7 +855,7 @@ class DriverAppController extends Controller
                 // Store the new badge copy in the specified directory
                 $badgeCopyFile = $request->file('badge_copy');
                 $badgeCopyFileName = "psv_badge_{$driverId}." . $badgeCopyFile->getClientOriginalExtension();
-                $badgeCopyPath = $badgeCopyFile->move('/home/kknuicdz/public/public_html_metroberry_app/uploads/psvbadge-avatars', $badgeCopyFileName);
+                $badgeCopyPath = $badgeCopyFile->move('/home/kknuicdz/public_html_metroberry_app/psvbadge-avatars', $badgeCopyFileName);
 
                 // Update the avatar path in the database
                 $psvBadge->update(['psv_badge_avatar' => $badgeCopyPath]);
