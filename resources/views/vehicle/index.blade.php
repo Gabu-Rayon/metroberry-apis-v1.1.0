@@ -186,7 +186,7 @@
                                         id="manufacturer_id" tabindex="-1" aria-hidden="true">
                                         <option value="">Please Select Make</option>
                                         @foreach ($manufacturers as $manufacturer)
-                                            <option value="{{ $manufacturer->id }}">Class {{ $manufacturer->name }}</option>
+                                            <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -242,7 +242,7 @@
                                         id="fuel_type" tabindex="-1" aria-hidden="true">
                                         <option value="">Please Select Fuel Yupe</option>
                                         @foreach ($fuel_types as $fuel_type)
-                                            <option value="{{ $fuel_type->id }}">Class {{ $fuel_type->name }}</option>
+                                            <option value="{{ $fuel_type->id }}">{{ $fuel_type->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
