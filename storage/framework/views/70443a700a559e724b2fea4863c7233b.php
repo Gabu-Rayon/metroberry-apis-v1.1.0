@@ -8,9 +8,11 @@
         </div>
         <div class="profile-picture text-center">
             <?php if(Auth::user()->avatar): ?>
-                <img src="<?php echo e(asset( Auth::user()->avatar)); ?>" alt="Profile Picture" class="rounded-profile-picture" />
+            <img src="<?php echo e(asset(Auth::user()->avatar)); ?>" alt="Profile Picture"
+                class="rounded-profile-picture" />
             <?php else: ?>
-                <img src="<?php echo e(asset('mobile-app-assets/images/anonymous.jpeg')); ?>" alt="Profile Picture" class="rounded-profile-picture" />
+            <img src="<?php echo e(asset('mobile-app-assets/images/anonymous.jpeg')); ?>" alt="Profile Picture"
+                class="rounded-profile-picture" />
             <?php endif; ?>
         </div>
         <div class="profile-info">
@@ -26,7 +28,8 @@
                         <img src="<?php echo e(asset('mobile-app-assets/icons/home.svg')); ?>" alt="Home Icon" />
                     </span>
                     <span class="menu-item-icon menu-light">
-                        <img src="<?php echo e(asset('mobile-app-assets/icons/home-light.svg')); ?>" alt="Home Lighter Icon" />
+                        <img src="<?php echo e(asset('mobile-app-assets/icons/home-light.svg')); ?>"
+                            alt="Home Lighter Icon" />
                     </span>
                     <span class="menu-item-title">Home</span>
                     <span class="menu-item-click fas fa-arrow-right"></span>
@@ -34,7 +37,8 @@
             </a>
             <a class="menu-item" href="<?php echo e(route('driver.profile')); ?>">
                 <span class="menu-item-icon menu-dark profile">
-                    <img src="<?php echo e(asset('mobile-app-assets/icons/avatar-dark.svg')); ?>" alt="Avatar Darker Icon" />
+                    <img src="<?php echo e(asset('mobile-app-assets/icons/avatar-dark.svg')); ?>"
+                        alt="Avatar Darker Icon" />
                 </span>
                 <span class="menu-item-icon menu-light profile">
                     <img src="<?php echo e(asset('mobile-app-assets/icons/avatar.svg')); ?>" alt="Avatar Darker Icon" />
@@ -47,9 +51,10 @@
                     <img src="<?php echo e(asset('mobile-app-assets/icons/my-wallet.svg')); ?>" alt="Wallet Icon" />
                 </span>
                 <span class="menu-item-icon menu-light">
-                    <img src="<?php echo e(asset('')); ?>mobile-app-assets/icons/my-wallet-light.svg" alt="Wallet Icon" />
+                    <img src="<?php echo e(asset('')); ?>mobile-app-assets/icons/my-wallet-light.svg"
+                        alt="Wallet Icon" />
                 </span>
-                <span class="menu-item-title">My Wallet</span>
+                <span class="menu-item-title">My Wallet <small class="text-danger"><i>coming soon</i></small> </span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
             <a class="menu-item" href="<?php echo e(route('driver.registration.page')); ?>">
@@ -66,32 +71,34 @@
             </a>
             <a class="menu-item position-relative" href="#">
                 <span class="menu-item-icon menu-dark">
-                    <img src="<?php echo e(asset('mobile-app-assets/icons/notification.svg')); ?>" alt="Notification Icon" />
+                    <img src="<?php echo e(asset('mobile-app-assets/icons/notification.svg')); ?>"
+                        alt="Notification Icon" />
                 </span>
                 <span class="menu-item-icon menu-light">
-                    <img src="<?php echo e(asset('mobile-app-assets/icons/notification-light.svg')); ?>" alt="Notification Icon" />
+                    <img src="<?php echo e(asset('mobile-app-assets/icons/notification-light.svg')); ?>"
+                        alt="Notification Icon" />
                 </span>
-                <span class="menu-item-title">Notifications</span>
+                <span class="menu-item-title">Notifications <small class="text-danger"><i>coming soon</i></small></span>
                 <span class="notification-num">3</span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
-            <a class="menu-item" href="<?php echo e(route('driver.vehicle')); ?>">
+            <a class="menu-item" href="<?php echo e(route('driver.vehicle.docs.registration')); ?>">
                 <span class="menu-item-icon fas fa-car"></span>
-                <span class="menu-item-title">Vehicle</span>
+                <span class="menu-item-title">Vehicle Registration</span>
                 <span class="menu-item-click fas fa-check green-status"></span>
             </a>
 
-            
+
 
 
             <a class="menu-item" href="<?php echo e(route('trips.history.page')); ?>">
                 <span class="menu-item-icon menu-dark">
-                    
+
                     <i class="fa-solid fa-plane-departure">
                     </i>
                 </span>
                 <span class="menu-item-icon menu-light">
-                    
+
                     <i class="fa-solid fa-plane-departure">
                     </i>
                 </span>
@@ -107,12 +114,14 @@
                     <img src="<?php echo e(asset('mobile-app-assets/icons/support.svg')); ?>" alt="Support Icon" />
                 </span>
                 <span class="menu-item-icon menu-light support">
-                    <img src="<?php echo e(asset('mobile-app-assets/icons/support-light.svg')); ?>" alt="Support Lighter Icon" />
+                    <img src="<?php echo e(asset('mobile-app-assets/icons/support-light.svg')); ?>"
+                        alt="Support Lighter Icon" />
                 </span>
-                <span class="menu-item-title">Online Support</span>
+                <span class="menu-item-title">Online Support <small class="text-danger"><i>coming soon</i></small>
+                </span>
                 <span class="menu-item-click fas fa-arrow-right"></span>
             </a>
-            
+
 
             <form method="POST" action="<?php echo e(route('logout')); ?>" class="menu-item margin-top-auto">
                 <?php echo csrf_field(); ?>
