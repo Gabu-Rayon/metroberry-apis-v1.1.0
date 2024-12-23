@@ -70,9 +70,9 @@ class ProfileController extends Controller
             $avatarDirectory = './public_html_metroberry_app/uploads/user-avatars';
 
             // Create the directory if it doesn't exist
-            if (!file_exists($avatarDirectory)) {
-                mkdir($avatarDirectory, 0755, true);
-            }
+            // if (!file_exists($avatarDirectory)) {
+            //     mkdir($avatarDirectory, 0755, true);
+            // }
 
             // Create a new file name by concatenating email, phone, and name
             $file = $request->file('avatar');
