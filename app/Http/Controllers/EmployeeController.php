@@ -103,9 +103,9 @@ class EmployeeController extends Controller
             $phone = $data['phone'];
 
             // Define exact paths
-            $frontIdPath = 'home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
-            $backIdPath = 'home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
-            $avatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+            $frontIdPath = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
+            $backIdPath = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
+            $avatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
 
             // Handle front page ID upload
             if ($request->hasFile('front_page_id')) {
@@ -170,32 +170,22 @@ class EmployeeController extends Controller
         }
     }
 
-    /**
-     * Handle file upload and return the file path.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param string $fileInputName
-     * @param string $uploadPath
-     * @param string $name
-     * @param string $email
-     * @param string $phone
-     * @return string $filePath
-     */
-    private function uploadFile($request, $fileInputName, $uploadPath, $name, $email, $phone)
+    private function uploadFile(Request $request, $inputName, $path, $name, $email, $phone)
     {
-        if ($request->hasFile($fileInputName)) {
-            $file = $request->file($fileInputName);
-            $extension = $file->getClientOriginalExtension();
-            $fileName = "{$name}-{$email}-{$phone}-" . basename($uploadPath) . '.' . $extension;
-            $filePath = $uploadPath . '/' . $fileName;
+        $file = $request->file($inputName);
+        $fileName = "{$name}-{$email}-{$phone}.{$file->getClientOriginalExtension()}";
+        $absolutePath = $path . $fileName;
 
-            // Move the file to the target directory
-            $file->move(dirname($filePath), $fileName);
-
-            return $filePath;
+        // Ensure the directory exists
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
         }
 
-        return $uploadPath; // Return the original path if no file is uploaded
+        // Move the file to the absolute path
+        $file->move($path, $fileName);
+
+        // Return the relative path to store in the database
+        return 'uploads/' . basename($path) . '/' . $fileName;
     }
 
 
@@ -341,58 +331,69 @@ class EmployeeController extends Controller
             $name = $data['name'];
             $phone = $data['phone'];
 
-            // Define upload paths
-            $frontIdPath = 'home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
-            $backIdPath = 'home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
-            $avatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+            // Define absolute upload paths
+            $frontIdPath = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
+            $backIdPath = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
+            $avatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+
+            // Ensure directories exist
+            if (!file_exists($frontIdPath)) {
+                mkdir($frontIdPath, 0777, true);
+            }
+            if (!file_exists($backIdPath)) {
+                mkdir($backIdPath, 0777, true);
+            }
+            if (!file_exists($avatarPath)) {
+                mkdir($avatarPath, 0777, true);
+            }
 
             // Handle avatar upload
             if ($request->hasFile('avatar')) {
-                // Check if the model already has a file and delete the old one
-                $oldAvatarPath = $avatarPath . $user->avatar; // Assuming field name matches the file input
-                if ($user->avatar && file_exists($oldAvatarPath)) {
-                    unlink($oldAvatarPath); // Delete the old file
-                }
-
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
+                $avatarFilePath = $avatarPath . $avatarFileName;
 
-                // Move the new file to the specified directory
+                // Delete old file if it exists
+                if ($user->avatar && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $user->avatar)) {
+                    unlink('/home/kknuicdz/public_html_metroberry_app/' . $user->avatar);
+                }
+
+                // Move new file to the specified directory
                 $avatarFile->move($avatarPath, $avatarFileName);
                 $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
             }
 
             // Handle front page ID upload
             if ($request->hasFile('front_page_id')) {
-                // Check if the model already has a file and delete the old one
-                $oldFrontIdPath = $frontIdPath . $customer->national_id_front_avatar; // Assuming field name matches the file input
-                if ($customer->national_id_front_avatar && file_exists($oldFrontIdPath)) {
-                    unlink($oldFrontIdPath); // Delete the old file
-                }
-
                 $frontIdFile = $request->file('front_page_id');
                 $frontIdExtension = $frontIdFile->getClientOriginalExtension();
                 $frontIdFileName = "{$name}-{$email}-{$phone}-front-page-id.{$frontIdExtension}";
+                $frontIdFilePath = $frontIdPath . $frontIdFileName;
 
-                // Move the new file to the specified directory
+                // Delete old file if it exists
+                if ($customer->national_id_front_avatar && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $customer->national_id_front_avatar)) {
+                    unlink('/home/kknuicdz/public_html_metroberry_app/' . $customer->national_id_front_avatar);
+                }
+
+                // Move new file to the specified directory
                 $frontIdFile->move($frontIdPath, $frontIdFileName);
                 $customer->national_id_front_avatar = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
             }
 
             // Handle back page ID upload
             if ($request->hasFile('back_page_id')) {
-                // Check if the model already has a file and delete the old one
-                $oldBackIdPath = $backIdPath . $customer->national_id_behind_avatar; // Assuming field name matches the file input
-                if ($customer->national_id_behind_avatar && file_exists($oldBackIdPath)) {
-                    unlink($oldBackIdPath); // Delete the old file
-                }
-
                 $backIdFile = $request->file('back_page_id');
                 $backIdExtension = $backIdFile->getClientOriginalExtension();
-                $backIdFileName = "{$name}-{$email}-{$phone}-back-page-back-id.{$backIdExtension}";
+                $backIdFileName = "{$name}-{$email}-{$phone}-back-page-id.{$backIdExtension}";
+                $backIdFilePath = $backIdPath . $backIdFileName;
 
-                // Move the new file to the specified directory
+                // Delete old file if it exists
+                if ($customer->national_id_behind_avatar && file_exists('/home/kknuicdz/public_html_metroberry_app/' . $customer->national_id_behind_avatar)) {
+                    unlink('/home/kknuicdz/public_html_metroberry_app/' . $customer->national_id_behind_avatar);
+                }
+
+                // Move new file to the specified directory
                 $backIdFile->move($backIdPath, $backIdFileName);
                 $customer->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
             }
