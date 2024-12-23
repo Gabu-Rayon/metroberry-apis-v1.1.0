@@ -58,7 +58,7 @@
                             placeholder="Front Page ID Picture" id="front_page_id" value="" />
                         @if ($customer->national_id_front_avatar)
                             <div class="mt-2">
-                                <a href="{{ asset($customer->national_id_front_avatar) }}" download>Download
+                                <a href="{{ asset('uploads/front-page-pics/' .basename($customer->national_id_front_avatar)) }}" download>Download
                                     Front Page ID</a>
                             </div>
                         @endif
@@ -123,7 +123,7 @@
                             placeholder="Back Page ID Picture" id="back_page_id" value="" />
                         @if ($customer->national_id_behind_avatar)
                             <div class="mt-2">
-                                <a href="{{ asset($customer->national_id_behind_avatar) }}"
+                                <a href="{{ asset('uploads/back-page-ids' .basename($customer->national_id_behind_avatar)) }}"
                                     download>Download Back Page ID</a>
                             </div>
                         @endif

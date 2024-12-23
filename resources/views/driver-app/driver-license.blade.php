@@ -145,7 +145,7 @@
                                                           alt="Lincense Front Avatar" /> --}}
                                                     <img id="national-id-front-preview"
                                                         src="{{ $driver->driverLicense && $driver->driverLicense->driving_license_avatar_front
-                                                            ? asset($driver->driverLicense->driving_license_avatar_front)
+                                                            ? asset('uploads/front-license-pics/'.basename($driver->driverLicense->driving_license_avatar_front))
                                                             : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                         alt="License Front Avatar" />
 
@@ -183,7 +183,7 @@
 
                                                     <img id="national-id-back-preview"
                                                         src="{{ $driver->driverLicense && $driver->driverLicense->driving_license_avatar_back
-                                                            ? asset($driver->driverLicense->driving_license_avatar_back)
+                                                            ? asset('uploads/back-license-pics/'.basename($driver->driverLicense->driving_license_avatar_back))
                                                             : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                         alt="License Back Avatar" />
 

@@ -48,9 +48,10 @@
                     <div class="col-sm-7">
                         <input name="avatar" class="form-control" type="file" accept="image/*" id="avatar" />
                         @if ($certificate->copy)
-                            <a href="{{ asset($certificate->copy) }}"
+
+                            <a href="{{ asset('uploads/speed-governor-cert-copies'.basename($certificate->copy)) }}"
                                 target="_blank">
-                                <img src="{{ asset($certificate->copy) }}"
+                                <img src="{{ asset('uploads/speed-governor-cert-copies'.basename($certificate->copy)) }}"
                                     alt="Certificate Copy" class="img-fluid mt-2" />
                             </a>
                         @endif

@@ -143,7 +143,7 @@
                                             <div class="upload-camera-container text-center">
                                                 <span class="#">
                                                     <img id="national-id-back-preview"
-                                                        src="{{ $driver->vehicle && $driver->vehicle->avatar ? asset($driver->vehicle->avatar) : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        src="{{ $driver->vehicle && $driver->vehicle->avatar ? asset('uploads/vehicle-avatars/'.basename($driver->vehicle->avatar)) : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                         alt="Back"
                                                         onerror="this.onerror=null; this.src='{{ asset('mobile-app-assets/icons/photocamera.svg') }}';" />
                                                 </span>

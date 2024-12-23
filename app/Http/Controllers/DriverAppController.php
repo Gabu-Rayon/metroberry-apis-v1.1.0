@@ -1221,7 +1221,6 @@ class DriverAppController extends Controller
         return redirect()->route('driver.vehicle.docs.registration')->with('success', 'Vehicle insurance added successfully.');
     }
 
-
     public function vehicleInsuranceUpdate(Request $request, $insuranceId)
     {
         $data = $request->all();
@@ -1266,10 +1265,12 @@ class DriverAppController extends Controller
         $driverVehicleInsurance = VehicleInsurance::findOrFail($insuranceId);
         $driverVehicleInsurancePolicyDocPath = $driverVehicleInsurance->policy_document;
 
+        $driverVehicleInsurancePolicyPath = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
+
         if ($request->hasFile('driver_insurance_policy_document')) {
             // Delete the old document if it exists
-            if ($driverVehicleInsurancePolicyDocPath && file_exists('home/kknuicdz/public_html_metroberry_app/' . $driverVehicleInsurancePolicyDocPath)) {
-                unlink('home/kknuicdz/public_html_metroberry_app/' . $driverVehicleInsurancePolicyDocPath);
+            if ($driverVehicleInsurancePolicyDocPath && file_exists($driverVehicleInsurancePolicyPath . $driverVehicleInsurancePolicyDocPath)) {
+                unlink($driverVehicleInsurancePolicyPath . $driverVehicleInsurancePolicyDocPath);
             }
 
             // Upload the new document
@@ -1277,7 +1278,7 @@ class DriverAppController extends Controller
             $fileName = "{$authUser->name}-{$authUser->email}-{$request->driver_insurance_policy_no}.{$file->getClientOriginalExtension()}";
             $driverVehicleInsurancePolicyDocPath = 'uploads/vehicle_insurance_policy_document/' . $fileName;
 
-            $destinationPath = 'home/kknuicdz/public_html_metroberry_app/' . dirname($driverVehicleInsurancePolicyDocPath);
+            $destinationPath = $driverVehicleInsurancePolicyPath;
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
             }
@@ -1306,7 +1307,6 @@ class DriverAppController extends Controller
 
         return redirect()->route('driver.vehicle.docs.registration')->with('success', 'Vehicle insurance updated successfully.');
     }
-
 
 
 

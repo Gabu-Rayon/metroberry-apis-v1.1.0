@@ -145,7 +145,8 @@
                      <div class="col-sm-7">
                          <input name="vehicle_avatar" class="form-control" type="file" id="vehicle_avatar">
                          @if ($vehicle->avatar)
-                             <img src="{{ asset($vehicle->avatar) }}" alt="Vehicle Avatar"
+
+                            <img src="{{ asset( 'uploads/vehicle-avatars' .basename($vehicle->avatar)) }}" alt="Vehicle Avatar"
                                  class="img-thumbnail mt-2" style="max-height: 150px;">
                          @endif
                      </div>

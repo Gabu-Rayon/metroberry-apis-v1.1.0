@@ -269,7 +269,7 @@
                                                             <td>{{ $payment->reference }}</td>
                                                             <td>{{ $payment->remark }}</td>
                                                             <td>
-                                                                <a href="{{ asset($payment->payment_receipt) }}"
+                                                             <a href="{{'payment_receipts/' . basename($payment->payment_receipt)) }}"
                                                                     download>
                                                                     <i class="fa-solid fa-file-pdf"></i> Receipt
                                                                 </a>

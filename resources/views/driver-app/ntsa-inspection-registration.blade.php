@@ -138,7 +138,7 @@
                                     <div class="position-relative">
                                         <div class="upload-picture-container text-center">
                                             <img id="certificate-copy-preview"
-                                                src="{{ $inspectionCertificate->ntsa_inspection_certificate_avatar ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                src="{{ asset('uploads/ntsa-insp-cert-copies/' .basename( $inspectionCertificate->ntsa_inspection_certificate_avatar )) ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                 alt="Certificate Copy" />
                                         </div>
                                     </div>

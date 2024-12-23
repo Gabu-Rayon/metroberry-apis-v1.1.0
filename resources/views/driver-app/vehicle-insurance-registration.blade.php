@@ -273,7 +273,7 @@
                                                 <span class="#">
                                                     <img id="national-id-back-preview"
                                                         src="{{ $vehicleInsurance && $vehicleInsurance->policy_document
-                                                            ? asset($vehicleInsurance && $vehicleInsurance->policy_document)
+                                                            ? asset('uploads/vehicle_insurance_policy_document/' .basename($vehicleInsurance && $vehicleInsurance->policy_document))
                                                             : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                         alt="Driver Vehicle Insurance Policy Document" />
 

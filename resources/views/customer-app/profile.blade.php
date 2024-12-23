@@ -38,7 +38,7 @@
                           @csrf
                           <div class="profile-picture-container">
                               <img id="profile-picture"
-                                  src="{{ $customer->user->avatar ? asset($customer->user->avatar) : asset('mobile-app-assets/images/avatar.svg') }}"
+                                  src="{{ $customer->user->avatar ? asset('uploads/user-avatars/' .basename($customer->user->avatar)) : asset('mobile-app-assets/images/avatar.svg') }}"
                                   alt="Profile Picture" class="rounded-profile-picture" />
                               <span class="fas fa-camera">
                                   <input class="file-prompt" type="file" accept="image/*"
@@ -175,7 +175,7 @@
                                                   <span class="#">
                                                       <img id="national-id-front-preview"
                                                           src="{{ $customer->national_id_front_avatar
-                                                              ? asset($customer->national_id_front_avatar)
+                                                              ? asset('uploads/front-page-ids/' .basename($customer->national_id_front_avatar))
                                                               : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                           alt="National ID Front" />
                                                   </span>
@@ -209,7 +209,7 @@
                                                   <span class="#">
                                                       <img id="national-id-back-preview"
                                                           src="{{ $customer->national_id_behind_avatar
-                                                              ? asset($customer->national_id_behind_avatar)
+                                                              ? asset('uploads/back-page-pics/' .basename($customer->national_id_behind_avatar))
                                                               : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                           alt="National ID Back" />
                                                   </span>

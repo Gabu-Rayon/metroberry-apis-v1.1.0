@@ -133,7 +133,7 @@
                                             <div class="upload-camera-container text-center">
                                                 <span class="#">
                                                     <img id="certificate-copy-preview"
-                                                        src="{{ $driver->vehicle->speedGovernorCertificate->certificate_copy ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        src="{{ asset('uploads/speed-governor-cert-cpoies/' .basename($driver->vehicle->speedGovernorCertificate->certificate_copy))  ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                         alt="Speed Governor Certificate Copy" />
                                                 </span>
                                             </div>

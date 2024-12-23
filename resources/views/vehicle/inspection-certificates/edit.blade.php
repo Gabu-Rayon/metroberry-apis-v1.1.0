@@ -51,8 +51,8 @@
                         @if ($certificate->ntsa_inspection_certificate_avatar)
                             <a href="{{ asset($certificate->ntsa_inspection_certificate_avatar) }}"
                                 target="_blank">
-                                <img src="{{ asset($certificate->ntsa_inspection_certificate_avatar) }}"
-                                    alt="Certificate Copy" class="img-fluid mt-2" />
+                                
+                                    <img src="{{ asset('uploads/ntsa-insp-cert-copies/' . basename($certificate->ntsa_inspection_certificate_avatar)) }}" alt="Certificate Copy" class="img-fluid mt-2" />
                             </a>
                         @endif
                     </div>
