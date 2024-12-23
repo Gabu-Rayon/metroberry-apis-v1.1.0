@@ -50,8 +50,10 @@
                     <div class="col-sm-7">
                         <input name="logo" class="form-control" type="file" placeholder="Logo" id="logo"
                             value="" />
-                        <img src="{{ asset($organisation->user->avatar) }}" alt="Avatar"
-                            class="form-control" />
+                        {{-- <img src="{{ asset($organisation->user->avatar) }}" alt="Avatar"
+                            class="form-control" /> --}}
+                            <img src="{{ asset('uploads/user-avatars/' . basename($organisation->user->avatar)) }}" alt="Avatar" class="form-control" />
+
                     </div>
                 </div>
 
