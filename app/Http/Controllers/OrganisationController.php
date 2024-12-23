@@ -161,16 +161,18 @@ class OrganisationController extends Controller
             Log::info('Password Generated for this Organisation: ');
             Log::info($generatedPassword);
 
+
             // Define the base path for uploads
-            $baseUploadPath = 'home/kknuicdz/public_html_metroberry_app/uploads';
+            $baseUploadCompanyLogosPath = '/home/kknuicdz/public_html_metroberry_app/uploads/company-logos';
+            $baseUploadOrganisationCertPath = '/home/kknuicdz/public_html_metroberry_app/uploads/organisation-certificates';
 
             // Store logo in the specified folder
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
                 $logoExtension = $logoFile->getClientOriginalExtension();
                 $logoFileName = "{$name}-{$email}-{$phone}-avatar.{$logoExtension}";
-                $logoPath = 'company-logos/' . $logoFileName; // Store the relative path
-                $logoFile->move("{$baseUploadPath}/company-logos", $logoFileName); // Move the file to the specified directory
+                $logoPath = $baseUploadCompanyLogosPath . '/' . $logoFileName;
+                $logoFile->move($baseUploadCompanyLogosPath, $logoFileName); // Move the file to the specified directory
             }
 
             // Store organization certificate in the specified folder
@@ -178,8 +180,8 @@ class OrganisationController extends Controller
                 $certificateFile = $request->file('organisation_certificate');
                 $certificateExtension = $certificateFile->getClientOriginalExtension();
                 $certificateFileName = "{$name}-{$email}-{$phone}-certificate.{$certificateExtension}";
-                $certificatePath = 'organisation-certificates/' . $certificateFileName; // Store the relative path
-                $certificateFile->move("{$baseUploadPath}/organisation-certificates", $certificateFileName); // Move the file to the specified directory
+                $certificatePath = $baseUploadOrganisationCertPath . '/' . $certificateFileName;
+                $certificateFile->move($baseUploadOrganisationCertPath, $certificateFileName); // Move the file to the specified directory
             }
 
             $user = User::create([
@@ -286,15 +288,17 @@ class OrganisationController extends Controller
             $certificatePath = $organisation->certificate_of_organisation; // Keep the existing certificate path if not updated
 
             // Define the base path for uploads
-            $baseUploadPath = 'home/kknuicdz/public_html_metroberry_app/uploads';
+            $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads';
+            $companyLogosPath = "{$baseUploadPath}/company-logos";
+            $organisationCertPath = "{$baseUploadPath}/organisation-certificates";
 
             // Store logo in the specified folder
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
                 $logoExtension = $logoFile->getClientOriginalExtension();
                 $logoFileName = "{$user->name}-{$user->email}-{$user->phone}-avatar.{$logoExtension}";
-                $logoPath = 'company-logos/' . $logoFileName; // Set relative path for logo
-                $logoFile->move("{$baseUploadPath}/company-logos", $logoFileName); // Move the file to specified folder
+                $logoPath = "company-logos/{$logoFileName}"; // Set relative path for logo
+                $logoFile->move($companyLogosPath, $logoFileName); // Move the file to specified folder
             }
 
             // Store certificate in the specified folder
@@ -302,8 +306,8 @@ class OrganisationController extends Controller
                 $certificateFile = $request->file('certificate_of_organisation');
                 $certificateExtension = $certificateFile->getClientOriginalExtension();
                 $certificateFileName = "{$user->name}-{$user->email}-{$user->phone}-certificate.{$certificateExtension}";
-                $certificatePath = 'organisation-certificates/' . $certificateFileName; // Set relative path for certificate
-                $certificateFile->move("{$baseUploadPath}/organisation-certificates", $certificateFileName); // Move the file to specified folder
+                $certificatePath = "organisation-certificates/{$certificateFileName}"; // Set relative path for certificate
+                $certificateFile->move($organisationCertPath, $certificateFileName); // Move the file to specified folder
             }
 
             // Update user and organisation
@@ -330,6 +334,7 @@ class OrganisationController extends Controller
             return redirect()->back()->with('error', 'An error occurred while updating organisation');
         }
     }
+
 
 
     /**
@@ -362,10 +367,13 @@ class OrganisationController extends Controller
 
             DB::beginTransaction();
 
+            // Define base upload paths
+            $baseUploadCompanyLogosPath = 'home/kknuicdz/public_html_metroberry_app/uploads/company-logos';
+            $baseUploadOrganisationCertPath = 'home/kknuicdz/public_html_metroberry_app/uploads/organisation-certificates';
+
             // Define file paths
-            $baseUploadPath = 'home/kknuicdz/public_html_metroberry_app/uploads';
-            $certificatePath = "{$baseUploadPath}/organisation-certificates/{$user->name}-{$user->email}-{$user->phone}-certificate.pdf"; // Adjust according to your naming convention
-            $logoPath = "{$baseUploadPath}/company-logos/{$user->name}-{$user->email}-{$user->phone}-avatar." . pathinfo($organisation->certificate_of_organisation, PATHINFO_EXTENSION); // Get the correct extension or naming convention
+            $certificatePath = "{$baseUploadOrganisationCertPath}/{$user->name}-{$user->email}-{$user->phone}-certificate.pdf"; 
+            $logoPath = "{$baseUploadCompanyLogosPath}/{$user->name}-{$user->email}-{$user->phone}-avatar." . pathinfo($organisation->certificate_of_organisation, PATHINFO_EXTENSION); // Get the correct extension or naming convention
 
             // Delete the certificate file if it exists
             if (File::exists($certificatePath)) {
@@ -386,12 +394,10 @@ class OrganisationController extends Controller
             return redirect()->route('organisation')->with('success', 'Organisation deleted successfully');
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('ERROR DELETING Organisation');
-            Log::error($e);
-            return redirect()->back()->with('error', 'An error occurred while deleting organisation');
+            Log::error('ERROR DELETING Organisation: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while deleting the organisation');
         }
     }
-
 
     public function activateForm(string $id)
     {

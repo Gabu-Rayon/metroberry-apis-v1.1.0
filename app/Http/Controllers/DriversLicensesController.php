@@ -72,8 +72,9 @@ class DriversLicensesController extends Controller
             $driver_email = $driverUser->email;
             $driver_phone = $driverUser->phone;
 
-            $frontLicensePath = null;
-            $backLicensePath = null;
+            // Define the absolute paths for the uploads
+            $frontLicensePath = 'home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics/';
+            $backLicensePath = 'home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics/';
 
             // Handle the front license image upload
             if ($request->hasFile('front_page_id')) {
@@ -81,9 +82,14 @@ class DriversLicensesController extends Controller
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
                 $frontLicenseFileName = "{$licenseNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-front-id.{$frontLicenseExtension}";
 
-                // Define the directory path and create it if necessary
-                $frontLicensePath = public_path('uploads/front-license-pics/' . $frontLicenseFileName);
-                $frontLicenseFile->move(public_path('uploads/front-license-pics'), $frontLicenseFileName);
+                // Ensure the destination directory exists
+                $destinationPath = $frontLicensePath . $frontLicenseFileName;
+                if (!file_exists($frontLicensePath)) {
+                    mkdir($frontLicensePath, 0777, true);
+                }
+
+                // Move the file to the specified path
+                $frontLicenseFile->move($frontLicensePath, $frontLicenseFileName);
             }
 
             // Handle the back license image upload
@@ -92,9 +98,14 @@ class DriversLicensesController extends Controller
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
                 $backLicenseFileName = "{$licenseNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-back-id.{$backLicenseExtension}";
 
-                // Define the directory path and create it if necessary
-                $backLicensePath = public_path('uploads/back-license-pics/' . $backLicenseFileName);
-                $backLicenseFile->move(public_path('uploads/back-license-pics'), $backLicenseFileName);
+                // Ensure the destination directory exists
+                $destinationPath = $backLicensePath . $backLicenseFileName;
+                if (!file_exists($backLicensePath)) {
+                    mkdir($backLicensePath, 0777, true);
+                }
+
+                // Move the file to the specified path
+                $backLicenseFile->move($backLicensePath, $backLicenseFileName);
             }
 
             // Begin database transaction
@@ -109,7 +120,6 @@ class DriversLicensesController extends Controller
                 'driving_license_date_of_expiry' => $data['expiry_date'],
                 'driving_license_avatar_front' => 'uploads/front-license-pics/' . $frontLicenseFileName,
                 'driving_license_avatar_back' => 'uploads/back-license-pics/' . $backLicenseFileName,
-
             ]);
 
             // Commit the transaction
@@ -171,12 +181,12 @@ class DriversLicensesController extends Controller
                 return redirect()->back()->with('error', $validator->errors()->first());
             }
 
-            $frontLicensePath = $license->driving_license_avatar_front; // Preserve the old path
-            $backLicensePath = $license->driving_license_avatar_back; // Preserve the old path
-
+            // Define the document paths
+            $frontLicenseDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics/';
+            $backLicenseDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics/';
 
             // Get driver details
-            $dl_driver_id = $license->driver_id;  // Assuming this is correct column for driver_id
+            $dl_driver_id = $license->driver_id;  // Assuming this is the correct column for driver_id
             $driver = Driver::findOrFail($dl_driver_id);
             $driverUserId = $driver->user_id;
             $driverUser = User::findOrFail($driverUserId);
@@ -186,44 +196,61 @@ class DriversLicensesController extends Controller
 
             // Handle new front license image upload
             if ($request->hasFile('driving_license_avatar_front')) {
-                // If there's an existing front image, delete it
-                if ($frontLicensePath && file_exists('home/kknuicdz/public_html_metroberry_app/uploads/' . $frontLicensePath)) {
-                    unlink('home/kknuicdz/public_html_metroberry_app/uploads/' . $frontLicensePath);
+                // Delete the existing front image if it exists
+                if ($license->driving_license_avatar_front && file_exists($frontLicenseDirectory . basename($license->driving_license_avatar_front))) {
+                    unlink($frontLicenseDirectory . basename($license->driving_license_avatar_front));
                 }
+
                 // Store the new front image
                 $frontLicenseFile = $request->file('driving_license_avatar_front');
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
                 $frontLicenseFileName = "{$license->driving_license_no}-{$driver_name}-{$driver_email}-{$driver_phone}-driver-license-front.{$frontLicenseExtension}";
-                $frontLicensePath = 'uploads/front-license-pics/' . $frontLicenseFileName; // Path to store
-                $frontLicenseFile->move('home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics', $frontLicenseFileName); // Move file
+                $frontLicensePath = 'uploads/front-license-pics/' . $frontLicenseFileName; // Relative path to store in DB
+
+                // Ensure the directory exists
+                if (!file_exists($frontLicenseDirectory)) {
+                    mkdir($frontLicenseDirectory, 0777, true);
+                }
+
+                // Move the file to the specified directory
+                $frontLicenseFile->move($frontLicenseDirectory, $frontLicenseFileName);
             }
 
             // Handle new back license image upload
             if ($request->hasFile('driving_license_avatar_back')) {
-                // If there's an existing back image, delete it
-                if ($backLicensePath && file_exists('home/kknuicdz/public_html_metroberry_app/uploads/' . $backLicensePath)) {
-                    unlink('home/kknuicdz/public_html_metroberry_app/' . $backLicensePath);
+                // Delete the existing back image if it exists
+                if ($license->driving_license_avatar_back && file_exists($backLicenseDirectory . basename($license->driving_license_avatar_back))) {
+                    unlink($backLicenseDirectory . basename($license->driving_license_avatar_back));
                 }
+
                 // Store the new back image
                 $backLicenseFile = $request->file('driving_license_avatar_back');
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
                 $backLicenseFileName = "{$license->driving_license_no}-{$driver_name}-{$driver_email}-{$driver_phone}-driver-license-back.{$backLicenseExtension}";
-                $backLicensePath = 'uploads/back-license-pics/' . $backLicenseFileName; // Path to store
-                $backLicenseFile->move('home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics', $backLicenseFileName); // Move file
+                $backLicensePath = 'uploads/back-license-pics/' . $backLicenseFileName; // Relative path to store in DB
+
+                // Ensure the directory exists
+                if (!file_exists($backLicenseDirectory)) {
+                    mkdir($backLicenseDirectory, 0777, true);
+                }
+
+                // Move the file to the specified directory
+                $backLicenseFile->move($backLicenseDirectory, $backLicenseFileName);
             }
 
             DB::beginTransaction();
 
-            // Update license details
+            // Update the license details
             $license->update([
                 'first_date_of_issue' => $data['first_date_of_issue'],
                 'driving_license_renewal_date_issue' => $data['driving_license_renewal_date_issue'],
                 'driving_license_date_of_expiry' => $data['driving_license_date_of_expiry'],
-                'driving_license_avatar_front' => $frontLicensePath,
-                'driving_license_avatar_back' => $backLicensePath,
+                'driving_license_avatar_front' => $frontLicensePath ?? $license->driving_license_avatar_front,
+                'driving_license_avatar_back' => $backLicensePath ?? $license->driving_license_avatar_back,
                 'verified' => false
             ]);
 
+            // Update driver status
             $license->driver->status = 'inactive';
             $license->driver->save();
 
@@ -237,6 +264,7 @@ class DriversLicensesController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
 
 
     public function delete($id)
@@ -261,29 +289,35 @@ class DriversLicensesController extends Controller
             // Start a database transaction
             DB::beginTransaction();
 
-            // Delete the front avatar if it exists
-            if ($license->driving_license_avatar_front && file_exists('home/kknuicdz/public_html_metroberry_app/uploads/' . $license->driving_license_avatar_front)) {
-                unlink('home/kknuicdz/public_html_metroberry_app/uploads/' . $license->driving_license_avatar_front); // Delete the front avatar
+            // Define the directories for front and back license images
+            $frontLicenseDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics/';
+            $backLicenseDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics/';
+
+            // Delete the front license image if it exists
+            if ($license->driving_license_avatar_front && file_exists($frontLicenseDirectory . $license->driving_license_avatar_front)) {
+                unlink($frontLicenseDirectory . $license->driving_license_avatar_front); // Delete the front avatar
+                Log::info('Deleted front license avatar: ' . $license->driving_license_avatar_front);
             }
 
-            // Delete the back avatar if it exists
-            if ($license->driving_license_avatar_back && file_exists('home/kknuicdz/public_html_metroberry_app/uploads/' . $license->driving_license_avatar_back)) {
-                unlink('home/kknuicdz/public_html_metroberry_app/uploads/' . $license->driving_license_avatar_back); // Delete the back avatar
+            // Delete the back license image if it exists
+            if ($license->driving_license_avatar_back && file_exists($backLicenseDirectory . $license->driving_license_avatar_back)) {
+                unlink($backLicenseDirectory . $license->driving_license_avatar_back); // Delete the back avatar
+                Log::info('Deleted back license avatar: ' . $license->driving_license_avatar_back);
             }
 
-            // Delete the license
+            // Delete the license record from the database
             $license->delete();
 
-            // Update driver status
+            // Update the driver's status to 'inactive'
             $driver->status = 'inactive';
             $driver->save();
 
             // Commit the transaction
             DB::commit();
 
-            return redirect()->route('driver.license')->with('success', 'License deleted successfully');
+            return redirect()->route('driver.license')->with('success', 'License and associated files deleted successfully');
         } catch (Exception $e) {
-            // Rollback transaction on error
+            // Rollback the transaction on error
             DB::rollBack();
             Log::error('DELETE LICENSE ERROR');
             Log::error($e);

@@ -50,10 +50,6 @@ class MaintenanceServicePaymentController extends Controller
     }
 
 
-
-
-
-
     public function billedVehicleServiceMaintenanceRecievePaymentStore(Request $request, $id)
     {
         try {
@@ -112,16 +108,25 @@ class MaintenanceServicePaymentController extends Controller
             $maintenanceServicePayment->created_by = $creator->id;
 
             // Handle payment receipt file upload
+            $maintenanceServicePaymentReceiptUploadpath = "home/kknuicdz/public_html_metroberry_app/maintenance_service_payment_receipts";
+
             if ($request->hasFile('payment_receipt')) {
                 $file = $request->file('payment_receipt');
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
 
+                // Ensure the target directory exists, if not, create it
+                if (!is_dir($maintenanceServicePaymentReceiptUploadpath)) {
+                    mkdir($maintenanceServicePaymentReceiptUploadpath, 0777, true);
+                }
+
                 // Move the uploaded file to the specified path
-                $file->move('home/kknuicdz/public_html_metroberry_app/maintenance_service_payment_receipts', $fileName);
+                $file->move($maintenanceServicePaymentReceiptUploadpath, $fileName);
+
                 // Store the relative path to the database
                 $maintenanceServicePayment->payment_receipt = 'maintenance_service_payment_receipts/' . $fileName;
             }
 
+            // Save the payment record
             $maintenanceServicePayment->save();
             Log::info('Maintenance Service Payment Saved');
 
@@ -142,9 +147,6 @@ class MaintenanceServicePaymentController extends Controller
             return redirect()->back()->with('error', 'An error occurred while receiving the payment for the Maintenance Service. Please try again.')->withInput();
         }
     }
-
-
-
 
     /**
      * Generate a unique invoice number.

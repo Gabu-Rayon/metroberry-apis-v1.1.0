@@ -119,7 +119,7 @@ class VehicleController extends Controller
                 }
 
                 // Generate a unique name for the avatar image
-                $avatarName = $request->plate_number . $request->model . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
+                $avatarName = $request->plate_number . '-' . $request->model . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
 
                 // Move the uploaded file to the absolute directory
                 $request->file('vehicle_avatar')->move($avatarDirectory, $avatarName);
@@ -156,8 +156,6 @@ class VehicleController extends Controller
             return back()->with('error', 'An error occurred while adding the vehicle. Please try again.')->withInput();
         }
     }
-
-
 
 
 
@@ -269,9 +267,6 @@ class VehicleController extends Controller
      */
 
 
-
-
-
     public function update(Request $request, $id)
     {
         try {
@@ -294,16 +289,16 @@ class VehicleController extends Controller
                 'vehicle_class' => 'required|string'
             ]);
 
-            //get the fuel type name
+            // Get the fuel type name
             $fuelTypeId = $request->fuel_type;
             $fuelType = FuelType::findOrFail($fuelTypeId);
             $fuelTypeName = $fuelType->name;
 
-            Log::info('fUEL TYPE NAME IS : ');
+            Log::info('Fuel Type Name Is: ');
             Log::info($fuelTypeName);
 
             if ($validator->fails()) {
-                Log::info('VALIDATION ERROR Here');
+                Log::info('Validation Error Here');
                 Log::info($validator->errors());
                 return redirect()->back()->with('error', $validator->errors()->first())->withInput();
             }
@@ -316,19 +311,19 @@ class VehicleController extends Controller
 
             // Check if the vehicle_avatar file exists in the request
             if ($request->hasFile('vehicle_avatar')) {
-                // Define the path where you want to save the avatar
-                $avatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
+                // Define the absolute path where you want to save the avatar
+                $avatarDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
 
                 // Create the directory if it doesn't exist
-                if (!File::exists($avatarPath)) {
-                    File::makeDirectory($avatarPath, 0755, true);
+                if (!File::exists($avatarDirectory)) {
+                    File::makeDirectory($avatarDirectory, 0755, true);
                 }
 
                 // Generate a unique name for the avatar image
                 $avatarName = $vehicle->plate_number . $vehicle->model . '-avatar.' . $request->file('vehicle_avatar')->getClientOriginalExtension();
 
                 // Move the uploaded file to the specified directory
-                $request->file('vehicle_avatar')->move($avatarPath, $avatarName);
+                $request->file('vehicle_avatar')->move($avatarDirectory, $avatarName);
 
                 // Update the avatar field with the path to the avatar
                 $vehicle->avatar = 'uploads/vehicle-avatars/' . $avatarName; // Keep this relative for the database
@@ -342,7 +337,7 @@ class VehicleController extends Controller
             $vehicle->seats = $request->seats;
             $vehicle->plate_number = $request->plate_number;
             $vehicle->fuel_type_id = $request->fuel_type;
-            //pass the fuel type name
+            // Pass the fuel type name
             $vehicle->fuel_type = $fuelTypeName;
             $vehicle->engine_size = $request->engine_size;
             $vehicle->organisation_id = $request->organisation_id;
@@ -365,6 +360,7 @@ class VehicleController extends Controller
                 $vehicle->driver_id = null;
             }
 
+            // Save the vehicle record
             $vehicle->save();
 
             return redirect()->route('vehicle')->with('success', 'Vehicle updated successfully.');
@@ -375,8 +371,6 @@ class VehicleController extends Controller
             return back()->with('error', 'An error occurred while updating the vehicle. Please try again.');
         }
     }
-
-
 
 
 
@@ -399,7 +393,8 @@ class VehicleController extends Controller
             $vehicle = Vehicle::findOrFail($id);
 
             // Define the absolute path to the vehicle avatar
-            $avatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/' . $vehicle->avatar;
+            $avatarDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
+            $avatarPath = $avatarDirectory . $vehicle->avatar;
 
             // Check if the avatar file exists and delete it
             if (File::exists($avatarPath)) {
@@ -415,7 +410,6 @@ class VehicleController extends Controller
             return back()->with('error', 'An error occurred while deleting the Vehicle. Please try again.');
         }
     }
-
 
     /**
      * Assign driver to vehicle

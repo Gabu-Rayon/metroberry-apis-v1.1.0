@@ -202,25 +202,41 @@ class DriverController extends Controller
             $phone = $data['phone'];
             $generatedPassword = $data['password'];
 
+            // Define the document paths
+            $driverFrontPageIdDocPath = 'home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
+            $driverBackPageIdDocPath = 'home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
+
             // Handle front ID upload
             if ($request->hasFile('front_page_id')) {
                 $frontIdFile = $request->file('front_page_id');
                 $frontIdExtension = $frontIdFile->getClientOriginalExtension();
                 $frontIdFileName = "{$name}-{$email}-{$phone}-front-id.{$frontIdExtension}";
                 $frontIdPath = 'uploads/front-page-ids/' . $frontIdFileName;
-                $frontIdFile->move('home/kknuicdz/public_html_metroberry_app/uploads' . dirname($frontIdPath), $frontIdFileName);
+
+                // Ensure the directory exists and move the file
+                $destinationPath = $driverFrontPageIdDocPath . dirname($frontIdPath);
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true); // Create directory if it doesn't exist
+                }
+
+                $frontIdFile->move($destinationPath, $frontIdFileName);
             }
 
             // Handle back ID upload
-
             if ($request->hasFile('back_page_id')) {
                 $backIdFile = $request->file('back_page_id');
                 $backIdExtension = $backIdFile->getClientOriginalExtension();
                 $backIdFileName = "{$name}-{$email}-{$phone}-back-id.{$backIdExtension}";
                 $backIdPath = 'uploads/back-page-ids/' . $backIdFileName;
-                $backIdFile->move('home/kknuicdz/public_html_metroberry_app/' . dirname($backIdPath), $backIdFileName);
-            }
 
+                // Ensure the directory exists and move the file
+                $destinationPath = $driverBackPageIdDocPath . dirname($backIdPath);
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true); // Create directory if it doesn't exist
+                }
+
+                $backIdFile->move($destinationPath, $backIdFileName);
+            }
 
             // Handle avatar upload
             if ($request->hasFile('avatar')) {
@@ -228,9 +244,17 @@ class DriverController extends Controller
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
                 $avatarPath = 'uploads/user-avatars/' . $avatarFileName;
-                $avatarFile->move('home/kknuicdz/public_html_metroberry_app/' . dirname($avatarPath), $avatarFileName);
+
+                // Ensure the directory exists and move the file
+                $destinationPath = 'home/kknuicdz/public_html_metroberry_app/' . dirname($avatarPath);
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true); // Create directory if it doesn't exist
+                }
+
+                $avatarFile->move($destinationPath, $avatarFileName);
             }
 
+            // Create the user
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -244,6 +268,7 @@ class DriverController extends Controller
 
             $user->assignRole('driver');
 
+            // Create the driver record
             Driver::create([
                 'created_by' => Auth::user()->id,
                 'user_id' => $user->id,
@@ -353,9 +378,6 @@ class DriverController extends Controller
             Log::info('UPDATE DRIVER');
             Log::info($data);
 
-            Log::info('DRIVER');
-            Log::info($driver);
-
             DB::beginTransaction();
 
             $user->name = $data['name'];
@@ -367,9 +389,11 @@ class DriverController extends Controller
             $email = $data['email'];
             $name = $data['name'];
             $phone = $data['phone'];
-            $avatarPath = null;
-            $frontIdPath = null;
-            $backIdPath = null;
+
+            // Define the upload paths
+            $avatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+            $frontIdPath = 'home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
+            $backIdPath = 'home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
 
             // Update avatar if a new file is uploaded
             if ($request->hasFile('avatar')) {
@@ -385,16 +409,13 @@ class DriverController extends Controller
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
 
-                // Define the directory for the avatar
-                $avatarDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/user-avatars';
-
                 // Ensure the directory exists
-                if (!is_dir($avatarDirectory)) {
-                    mkdir($avatarDirectory, 0755, true); // Create directory if it doesn't exist
+                if (!is_dir($avatarPath)) {
+                    mkdir($avatarPath, 0755, true); // Create directory if it doesn't exist
                 }
 
-                // Move the file to the uploads/user-avatars directory
-                $avatarFile->move($avatarDirectory, $avatarFileName);
+                // Move the file to the user avatars directory
+                $avatarFile->move($avatarPath, $avatarFileName);
                 $user->avatar = 'uploads/user-avatars/' . $avatarFileName; // Save the relative path
             }
 
@@ -412,16 +433,13 @@ class DriverController extends Controller
                 $frontIdExtension = $frontIdFile->getClientOriginalExtension();
                 $frontIdFileName = "{$email}-front-id.{$frontIdExtension}";
 
-                // Define the directory for the front ID
-                $frontIdDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids';
-
                 // Ensure the directory exists
-                if (!is_dir($frontIdDirectory)) {
-                    mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
+                if (!is_dir($frontIdPath)) {
+                    mkdir($frontIdPath, 0755, true); // Create directory if it doesn't exist
                 }
 
-                // Move the file to the uploads/front-page-ids directory
-                $frontIdFile->move($frontIdDirectory, $frontIdFileName);
+                // Move the file to the front ID directory
+                $frontIdFile->move($frontIdPath, $frontIdFileName);
                 $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontIdFileName; // Save the relative path
             }
 
@@ -439,19 +457,17 @@ class DriverController extends Controller
                 $backIdExtension = $backIdFile->getClientOriginalExtension();
                 $backIdFileName = "{$name}-{$email}-{$phone}-back-id.{$backIdExtension}";
 
-                // Define the directory for the back ID
-                $backIdDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids';
-
                 // Ensure the directory exists
-                if (!is_dir($backIdDirectory)) {
-                    mkdir($backIdDirectory, 0755, true); // Create directory if it doesn't exist
+                if (!is_dir($backIdPath)) {
+                    mkdir($backIdPath, 0755, true); // Create directory if it doesn't exist
                 }
 
-                // Move the file to the uploads/back-page-ids directory
-                $backIdFile->move($backIdDirectory, $backIdFileName);
+                // Move the file to the back ID directory
+                $backIdFile->move($backIdPath, $backIdFileName);
                 $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backIdFileName; // Save the relative path
             }
 
+            // Save the changes to the driver and user
             $driver->save();
             $user->save();
 
@@ -465,6 +481,7 @@ class DriverController extends Controller
             return redirect()->back()->with('error', 'An error occurred');
         }
     }
+
 
 
     public function assignVehicleForm($id)
@@ -744,7 +761,7 @@ class DriverController extends Controller
             $driver = Driver::find($id);
 
             if (!$driver) {
-                return redirect()->back()->with('error', 'driver not found');
+                return redirect()->back()->with('error', 'Driver not found');
             }
 
             $user = User::find($driver->user_id);
@@ -753,23 +770,30 @@ class DriverController extends Controller
                 return redirect()->back()->with('error', 'User not found');
             }
 
-            // Delete associated files
+            // Define the file paths
+            $avatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+            $frontIdPath = 'home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
+            $backIdPath = 'home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
+
+            // Delete the user's avatar if it exists
             if ($user->avatar) {
-                $oldAvatarPath = 'home/kknuicdz/public_html_metroberry_app/' . $user->avatar;
+                $oldAvatarPath = $avatarPath . $user->avatar;
                 if (file_exists($oldAvatarPath)) {
                     unlink($oldAvatarPath); // Delete the old avatar
                 }
             }
 
+            // Delete the driver's front ID if it exists
             if ($driver->national_id_front_avatar) {
-                $oldFrontIdPath = 'home/kknuicdz/public_html_metroberry_app/' . $driver->national_id_front_avatar;
+                $oldFrontIdPath = $frontIdPath . $driver->national_id_front_avatar;
                 if (file_exists($oldFrontIdPath)) {
                     unlink($oldFrontIdPath); // Delete the old front ID
                 }
             }
 
+            // Delete the driver's back ID if it exists
             if ($driver->national_id_behind_avatar) {
-                $oldBackIdPath = 'home/kknuicdz/public_html_metroberry_app/' . $driver->national_id_behind_avatar;
+                $oldBackIdPath = $backIdPath . $driver->national_id_behind_avatar;
                 if (file_exists($oldBackIdPath)) {
                     unlink($oldBackIdPath); // Delete the old back ID
                 }
@@ -777,17 +801,19 @@ class DriverController extends Controller
 
             DB::beginTransaction();
 
+            // Delete the driver and user records
             $driver->delete();
             $user->delete();
 
             DB::commit();
 
-            return redirect()->route('driver')->with('success', 'driver details deleted successfully!');
+            return redirect()->route('driver')->with('success', 'Driver details deleted successfully!');
         } catch (Exception $e) {
             DB::rollBack();
-            Log::info('DELETE driver ERROR');
-            Log::info($e);
-            return redirect()->back()->with('error', 'An error occurred while deleting driver');
+            Log::error('DELETE DRIVER ERROR');
+            Log::error($e);
+            return redirect()->back()->with('error', 'An error occurred while deleting the driver');
         }
     }
+
 }

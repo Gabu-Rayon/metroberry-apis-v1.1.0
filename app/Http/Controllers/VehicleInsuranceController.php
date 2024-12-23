@@ -84,6 +84,7 @@ class VehicleInsuranceController extends Controller
             Log::info('Vehicle Insurance store request data From the Form:', $request->all());
 
             $data = $request->all();
+
             // Validate the request data
             $validator = Validator::make($data, [
                 'vehicle_id' => 'required|numeric|exists:vehicles,id',
@@ -126,7 +127,8 @@ class VehicleInsuranceController extends Controller
                 // Construct the filename using plate number, vehicle model, and insurance policy number
                 $filename = $plate_number . '_' . $vehicle_model . '_' . $insurance_policy_no . '.' . $file->getClientOriginalExtension();
 
-                $directory = 'home/kknuicdz/public_html_metroberry_app/vehicle_insurance_policy_document/';
+                // Absolute directory path
+                $directory = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
                 $policyDocument = 'uploads/vehicle_insurance_policy_document/' . $filename;
 
                 // Create the directory if it doesn't exist
@@ -157,6 +159,7 @@ class VehicleInsuranceController extends Controller
 
             $vehicleInsurance->save();
 
+            // Log the expense
             Expense::create([
                 'name' => 'Vehicle Insurance',
                 'amount' => $request->charges_payable,
@@ -174,7 +177,6 @@ class VehicleInsuranceController extends Controller
             return back()->with('error', 'An error occurred while adding the vehicle Insurance. Please try again.');
         }
     }
-
 
     /**
      * Display the specified resource.
@@ -209,7 +211,6 @@ class VehicleInsuranceController extends Controller
      *
      *
      */
-
 
     public function update(Request $request, $id)
     {
@@ -255,9 +256,9 @@ class VehicleInsuranceController extends Controller
                 // Construct the filename using plate number, vehicle model, and insurance policy number
                 $filename = $plate_number . '_' . $vehicle_model . '_' . $insurance_policy_no . '.' . $file->getClientOriginalExtension();
 
-                // Define the directory path
-                $directory = 'home/kknuicdz/public_html_metroberry_app/uploads/policy_documents/';
-                $filePath = 'uploads/policy_documents/' . $filename;
+                // Define the absolute directory path
+                $directory = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
+                $filePath = 'uploads/vehicle_insurance_policy_document/' . $filename;
 
                 // Create the directory if it doesn't exist
                 if (!file_exists($directory)) {
@@ -311,6 +312,7 @@ class VehicleInsuranceController extends Controller
         }
     }
 
+
     /**
      * Remove the specified resource from storage.
      * 
@@ -345,19 +347,26 @@ class VehicleInsuranceController extends Controller
                 return redirect()->back()->with('error', 'Vehicle insurance not found');
             }
 
+            // Define the absolute path for policy documents
+            $directory = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
+
             // Delete old policy document if it exists
             if ($insurance->policy_document) {
-                $filePath = 'home/kknuicdz/public_html_metroberry_app/uploads/' . $insurance->policy_document;
+                $filePath = $directory . $insurance->policy_document;
                 if (file_exists($filePath)) {
-                    unlink($filePath);
+                    unlink($filePath); // Delete the file from the server
                 }
             }
 
             DB::beginTransaction();
+
+            // Update vehicle and driver status to inactive
             $insurance->vehicle->status = 'inactive';
             $insurance->vehicle->driver->status = 'inactive';
             $insurance->vehicle->save();
             $insurance->vehicle->driver->save();
+
+            // Delete the insurance record
             $insurance->delete();
 
             DB::commit();
@@ -392,6 +401,7 @@ class VehicleInsuranceController extends Controller
 
             $data = $request->all();
 
+            // Validate the input data
             $validator = Validator::make($data, [
                 'issue_date' => 'required|date',
                 'expiry_date' => 'required|date|after:issue_date|after:today',
@@ -404,6 +414,7 @@ class VehicleInsuranceController extends Controller
 
             DB::beginTransaction();
 
+            // Update insurance details
             $insurance->update([
                 'insurance_date_of_issue' => $data['issue_date'],
                 'insurance_date_of_expiry' => $data['expiry_date'],
@@ -414,8 +425,13 @@ class VehicleInsuranceController extends Controller
             if ($request->hasFile('policy_document')) {
                 $file = $request->file('policy_document');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $directory = 'home/kknuicdz/public_html_metroberry_app/uploads/policy_documents/';
+                $directory = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
                 $filePath = $directory . $filename;
+
+                // Ensure the directory exists
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true); // Create the directory if it doesn't exist
+                }
 
                 // Move the file to the specified directory
                 $file->move($directory, $filename);
@@ -424,16 +440,18 @@ class VehicleInsuranceController extends Controller
                 if ($insurance->policy_document) {
                     $oldFilePath = 'home/kknuicdz/public_html_metroberry_app/uploads/' . $insurance->policy_document;
                     if (file_exists($oldFilePath)) {
-                        unlink($oldFilePath);
+                        unlink($oldFilePath);  // Delete the old file
                     }
                 }
 
                 // Set new policy document path
-                $insurance->policy_document = 'uploads/policy_documents/' . $filename;
+                $insurance->policy_document = 'uploads/vehicle_insurance_policy_document/' . $filename;
             }
 
+            // Save the updated insurance record
             $insurance->save();
 
+            // Create an expense record for the insurance renewal
             Expense::create([
                 'name' => 'Vehicle Insurance',
                 'amount' => $insurance->charges_payable,

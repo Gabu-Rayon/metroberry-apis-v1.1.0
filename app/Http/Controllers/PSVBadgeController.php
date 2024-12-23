@@ -44,6 +44,7 @@ class PSVBadgeController extends Controller
         try {
             $data = $request->all();
 
+            // Validation
             $validator = Validator::make($data, [
                 'driver' => 'required|numeric|exists:drivers,id',
                 'psvbadge_no' => 'required|unique:psv_badges,psv_badge_no',
@@ -61,6 +62,7 @@ class PSVBadgeController extends Controller
             $badgePath = null;
             $badgeNumber = $data['psvbadge_no'];
 
+            // Retrieve driver and driver user details
             $driver = Driver::findOrFail($data['driver']);
             $driverUserId = $driver->user_id;
             $driverUser = User::findOrFail($driverUserId);
@@ -70,16 +72,28 @@ class PSVBadgeController extends Controller
 
             DB::beginTransaction();
 
+            // Define the file upload path
+            $psvbadgeUploadpath = "home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars";
+
+            // Check if the PSV badge avatar file is uploaded
             if ($request->hasFile('psv_badge_avatar')) {
                 $badgeFile = $request->file('psv_badge_avatar');
                 $badgeExtension = $badgeFile->getClientOriginalExtension();
                 $badgeFileName = "{$badgeNumber}-{$driver_name}-{$driver_email}-{$driver_phone}.{$badgeExtension}";
-                // Store the avatar directly in the specified directory
-                $badgeFilePath = 'home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars/';
-                $badgeFile->move($badgeFilePath, $badgeFileName);
+
+                // Ensure the upload path exists, create if it doesn't
+                if (!is_dir($psvbadgeUploadpath)) {
+                    mkdir($psvbadgeUploadpath, 0777, true); // Create the directory with correct permissions
+                }
+
+                // Move the uploaded file to the specified path
+                $badgeFile->move($psvbadgeUploadpath, $badgeFileName);
+
+                // Store the relative file path for the database
                 $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName;
             }
 
+            // Create the PSV badge record in the database
             PSVBadge::create([
                 'driver_id' => $data['driver'],
                 'psv_badge_no' => $badgeNumber,
@@ -92,7 +106,7 @@ class PSVBadgeController extends Controller
 
             return redirect()->back()->with('success', 'PSV Badge Added Successfully');
         } catch (Exception $e) {
-            DB::rollBack(); // Rollback if there's an error
+            DB::rollBack(); // Rollback the transaction if an error occurs
             Log::error('PSV BADGE STORE ERROR');
             Log::error($e);
             return redirect()->back()->with('error', 'Something Went Wrong')->withInput();
@@ -161,25 +175,28 @@ class PSVBadgeController extends Controller
             DB::beginTransaction();
 
             // Handle new avatar upload
+            $psvbadgeUploadpath = "home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars";
+
             if ($request->hasFile('psv_badge_avatar')) {
                 // Delete old avatar if exists
-                if ($badgePath && file_exists(public_path($badgePath))) {
-                    unlink(public_path($badgePath));  // Use public_path() for cross-platform compatibility
+                if ($badgePath && file_exists($psvbadgeUploadpath . '/' . $badgePath)) {
+                    unlink($psvbadgeUploadpath . '/' . $badgePath);  // Deleting old avatar from the directory
                 }
 
                 $badgeFile = $request->file('psv_badge_avatar');
                 $badgeExtension = $badgeFile->getClientOriginalExtension();
                 $badgeFileName = "{$badgeNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-back-id.{$badgeExtension}";
 
-                // Define the path in the specified directory
-                $publicPath = public_path('uploads/psvbadge-avatars');
-                if (!file_exists($publicPath)) {
-                    mkdir($publicPath, 0755, true);
+                // Ensure the directory exists
+                if (!file_exists($psvbadgeUploadpath)) {
+                    mkdir($psvbadgeUploadpath, 0755, true);
                 }
 
                 // Move the file to the specified directory
-                $badgeFile->move($publicPath, $badgeFileName);
-                $badgePath = 'uploads/psvbadge-avatars/' . $badgeFileName;
+                $badgeFile->move($psvbadgeUploadpath, $badgeFileName);
+
+                // Update badge path
+                $badgePath = 'psvbadge-avatars/' . $badgeFileName;
             }
 
             // Update PSV Badge record
@@ -203,6 +220,7 @@ class PSVBadgeController extends Controller
             return redirect()->back()->with('error', 'Something Went Wrong');
         }
     }
+
 
 
 
@@ -230,13 +248,16 @@ class PSVBadgeController extends Controller
             DB::beginTransaction();
 
             // Get the avatar path and delete the file if it exists
-            $avatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/' . $psvbadge->psv_badge_avatar;
+            $psvbadgeUploadpath = "home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars";
+            $avatarPath = $psvbadgeUploadpath . '/' . $psvbadge->psv_badge_avatar;
+
             if (file_exists($avatarPath)) {
                 unlink($avatarPath); // Delete the file
             }
 
+            // Delete the PSV badge and update driver status
             $psvbadge->delete();
-            $driver->status = 'inactive';
+            $driver->status = 'inactive'; // Set driver status to inactive
             $driver->save();
 
             DB::commit();

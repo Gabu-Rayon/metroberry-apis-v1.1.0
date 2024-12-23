@@ -48,7 +48,6 @@ class VehicleSpeedGovernorCertificateController extends Controller
                 'copy' => 'required|file|mimes:png,jpg,jpeg,webp',
             ]);
 
-
             if ($validator->fails()) {
                 Log::info('VALIDATION FAILED');
                 Log::info($validator->errors());
@@ -62,9 +61,10 @@ class VehicleSpeedGovernorCertificateController extends Controller
             $vehicle_model = $vehicle->model;
             $vehicle_plate_number = $vehicle->plate_number;
 
-            // Define the directory for storing the copy
+            // Define the absolute directory for storing the copy
             $avatarDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
 
+            // Create the directory if it does not exist
             if (!File::exists($avatarDirectory)) {
                 File::makeDirectory($avatarDirectory, 0755, true);
             }
@@ -77,12 +77,13 @@ class VehicleSpeedGovernorCertificateController extends Controller
                 $driverVehicleSpeedGovernorDocPath = 'uploads/vehicle-speed-governor-copy/' . $fileName;
                 $destinationPath = $avatarDirectory;
 
-                // Move the file to the specified directory
+                // Move the file to the specified absolute directory
                 $file->move($destinationPath, $fileName);
             }
 
             Log::info('The Driver vehicle Speed Governor Certificate Document path to be uploaded: ', [$driverVehicleSpeedGovernorDocPath]);
 
+            // Create a new Vehicle Speed Governor Certificate record
             VehicleSpeedGovernorCertificate::create([
                 'certificate_no' => $data['certificate_no'],
                 'vehicle_id' => $data['vehicle_id'],
@@ -106,6 +107,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
         }
     }
 
+
     public function edit($id)
     {
         $vehicles = Vehicle::all();
@@ -121,6 +123,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
         try {
             $data = $request->all();
 
+            // Validate the incoming data
             $validator = Validator::make($data, [
                 'vehicle_id' => 'exists:vehicles,id',
                 'certificate_no' => 'string',
@@ -140,30 +143,37 @@ class VehicleSpeedGovernorCertificateController extends Controller
 
             DB::beginTransaction();
 
+            // Fetch the existing certificate
             $certificate = VehicleSpeedGovernorCertificate::findOrFail($id);
 
-            // Fetch vehicle details
+            // Fetch the vehicle details
             $vehicle = Vehicle::findOrFail($data['vehicle_id']);
             $vehicle_model = $vehicle->model;
             $vehicle_plate_number = $vehicle->plate_number;
-            // Define the directory for storing the copy
-            $avatarDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
 
+            // Define the absolute directory for storing the certificate copy
+            $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
+
+            // Ensure the directory exists
             if (!File::exists($avatarDirectory)) {
                 File::makeDirectory($avatarDirectory, 0755, true);
             }
 
+            // Store the document path for the certificate
             $driverVehicleSpeedGovernorDocPath = $certificate->certificate_copy;
 
             // Check if a new file is uploaded
             if ($request->hasFile('certificate_copy')) {
-                $existingPath = $certificate->certificate_copy;
-                if (File::exists(public_path($existingPath))) {
-                    File::delete(public_path($existingPath));
+                // Delete the old file if it exists
+                if (File::exists(public_path($driverVehicleSpeedGovernorDocPath))) {
+                    File::delete(public_path($driverVehicleSpeedGovernorDocPath));
                 }
 
+                // Handle the new file upload
                 $file = $request->file('certificate_copy');
                 $fileName = "{$vehicle_model}-{$vehicle_plate_number}-{$data['certificate_no']}.{$file->getClientOriginalExtension()}";
+
+                // Update the file path
                 $driverVehicleSpeedGovernorDocPath = 'uploads/vehicle-speed-governor-copy/' . $fileName;
                 $destinationPath = $avatarDirectory;
 
@@ -173,7 +183,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
 
             Log::info('The Driver vehicle Speed Governor Certificate Document path to be uploaded: ', [$driverVehicleSpeedGovernorDocPath]);
 
-            // Update the certificate details
+            // Update the certificate record in the database
             $certificate->update([
                 'certificate_no' => $data['certificate_no'],
                 'vehicle_id' => $data['vehicle_id'],
@@ -186,7 +196,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
                 'status' => 'inactive',
             ]);
 
-            // Update related vehicle status
+            // Update the vehicle's status
             $certificate->vehicle->status = 'inactive';
             $certificate->vehicle->save();
 
@@ -292,15 +302,20 @@ class VehicleSpeedGovernorCertificateController extends Controller
 
             DB::beginTransaction();
 
+            // Set the vehicle status to inactive
             $certificate->vehicle->status = 'inactive';
             $certificate->vehicle->save();
 
-            $avatarPath = 'home/kknuicdz/public_html_metroberry_app/' . $certificate->copy;
+            // Define the absolute path for the certificate copy
+            $avatarDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
+            $avatarPath = $avatarDirectory . $certificate->copy;
 
+            // Check if the file exists and delete it
             if (File::exists($avatarPath)) {
                 File::delete($avatarPath);
             }
 
+            // Delete the certificate record
             $certificate->delete();
 
             DB::commit();

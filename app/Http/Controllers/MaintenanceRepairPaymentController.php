@@ -107,23 +107,25 @@ class MaintenanceRepairPaymentController extends Controller
                 $file = $request->file('payment_receipt');
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
 
-                // Define the upload path
+                // Define the upload path (must match the target URL)
                 $uploadPath = 'home/kknuicdz/public_html_metroberry_app/maintenance_repair_payment_receipts';
 
-                // Ensure the directory exists
+                // Ensure the directory exists, create if not
                 if (!is_dir($uploadPath)) {
                     mkdir($uploadPath, 0755, true); // Create directory if it doesn't exist
                 }
 
                 // Move the uploaded file to the specified path
                 $file->move($uploadPath, $fileName);
-                $maintenanceRepairPayment->payment_receipt = 'maintenance_repair_payment_receipts/' . $fileName; // Store the relative path
+
+                // Store the relative path in the database
+                $maintenanceRepairPayment->payment_receipt = 'maintenance_repair_payment_receipts/' . $fileName; // Store relative path
             }
 
             $maintenanceRepairPayment->save();
             Log::info('Maintenance Repair Payment Saved');
 
-            // Update the MaintenanceService status
+            // Update the MaintenanceRepair status
             $totalPaid = MaintenanceRepairPayment::where('maintenance_repair_id', $maintenanceRepair->id)->sum('total_amount');
 
             if ($totalPaid >= $maintenanceRepair->repair_cost) {
