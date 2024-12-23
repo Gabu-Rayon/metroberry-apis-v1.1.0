@@ -63,16 +63,16 @@ class ProfileController extends Controller
             if ($user->avatar) {
                 $oldAvatarPath = public_path($user->avatar);
                 if (file_exists($oldAvatarPath)) {
-                    unlink($oldAvatarPath); 
+                    unlink($oldAvatarPath);
                 }
             }
 
-            $avatarDirectory = './public_html_metroberry_app/uploads/user-avatars';
+            $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars';
 
             // Create the directory if it doesn't exist
-            // if (!file_exists($avatarDirectory)) {
-            //     mkdir($avatarDirectory, 0755, true);
-            // }
+            if (!file_exists($avatarDirectory)) {
+                mkdir($avatarDirectory, 0755, true);
+            }
 
             // Create a new file name by concatenating email, phone, and name
             $file = $request->file('avatar');
@@ -80,10 +80,10 @@ class ProfileController extends Controller
                 strtolower(str_replace([' ', '-', '+'], ['_', '_', ''], $user->phone)) . '-' .
                 strtolower(str_replace(' ', '_', $user->name)) . '.' . $file->getClientOriginalExtension();
 
-            // Store the new avatar in the public directory
+            // Store the new avatar in the user-avatars directory
             $file->move($avatarDirectory, $fileName); // Move the file to the avatars directory
 
-            $user->avatar = 'avatars/' . $fileName; // Update the avatar path in the user model
+            $user->avatar = 'uploads/user-avatars/' . $fileName; // Update the avatar path in the user model
         }
 
         $user->save();

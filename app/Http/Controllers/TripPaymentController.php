@@ -262,7 +262,7 @@ class TripPaymentController extends Controller
                 $file = $request->file('payment_receipt');
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
                 // Move the uploaded file to the specified path
-                $filePath = './public/public_html_metroberry_app/payment_receipts';
+                $filePath = 'home/kknuicdz/public_html_metroberry_app/payment_receipts';
                 // Create the directory if it doesn't exist
                 if (!file_exists($filePath)) {
                     mkdir($filePath, 0755, true);
