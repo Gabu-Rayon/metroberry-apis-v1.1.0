@@ -96,6 +96,14 @@ class VehicleController extends Controller
                 'manufacturer_id' => 'required|numeric|exists:vehicle_manufacturers,id'
             ]);
 
+            // Get the fuel type name
+            $fuelTypeId = $request->fuel_type;
+            $fuelType = FuelType::findOrFail($fuelTypeId);
+            $fuelTypeName = $fuelType->name;
+
+            Log::info('Fuel Type Name Is: ');
+            Log::info($fuelTypeName);
+
             if ($validator->fails()) {
                 Log::info('VALIDATION ERROR Here');
                 Log::info($validator->errors());
@@ -111,7 +119,7 @@ class VehicleController extends Controller
             // Handle the file upload
             if ($request->hasFile('vehicle_avatar')) {
                 // Define the absolute path where you want to save the avatar
-                $avatarDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
+                $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
 
                 // Create the directory if it doesn't exist
                 if (!File::exists($avatarDirectory)) {
@@ -135,17 +143,20 @@ class VehicleController extends Controller
             $vehicle = new Vehicle();
             $vehicle->created_by = Auth::user()->id;
             $vehicle->organisation_id = $request->organisation_id;
+            
+            //vehicle mode like Toyota Auris,Toyota Corolla            
             $vehicle->model = $request->model;
             $vehicle->year = $year;
             $vehicle->color = $request->color;
             $vehicle->seats = $request->seats;
             $vehicle->class = $request->vehicle_class;
             $vehicle->plate_number = $request->plate_number;
-            $vehicle->fuel_type = $request->fuel_type;
             $vehicle->engine_size = $request->engine_size;
             $vehicle->avatar = $avatarPath; // Save the path to the avatar
             $vehicle->manufacturer_id = $request->manufacturer_id;
             $vehicle->fuel_type_id = $request->fuel_type;
+            // Pass the fuel type name
+            // $vehicle->fuel_type = $fuelTypeName;
             $vehicle->save();
 
             return redirect()->route('vehicle')->with('success', 'Vehicle added successfully.');
@@ -312,7 +323,7 @@ class VehicleController extends Controller
             // Check if the vehicle_avatar file exists in the request
             if ($request->hasFile('vehicle_avatar')) {
                 // Define the absolute path where you want to save the avatar
-                $avatarDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
+                $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
 
                 // Create the directory if it doesn't exist
                 if (!File::exists($avatarDirectory)) {
@@ -338,7 +349,7 @@ class VehicleController extends Controller
             $vehicle->plate_number = $request->plate_number;
             $vehicle->fuel_type_id = $request->fuel_type;
             // Pass the fuel type name
-            $vehicle->fuel_type = $fuelTypeName;
+            // $vehicle->fuel_type = $fuelTypeName;
             $vehicle->engine_size = $request->engine_size;
             $vehicle->organisation_id = $request->organisation_id;
             $vehicle->class = $request->vehicle_class;
@@ -393,7 +404,7 @@ class VehicleController extends Controller
             $vehicle = Vehicle::findOrFail($id);
 
             // Define the absolute path to the vehicle avatar
-            $avatarDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
+            $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
             $avatarPath = $avatarDirectory . $vehicle->avatar;
 
             // Check if the avatar file exists and delete it

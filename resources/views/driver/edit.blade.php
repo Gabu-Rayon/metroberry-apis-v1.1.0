@@ -72,14 +72,14 @@
                     <div class="col-sm-7">
                         <input name="avatar" class="form-control" type="file" placeholder="Avatar" id="avatar"
                             value="" />
-                        <img src="{{ asset($driver->user->avatar) }}" alt="Avatar" class="form-control" />
+                        <img src=" {{ asset('uploads/user-avatars/' .basename($driver->user->avatar)) }}" alt="Avatar" class="form-control" />
+                       
                     </div>
                 </div>
 
             </div>
 
             <div class="col-md-12 col-lg-6">
-
                 <div class="form-group row my-2">
                     <label for="email" class="col-sm-5 col-form-label">
                         Email

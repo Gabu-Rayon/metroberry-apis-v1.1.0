@@ -374,8 +374,8 @@ class OrganisationController extends Controller
             DB::beginTransaction();
 
             // Define base upload paths
-            $baseUploadCompanyLogosPath = 'home/kknuicdz/public_html_metroberry_app/uploads/company-logos';
-            $baseUploadOrganisationCertPath = 'home/kknuicdz/public_html_metroberry_app/uploads/organisation-certificates';
+            $baseUploadCompanyLogosPath = '/home/kknuicdz/public_html_metroberry_app/uploads/company-logos';
+            $baseUploadOrganisationCertPath = '/home/kknuicdz/public_html_metroberry_app/uploads/organisation-certificates';
 
             // Define file paths
             $certificatePath = "{$baseUploadOrganisationCertPath}/{$user->name}-{$user->email}-{$user->phone}-certificate.pdf"; 

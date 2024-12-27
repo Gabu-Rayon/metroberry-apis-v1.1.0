@@ -82,13 +82,8 @@ class NTSAInspectionCertificateController extends Controller
                 // Set the full avatar path
                 $avatarPath = "{$NtsaIspectionCertUploadpath}/{$avatarFileName}";
 
-                // Create the directory if it doesn't exist
-                if (!file_exists(dirname($avatarPath))) {
-                    mkdir(dirname($avatarPath), 0755, true); // Create the directory if it doesn't exist
-                }
-
                 // Store the avatar directly in the specified path
-                $avatarFile->move(dirname($avatarPath), $avatarFileName); // Move the file to the correct path
+                $avatarFile->move($NtsaIspectionCertUploadpath, $avatarFileName); // Move the file to the correct path
             }
 
             // Create or update the NTSA inspection certificate record
@@ -182,17 +177,12 @@ class NTSAInspectionCertificateController extends Controller
                 }
 
                 // Define the upload path for the new avatar
-                $NtsaIspectionCertUploadpath = "home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies";
+                $NtsaIspectionCertUploadpath = "/home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies";
 
                 // Get the uploaded avatar file
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$certNo}-{$plate_number}-{$vehicle_model}-avatar.{$avatarExtension}";
-
-                // Ensure the directory exists
-                if (!file_exists($NtsaIspectionCertUploadpath)) {
-                    mkdir($NtsaIspectionCertUploadpath, 0755, true); // Create the directory if it doesn't exist
-                }
 
                 // Move the new avatar file to the target directory
                 $avatarFile->move($NtsaIspectionCertUploadpath, $avatarFileName);
@@ -327,7 +317,7 @@ class NTSAInspectionCertificateController extends Controller
             $certificate->vehicle->save();
 
             // Define the path to the inspection certificate
-            $NtsaIspectionCertUploadpath = "home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies";
+            $NtsaIspectionCertUploadpath = "/home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies";
 
             // Check if the associated certificate file exists, then delete it
             if ($certificate->file_name && File::exists($NtsaIspectionCertUploadpath . '/' . $certificate->file_name)) {

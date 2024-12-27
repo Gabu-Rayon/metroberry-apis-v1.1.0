@@ -108,18 +108,13 @@ class MaintenanceRepairPaymentController extends Controller
                 $fileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
 
                 // Define the upload path (must match the target URL)
-                $uploadPath = 'home/kknuicdz/public_html_metroberry_app/maintenance_repair_payment_receipts';
+                $uploadPath = 'maintenance_repair_payment_receipts';
 
-                // Ensure the directory exists, create if not
-                if (!is_dir($uploadPath)) {
-                    mkdir($uploadPath, 0755, true); // Create directory if it doesn't exist
-                }
-
-                // Move the uploaded file to the specified path
-                $file->move($uploadPath, $fileName);
+                // Store the uploaded file using Storage
+                $file->storeAs($uploadPath, $fileName);
 
                 // Store the relative path in the database
-                $maintenanceRepairPayment->payment_receipt = 'maintenance_repair_payment_receipts/' . $fileName; // Store relative path
+                $maintenanceRepairPayment->payment_receipt = $uploadPath . '/' . $fileName; // Store relative path
             }
 
             $maintenanceRepairPayment->save();
@@ -142,6 +137,7 @@ class MaintenanceRepairPaymentController extends Controller
             return redirect()->back()->with('error', 'An error occurred while receiving the payment for the Maintenance Repair. Please try again.');
         }
     }
+
 
 
 

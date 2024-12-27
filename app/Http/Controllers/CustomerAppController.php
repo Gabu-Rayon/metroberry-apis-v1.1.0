@@ -124,11 +124,6 @@ class CustomerAppController extends Controller
                 // Set the path where the avatar will be uploaded
                 $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars';
 
-                // Create the directory if it doesn't exist
-                if (!file_exists($avatarDirectory)) {
-                    mkdir($avatarDirectory, 0755, true);
-                }
-
                 // Move the uploaded avatar to the specified directory
                 $file->move($avatarDirectory, $fileName);
                 $avatarPath = 'uploads/user-avatars/' . $fileName; // Save the relative path in the database
@@ -171,6 +166,7 @@ class CustomerAppController extends Controller
             return redirect()->back()->with('error', 'Failed to register customer. Please try again later.');
         }
     }
+
 
     // Sign-up continue page method
     public function signUpContinuePage()
@@ -391,9 +387,9 @@ class CustomerAppController extends Controller
         $customer->national_id_no = $request->input('national_id_no');
 
         // Base path for uploads
-        $baseUploadUserAvatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
-        $baseUploadIDFrontPagePath = 'home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
-        $baseUploadIDBackPagePath = 'home/kknuicdz/public_html_metroberry_app/uploads/b-page-ids/';
+        $baseUploadUserAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+        $baseUploadIDFrontPagePath = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
+        $baseUploadIDBackPagePath = '/home/kknuicdz/public_html_metroberry_app/uploads/b-page-ids/';
 
         // Function to create directory if it doesn't exist
         $createDirIfNotExists = function ($path) {
@@ -667,7 +663,7 @@ class CustomerAppController extends Controller
         $user = Auth::user();
         $customer = $user->customer;
 
-        $baseUploadUserAvatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+        $baseUploadUserAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
 
         if ($request->hasFile('profile_picture')) {
             // Check if the old profile picture exists and delete it if necessary
@@ -680,25 +676,21 @@ class CustomerAppController extends Controller
 
             $file = $request->file('profile_picture');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $directory = $baseUploadUserAvatarPath . $user->id . '/';
+            $filePath = $baseUploadUserAvatarPath . $fileName; // Save directly under the user-avatars folder
 
-            // Ensure the directory exists
-            if (!is_dir($directory)) {
-                mkdir($directory, 0755, true); 
-            }
-
-            // Move the file to the specified directory
-            $file->move($directory, $fileName);
+            // Move the file to the specified path
+            $file->move($baseUploadUserAvatarPath, $fileName);
 
             // Update the user's profile picture path
-            $customer->user->avatar = 'user-avatars/' . $user->id . '/' . $fileName; 
+            $customer->user->avatar = 'user-avatars/' . $fileName;
             $customer->user->save();
 
-            return response()->json(['newProfilePictureUrl' => asset('uploads/user-avatars/' . $user->id . '/' . $fileName)]);
+            return response()->json(['newProfilePictureUrl' => asset('uploads/user-avatars/' . $fileName)]);
         }
 
         return response()->json(['error' => 'Failed to upload profile picture'], 400);
     }
+
 
 
 }

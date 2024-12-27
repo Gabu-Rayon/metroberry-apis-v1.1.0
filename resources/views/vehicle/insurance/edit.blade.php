@@ -152,8 +152,12 @@
                         <input type="file" name="policy_document" id="policy_document"
                             onchange="get_img_url(this, '#document_image');">
                         @if ($vehicleInsurance->policy_document)
-                            <a href="{{ asset('uploads/vehicle-insurance-policy-document'.basename($vehicleInsurance->policy_document)) }}"
+                            <a href="{{ asset('uploads/vehicle_insurance_policy_document/'.basename($vehicleInsurance->policy_document)) }}"
                                 target="_blank">View Current Document</a>
+
+
+                                 {{-- <a href="{{ asset('uploads/vehicle_insurance_policy_document/'.basename($vehicleInsurance->policy_document)) }}"
+                                    download>View Current Document</a> --}}
                         @endif
                     </div>
                 </div>

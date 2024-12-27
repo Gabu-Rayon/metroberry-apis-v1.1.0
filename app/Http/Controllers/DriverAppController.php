@@ -173,25 +173,13 @@ class DriverAppController extends Controller
             $driver = Driver::findOrFail($id);
 
             // Define the directories for the ID uploads
-            $frontIdDirectory = 'home/kknuicdz/public_html_metroberry_app/front-page-ids';
-            $backIdDirectory = 'home/kknuicdz/public_html_metroberry_app/back-page-ids';
+            $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/front-page-ids';
+            $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/back-page-ids';
 
             if (app()->environment('local')) {
                 $frontIdDirectory = public_path('uploads/front-page-ids');
                 $backIdDirectory = public_path('uploads/back-page-ids');
-            } else {
-                $frontIdDirectory = 'home/kknuicdz/public_html_metroberry_app/front-page-ids';
-                $backIdDirectory = 'home/kknuicdz/public_html_metroberry_app/back-page-ids';
-                if (!is_dir($frontIdDirectory)) {
-                    mkdir($frontIdDirectory, 0755, true); // Create directory if it doesn't exist
-                }
-
-                if (!is_dir($backIdDirectory)) {
-                    mkdir($backIdDirectory, 0755, true); // Create directory if it doesn't exist
-                }
             }
-
-            // Ensure the directories exist
 
             // Upload front and back images
             $national_id_front_avatar = $request->file('national_id_front_avatar');
@@ -239,17 +227,11 @@ class DriverAppController extends Controller
 
             $frontIdDirectory = app()->environment('local')
                 ? public_path('uploads/front-page-ids')
-                : 'home/kknuicdz/public_html_metroberry_app/front-page-ids';
+                : '/home/kknuicdz/public_html_metroberry_app/front-page-ids';
 
             $backIdDirectory = app()->environment('local')
                 ? public_path('uploads/back-page-ids')
-                : 'home/kknuicdz/public_html_metroberry_app/back-page-ids';
-
-            foreach ([$frontIdDirectory, $backIdDirectory] as $directory) {
-                if (!is_dir($directory)) {
-                    mkdir($directory, 0755, true);
-                }
-            }
+                : '/home/kknuicdz/public_html_metroberry_app/back-page-ids';
 
             if ($request->hasFile('national_id_front_avatar')) {
                 $frontAvatar = $request->file('national_id_front_avatar');
@@ -313,8 +295,8 @@ class DriverAppController extends Controller
             DB::beginTransaction();
 
             // Define directories for license uploads
-            $frontLicenseDirectory = 'home/kknuicdz/public_html_metroberry_app/front-license-pics';
-            $backLicenseDirectory = 'home/kknuicdz/public_html_metroberry_app/back-license-pics';
+            $frontLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/front-license-pics';
+            $backLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/back-license-pics';
 
             $license_front_avatar = $request->file('license_front_avatar');
             $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();
@@ -360,7 +342,6 @@ class DriverAppController extends Controller
      */
 
 
-
     public function updateLicense(Request $request, $id)
     {
         try {
@@ -389,17 +370,8 @@ class DriverAppController extends Controller
             $license = Auth::user()->driver->license;
 
             // Define directories for license uploads
-            $frontLicenseDirectory = 'home/kknuicdz/public_html_metroberry_app/front-license-pics';
-            $backLicenseDirectory = 'home/kknuicdz/public_html_metroberry_app/back-license-pics';
-
-            // Ensure the directories exist
-            if (!is_dir($frontLicenseDirectory)) {
-                mkdir($frontLicenseDirectory, 0755, true); // Create directory if it doesn't exist
-            }
-
-            if (!is_dir($backLicenseDirectory)) {
-                mkdir($backLicenseDirectory, 0755, true); // Create directory if it doesn't exist
-            }
+            $frontLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/front-license-pics';
+            $backLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/back-license-pics';
 
             // Handle file uploads
             if ($request->hasFile('license_front_avatar')) {
@@ -450,8 +422,6 @@ class DriverAppController extends Controller
 
 
 
-
-
     /**
      * Store Driver PSV Badge
      * 
@@ -488,11 +458,6 @@ class DriverAppController extends Controller
             // Define the directory for storing PSV badge images
             $psvBadgeDirectory = '/home/kknuicdz/public_html_metroberry_app/psvbadge-avatars';
 
-            // Ensure the directory exists
-            if (!is_dir($psvBadgeDirectory)) {
-                mkdir($psvBadgeDirectory, 0755, true); // Create directory if it doesn't exist
-            }
-
             // Handle the file upload
             $badge_copy = $request->file('badge_copy');
             $badgeFileName = auth()->user()->driver->email . '-psv-badge.' . $badge_copy->getClientOriginalExtension();
@@ -518,7 +483,6 @@ class DriverAppController extends Controller
             return back()->with('error', 'Something went wrong.')->withInput();
         }
     }
-
 
 
 
@@ -566,11 +530,6 @@ class DriverAppController extends Controller
                 // Define the directory for storing PSV badge images
                 $psvBadgeDirectory = '/home/kknuicdz/public_html_metroberry_app/psvbadge-avatars';
 
-                // Ensure the directory exists
-                if (!is_dir($psvBadgeDirectory)) {
-                    mkdir($psvBadgeDirectory, 0755, true); // Create directory if it doesn't exist
-                }
-
                 // Handle the file upload
                 $badge_copy = $request->file('badge_copy');
                 $badgeFileName = auth()->user()->driver->email . '-psv-badge-' . time() . '.' . $badge_copy->getClientOriginalExtension();
@@ -598,6 +557,7 @@ class DriverAppController extends Controller
             return back()->with('error', 'Something went wrong.')->withInput();
         }
     }
+
 
     /**
      * Driver Documents Page
@@ -779,24 +739,19 @@ class DriverAppController extends Controller
         if ($request->hasFile('profile_picture')) {
             // Check if the old profile picture exists and delete it if necessary
             if ($driver->user->avatar) {
-                $oldProfilePath = 'home/kknuicdz/public_html_metroberry_app/' . $driver->user->avatar;
+                $oldProfilePath = '/home/kknuicdz/public_html_metroberry_app/' . $driver->user->avatar;
                 if (file_exists($oldProfilePath)) {
                     unlink($oldProfilePath); // Delete the old profile picture
                 }
             }
 
             // Set the base path for uploading user avatar
-            $baseUploadUserAvatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+            $baseUploadUserAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
             $file = $request->file('profile_picture');
             $fileName = time() . '_' . $file->getClientOriginalName(); // Use a unique name for the file
 
-            // Ensure the directory exists
+            // Assume the directory already exists and move the file to the specified directory
             $fullDirectoryPath = $baseUploadUserAvatarPath . $user->id . '/';
-            if (!is_dir($fullDirectoryPath)) {
-                mkdir($fullDirectoryPath, 0755, true); // Create directory if it doesn't exist
-            }
-
-            // Move the file to the specified directory
             $file->move($fullDirectoryPath, $fileName);
 
             // Update the user's profile picture path (store the relative path)
@@ -846,7 +801,7 @@ class DriverAppController extends Controller
             ]);
 
             // Define the base path for uploading the PSV badge avatar
-            $baseUploadPSVBadgeAvatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars/';
+            $baseUploadPSVBadgeAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars/';
 
             // Handle file upload for the badge copy
             if ($request->hasFile('badge_copy')) {
@@ -958,7 +913,7 @@ class DriverAppController extends Controller
         $driverPlateNumber = $data['driver_vehicle_plate_number'];
 
         // Define the upload path
-        $baseUploadVehicleAvatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
+        $baseUploadVehicleAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
 
         // Handle avatar upload
         if ($request->hasFile('driver_vehicle_avatar')) {
@@ -1053,7 +1008,7 @@ class DriverAppController extends Controller
         $driverPlateNumber = $data['driver_vehicle_plate_number'];
 
         // Define the base path for avatar upload
-        $baseUploadVehicleAvatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
+        $baseUploadVehicleAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle-avatars/';
 
         // Handle avatar upload
         if ($request->hasFile('driver_vehicle_avatar')) {
@@ -1179,23 +1134,15 @@ class DriverAppController extends Controller
         $driverVehicleInsurancePolicyDocPath = null;
 
         // Set the base upload path
-        $baseUploadVehicleInsuranceDocPath = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
+        $baseUploadVehicleInsuranceDocPath = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
 
         if ($request->hasFile('driver_insurance_policy_document')) {
             $file = $request->file('driver_insurance_policy_document');
             $fileName = "{$authUser->name}-{$authUser->email}-{$request->driver_insurance_policy_no}.{$file->getClientOriginalExtension()}";
             $driverVehicleInsurancePolicyDocPath = 'uploads/vehicle_insurance_policy_document/' . $fileName;
 
-            // Create the destination path inside the public directory
-            $destinationPath = $baseUploadVehicleInsuranceDocPath;
-
-            // Ensure the destination path exists, if not, create it
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
-            }
-
-            // Move the uploaded file to the desired location
-            $file->move($destinationPath, $fileName);
+            // Move the uploaded file to the desired location without checking or creating the directory
+            $file->move($baseUploadVehicleInsuranceDocPath, $fileName);
         }
 
         Log::info('The Driver vehicle Insurance Policy Document path to be uploaded: ', [$driverVehicleInsurancePolicyDocPath]);
@@ -1220,6 +1167,7 @@ class DriverAppController extends Controller
 
         return redirect()->route('driver.vehicle.docs.registration')->with('success', 'Vehicle insurance added successfully.');
     }
+
 
     public function vehicleInsuranceUpdate(Request $request, $insuranceId)
     {
@@ -1265,7 +1213,7 @@ class DriverAppController extends Controller
         $driverVehicleInsurance = VehicleInsurance::findOrFail($insuranceId);
         $driverVehicleInsurancePolicyDocPath = $driverVehicleInsurance->policy_document;
 
-        $driverVehicleInsurancePolicyPath = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
+        $driverVehicleInsurancePolicyPath = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
 
         if ($request->hasFile('driver_insurance_policy_document')) {
             // Delete the old document if it exists
@@ -1279,8 +1227,11 @@ class DriverAppController extends Controller
             $driverVehicleInsurancePolicyDocPath = 'uploads/vehicle_insurance_policy_document/' . $fileName;
 
             $destinationPath = $driverVehicleInsurancePolicyPath;
+
+            // Check if the directory exists
             if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
+                Log::error("The directory does not exist: $destinationPath");
+                return redirect()->back()->with('error', 'Directory does not exist. Please contact support.');
             }
 
             $file->move($destinationPath, $fileName);
@@ -1371,7 +1322,7 @@ class DriverAppController extends Controller
             }
 
             // Define the path for storing the insurance policy document
-            $driverNTSAInspectionCertDocPath = 'home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies/';
+            $driverNTSAInspectionCertDocPath = '/home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies/';
 
             if ($request->hasFile('driver_ntsa_certificate_copy')) {
                 $file = $request->file('driver_ntsa_certificate_copy');
@@ -1379,11 +1330,6 @@ class DriverAppController extends Controller
 
                 // Full path for the file to be saved
                 $destinationPath = $driverNTSAInspectionCertDocPath . $fileName;
-
-                // Ensure the directory exists
-                if (!file_exists($driverNTSAInspectionCertDocPath)) {
-                    mkdir($driverNTSAInspectionCertDocPath, 0777, true);
-                }
 
                 // Move the file to the destination path
                 $file->move($driverNTSAInspectionCertDocPath, $fileName);
@@ -1413,6 +1359,7 @@ class DriverAppController extends Controller
             return back()->withErrors(['error' => 'There was an error while adding the NTSA Inspection Certificate. Please try again.']);
         }
     }
+
 
     public function ntsaInspectionCertificateUpdate(Request $request, $id)
     {
@@ -1447,7 +1394,7 @@ class DriverAppController extends Controller
         }
 
         // Set the base path for the file uploads
-        $baseUploadPath = 'home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies/';
+        $baseUploadPath = '/home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies/';
 
         // Retrieve the NTSA certificate number
         $ntsaCertificateNo = $request->input('driver_ntsa_inspection_certificate_no');
@@ -1469,14 +1416,8 @@ class DriverAppController extends Controller
             // Set the new file path
             $driverNTSAInspectionCertDocPath = 'uploads/ntsa-insp-cert-copies/' . $fileName;
 
-            // Ensure the directory exists
-            $destinationPath = $baseUploadPath . dirname($driverNTSAInspectionCertDocPath);
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
-            }
-
             // Move the uploaded file to the destination directory
-            $file->move($destinationPath, $fileName);
+            $file->move($baseUploadPath, $fileName);
         }
 
         Log::info('The Driver NTSA Inspection Certificate Document path to be uploaded: ', [$driverNTSAInspectionCertDocPath]);
@@ -1569,21 +1510,14 @@ class DriverAppController extends Controller
         }
 
         // Define the document path
-        $driverVehicleSpeedGovernorDocPath = 'home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
+        $driverVehicleSpeedGovernorDocPath = '/home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
 
         if ($request->hasFile('driver_speed_governor_certificate_copy')) {
             $file = $request->file('driver_speed_governor_certificate_copy');
             $fileName = "{$authUser->name}-{$driverVehicle->model}-{$driverVehicle->plate_number}-{$data['driver_speed_governor_certificate_no']}.{$file->getClientOriginalExtension()}";
 
-            // Ensure the destination directory exists
-            $destinationPath = $driverVehicleSpeedGovernorDocPath;  // No need for public_path here as you're using an absolute path
-
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
-            }
-
-            // Move the file to the specified path
-            $file->move($destinationPath, $fileName);
+            // Directly move the file to the specified path without creating the directory
+            $file->move($driverVehicleSpeedGovernorDocPath, $fileName);
 
             // Update the document path for saving in the database
             $driverVehicleSpeedGovernorDocPath = 'uploads/speed-governor-cert-copies/' . $fileName;
@@ -1612,6 +1546,7 @@ class DriverAppController extends Controller
         return redirect()->route('driver.vehicle.docs.registration')
             ->with('success', 'Speed Governor Certificate successfully Added.');
     }
+
 
     public function speedGovernorRegistrationUpdate(Request $request, $certificateId)
     {
@@ -1659,12 +1594,12 @@ class DriverAppController extends Controller
         $driverVehicleSpeedGovernorDocPath = $speedGovernorCertificate->certificate_copy;
 
         // Define the absolute path for file storage
-        $uploadDirectory = 'home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
+        $uploadDirectory = 'uploads/speed-governor-cert-copies/';
 
         // Handle file upload if a new file is provided
         if ($request->hasFile('driver_speed_governor_certificate_copy')) {
             // Delete the old file if it exists
-            $oldFilePath = $uploadDirectory . $speedGovernorCertificate->certificate_copy;
+            $oldFilePath = public_path($uploadDirectory . $speedGovernorCertificate->certificate_copy);
             if (file_exists($oldFilePath)) {
                 unlink($oldFilePath);  // Delete old file
             }
@@ -1674,16 +1609,10 @@ class DriverAppController extends Controller
             $fileName = "{$authUser->name}-{$driverVehicle->model}-{$driverVehicle->plate_number}-{$data['driver_speed_governor_certificate_no']}.{$file->getClientOriginalExtension()}";
 
             // Set the new file path for saving
-            $newFilePath = 'uploads/speed-governor-cert-copies/' . $fileName;
-            $destinationPath = $uploadDirectory . dirname($newFilePath);
+            $newFilePath = $uploadDirectory . $fileName;
 
-            // Ensure the destination directory exists
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);  // Create the directory if it doesn't exist
-            }
-
-            // Move the uploaded file to the desired path
-            $file->move($destinationPath, $fileName);
+            // Store the file using Laravel's default storage system
+            $file->move(public_path($uploadDirectory), $fileName);
 
             // Update the document path for database storage
             $driverVehicleSpeedGovernorDocPath = $newFilePath;
@@ -1709,8 +1638,6 @@ class DriverAppController extends Controller
         return redirect()->route('driver.vehicle.docs.registration')
             ->with('success', 'Speed Governor Certificate successfully updated.');
     }
-
-
 
 
 }

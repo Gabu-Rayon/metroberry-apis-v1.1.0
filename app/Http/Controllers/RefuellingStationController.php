@@ -67,8 +67,8 @@ class RefuellingStationController extends Controller
             DB::beginTransaction();
 
             // Absolute paths
-            $certificateOfOperationsPath = "home/kknuicdz/public_html_metroberry_app/uploads/cert-ops";
-            $avatarPath = "home/kknuicdz/public_html_metroberry_app/uploads/user-avatars";
+            $certificateOfOperationsPath = "/home/kknuicdz/public_html_metroberry_app/uploads/cert-ops";
+            $avatarPath = "/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars";
 
             $email = $data['email'];
             $phone = $data['phone'];
@@ -201,11 +201,6 @@ class RefuellingStationController extends Controller
                 $certificateOfOperationsExtension = $certificateOfOperationsFile->getClientOriginalExtension();
                 $certificateOfOperationsFileName = "{$name}-{$email}-{$phone}-cert-op.{$certificateOfOperationsExtension}";
 
-                // Ensure the directory exists
-                if (!file_exists($certificateOfOperationsUploadPath)) {
-                    mkdir($certificateOfOperationsUploadPath, 0755, true);
-                }
-
                 // Move the file to the specified directory
                 $certificateOfOperationsFile->move($certificateOfOperationsUploadPath, $certificateOfOperationsFileName);
                 $certificateOfOperationsPath = 'uploads/cert-ops/' . $certificateOfOperationsFileName;
@@ -225,11 +220,6 @@ class RefuellingStationController extends Controller
                 $avatarFile = $request->file('avatar');
                 $avatarExtension = $avatarFile->getClientOriginalExtension();
                 $avatarFileName = "{$name}-{$email}-{$phone}-avatar.{$avatarExtension}";
-
-                // Ensure the directory exists
-                if (!file_exists($avatarUploadPath)) {
-                    mkdir($avatarUploadPath, 0755, true);
-                }
 
                 // Move the file to the specified directory
                 $avatarFile->move($avatarUploadPath, $avatarFileName);
@@ -270,6 +260,7 @@ class RefuellingStationController extends Controller
             return redirect()->back()->with('error', $e->getMessage())->withInput();
         }
     }
+
 
 
 
@@ -370,8 +361,8 @@ class RefuellingStationController extends Controller
             DB::beginTransaction();
 
             // Absolute paths for files
-            $certificateOfOperationsPath = "home/kknuicdz/public_html_metroberry_app/uploads/cert-ops";
-            $avatarPath = "home/kknuicdz/public_html_metroberry_app/uploads/user-avatars";
+            $certificateOfOperationsPath = "/home/kknuicdz/public_html_metroberry_app/uploads/cert-ops";
+            $avatarPath = "/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars";
 
             // Delete certificate of operations file if it exists
             if ($station->certificate_of_operations) {

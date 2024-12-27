@@ -176,17 +176,13 @@ class EmployeeController extends Controller
         $fileName = "{$name}-{$email}-{$phone}.{$file->getClientOriginalExtension()}";
         $absolutePath = $path . $fileName;
 
-        // Ensure the directory exists
-        if (!file_exists($path)) {
-            mkdir($path, 0777, true);
-        }
-
         // Move the file to the absolute path
         $file->move($path, $fileName);
 
         // Return the relative path to store in the database
         return 'uploads/' . basename($path) . '/' . $fileName;
     }
+
 
 
 
@@ -336,17 +332,6 @@ class EmployeeController extends Controller
             $backIdPath = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
             $avatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
 
-            // Ensure directories exist
-            if (!file_exists($frontIdPath)) {
-                mkdir($frontIdPath, 0777, true);
-            }
-            if (!file_exists($backIdPath)) {
-                mkdir($backIdPath, 0777, true);
-            }
-            if (!file_exists($avatarPath)) {
-                mkdir($avatarPath, 0777, true);
-            }
-
             // Handle avatar upload
             if ($request->hasFile('avatar')) {
                 $avatarFile = $request->file('avatar');
@@ -417,6 +402,7 @@ class EmployeeController extends Controller
             return redirect()->back()->with('error', 'An error occurred while updating customer');
         }
     }
+
 
 
     public function activateForm($id)
@@ -536,9 +522,9 @@ class EmployeeController extends Controller
             }
 
             // Define the paths for the files
-            $frontIdPath = 'home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
-            $backIdPath = 'home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
-            $avatarPath = 'home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+            $frontIdPath = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
+            $backIdPath = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
+            $avatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
 
             // Delete associated files for the user
             if ($user->avatar) {

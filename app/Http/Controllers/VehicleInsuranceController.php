@@ -76,7 +76,6 @@ class VehicleInsuranceController extends Controller
      *
      */
 
-
     public function store(Request $request)
     {
         try {
@@ -131,11 +130,6 @@ class VehicleInsuranceController extends Controller
                 $directory = '/home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
                 $policyDocument = 'uploads/vehicle_insurance_policy_document/' . $filename;
 
-                // Create the directory if it doesn't exist
-                if (!file_exists($directory)) {
-                    mkdir($directory, 0755, true);
-                }
-
                 // Store the file in the specified path
                 $file->move($directory, $filename);
             }
@@ -178,6 +172,7 @@ class VehicleInsuranceController extends Controller
         }
     }
 
+
     /**
      * Display the specified resource.
      */
@@ -211,7 +206,6 @@ class VehicleInsuranceController extends Controller
      *
      *
      */
-
     public function update(Request $request, $id)
     {
         // Validate the request data
@@ -260,11 +254,6 @@ class VehicleInsuranceController extends Controller
                 $directory = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
                 $filePath = 'uploads/vehicle_insurance_policy_document/' . $filename;
 
-                // Create the directory if it doesn't exist
-                if (!file_exists($directory)) {
-                    mkdir($directory, 0755, true);
-                }
-
                 // Move the file to the specified path
                 $file->move($directory, $filename);
 
@@ -311,6 +300,7 @@ class VehicleInsuranceController extends Controller
             return back()->with('error', 'An error occurred while updating the insurance. Please try again.');
         }
     }
+
 
 
     /**
@@ -428,11 +418,6 @@ class VehicleInsuranceController extends Controller
                 $directory = 'home/kknuicdz/public_html_metroberry_app/uploads/vehicle_insurance_policy_document/';
                 $filePath = $directory . $filename;
 
-                // Ensure the directory exists
-                if (!file_exists($directory)) {
-                    mkdir($directory, 0755, true); // Create the directory if it doesn't exist
-                }
-
                 // Move the file to the specified directory
                 $file->move($directory, $filename);
 
@@ -470,6 +455,7 @@ class VehicleInsuranceController extends Controller
             return back()->with('error', 'Something went wrong.');
         }
     }
+
 
     public function verifyForm($id)
     {
