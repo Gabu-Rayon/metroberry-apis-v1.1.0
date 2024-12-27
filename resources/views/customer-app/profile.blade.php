@@ -209,7 +209,7 @@
                                                   <span class="#">
                                                       <img id="national-id-back-preview"
                                                           src="{{ $customer->national_id_behind_avatar
-                                                              ? asset('uploads/back-page-pics/' .basename($customer->national_id_behind_avatar))
+                                                              ? asset('uploads/back-page-ids/' .basename($customer->national_id_behind_avatar))
                                                               : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                           alt="National ID Back" />
                                                   </span>

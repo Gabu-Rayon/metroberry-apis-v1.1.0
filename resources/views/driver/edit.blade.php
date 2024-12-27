@@ -58,7 +58,7 @@
                             placeholder="Front Page ID Picture" id="front_page_id" value="" />
                         @if ($driver->national_id_front_avatar)
                             <div class="mt-2">
-                                <a href="{{ asset( 'uploads/front-pages-pics/'.basename($driver->national_id_front_avatar)) }}" download>Download
+                                <a href="{{ asset( 'uploads/front-pages-ids/'.basename($driver->national_id_front_avatar)) }}" download>Download
                                     Front Page ID</a>
                             </div>
                         @endif
@@ -137,7 +137,7 @@
                         <div class="col-sm-7">
                             <input name="vehicle" class="form-control" type="text" placeholder="Vehicle"
                                 id="vehicle" readonly value="{{ $driver->vehicle->plate_number }}" />
-                            <img src="{{ asset('uploads/vehicle-avatars' .basename($driver->vehicle->avatar)) }}" alt="Vehicle"
+                            <img src="{{ asset('uploads/vehicle-avatars/' .basename($driver->vehicle->avatar)) }}" alt="Vehicle"
                                 class="form-control" />
                         </div>
                     </div>

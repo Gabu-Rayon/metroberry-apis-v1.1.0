@@ -389,7 +389,7 @@ class CustomerAppController extends Controller
         // Base path for uploads
         $baseUploadUserAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
         $baseUploadIDFrontPagePath = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
-        $baseUploadIDBackPagePath = '/home/kknuicdz/public_html_metroberry_app/uploads/b-page-ids/';
+        $baseUploadIDBackPagePath = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
 
         // Function to create directory if it doesn't exist
         $createDirIfNotExists = function ($path) {
