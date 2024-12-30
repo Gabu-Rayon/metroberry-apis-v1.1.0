@@ -5,7 +5,7 @@
                 <div class="copy">
                     © 2024 <a class="text-capitalize text-black" href="" target="_blank">Metroberry Tours
                         <small><i>&
-                            </i></small> Travel</a>.
+                            </i></small> Travel</a>.,<small><i class="text-dark">V1.1.0</i></small>
                 </div>
             </div>
             <div class="col-md-6 text-end">
