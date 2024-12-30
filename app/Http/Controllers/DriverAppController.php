@@ -204,7 +204,6 @@ class DriverAppController extends Controller
         }
     }
 
-
     public function iddocsUpdate(Request $request, $id)
     {
         try {
@@ -222,32 +221,41 @@ class DriverAppController extends Controller
 
             $driver = Driver::findOrFail($id);
 
-            $frontIdDirectory = app()->environment('local')
-                ? public_path('uploads/front-page-ids')
-                : '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids';
+            $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids';
+            $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids';
 
-            $backIdDirectory = app()->environment('local')
-                ? public_path('uploads/back-page-ids')
-                : '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids';
-
+            // Handle front avatar
             if ($request->hasFile('national_id_front_avatar')) {
+                // Unlink old file if exists
+                $oldFrontAvatar = public_path($driver->national_id_front_avatar);
+                if ($driver->national_id_front_avatar && file_exists($oldFrontAvatar)) {
+                    unlink($oldFrontAvatar);
+                }
+
                 $frontAvatar = $request->file('national_id_front_avatar');
-                $frontFileName = "{$driver->email}-national-id-front." . $frontAvatar->getClientOriginalExtension();
+                $frontFileName = "driver-{$driver->user->name}-{$driver->user->email}-national-id-front-page." . $frontAvatar->getClientOriginalExtension();
                 $frontAvatar->move($frontIdDirectory, $frontFileName);
                 $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontFileName;
             }
 
-            if ($request->hasFile('national_id_xback_avatar')) {
+            // Handle back avatar
+            if ($request->hasFile('national_id_back_avatar')) {
+                // Unlink old file if exists
+                $oldBackAvatar = public_path($driver->national_id_back_avatar);
+                if ($driver->national_id_back_avatar && file_exists($oldBackAvatar)) {
+                    unlink($oldBackAvatar);
+                }
+
                 $backAvatar = $request->file('national_id_back_avatar');
-                $backFileName = "{$driver->email}-national-id-back." . $backAvatar->getClientOriginalExtension();
+                $backFileName = "driver-{$driver->user->name}-{$driver->user->email}-national-id-back-page." . $backAvatar->getClientOriginalExtension();
                 $backAvatar->move($backIdDirectory, $backFileName);
-                $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backFileName;
+                $driver->national_id_back_avatar = 'uploads/back-page-ids/' . $backFileName;
             }
 
             $driver->national_id_no = $request->input('national_id_no');
             $driver->save();
 
-            return redirect()->route('driver.registration.page')->with('success', 'Driver personal documents uploaded successfully.');
+            return redirect()->route('driver.registration.page')->with('success', 'Driver personal documents updated successfully.');
         } catch (\Exception $e) {
             Log::error('UPLOAD DRIVER PERSONAL DOCUMENTS ERROR');
             Log::error($e->getMessage());
@@ -255,6 +263,7 @@ class DriverAppController extends Controller
             return back()->with('error', 'Something went wrong.')->withInput();
         }
     }
+
 
 
     /**
@@ -533,19 +542,30 @@ class DriverAppController extends Controller
                 return back()->with('error', $validator->errors()->first())->withInput();
             }
 
+            // Find the authenticated user
+            $user = auth()->user();
+
+            // Find the associated driver by user_id
+            $driver = Driver::where('user_id', $user->id)->first();
+
             DB::beginTransaction();
 
             // Find the existing PSV badge
-            $psvBadge = PSVBadge::findOrFail($id); // Use findOrFail for better error handling
+            $psvBadge = PSVBadge::findOrFail($id);
 
             // Handle file upload if a new file is provided
             if ($request->hasFile('badge_copy')) {
                 // Define the directory for storing PSV badge images
                 $psvBadgeDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars';
 
+                // Delete the old file if it exists
+                if ($psvBadge->psv_badge_avatar && file_exists(public_path($psvBadge->psv_badge_avatar))) {
+                    unlink(public_path($psvBadge->psv_badge_avatar));
+                }
+
                 // Handle the file upload
                 $badge_copy = $request->file('badge_copy');
-                $badgeFileName = auth()->user()->driver->email . '-psv-badge-' . time() . '.' . $badge_copy->getClientOriginalExtension();
+                $badgeFileName = "driver-{$driver->user->name}-{$driver->user->email}-PSV-Badge-Copy." . $badge_copy->getClientOriginalExtension();
                 $badge_copy->move($psvBadgeDirectory, $badgeFileName);
 
                 // Update the badge avatar path
@@ -807,6 +827,12 @@ class DriverAppController extends Controller
                 return redirect()->back()->with('error', 'PSV badge not found')->withInput();
             }
 
+            // Find the authenticated user
+            $user = auth()->user();
+
+            // Find the associated driver by user_id
+            $driver = Driver::where('user_id', $user->id)->first();
+
             // Begin transaction
             DB::beginTransaction();
 
@@ -822,9 +848,14 @@ class DriverAppController extends Controller
 
             // Handle file upload for the badge copy
             if ($request->hasFile('badge_copy')) {
+                // Check if an old file exists and delete it
+                if (!empty($psvBadge->psv_badge_avatar) && file_exists(public_path($psvBadge->psv_badge_avatar))) {
+                    unlink(public_path($psvBadge->psv_badge_avatar));
+                }
+
                 // Get the uploaded file
                 $badgeCopyFile = $request->file('badge_copy');
-                $badgeCopyFileName = "psv_badge_{$driverId}." . $badgeCopyFile->getClientOriginalExtension();
+                $badgeCopyFileName = "driver-{$driver->user->name}-{$driver->user->email}-PSV-Badge-Copy." . $badgeCopyFile->getClientOriginalExtension();
 
                 // Move the file to the defined directory
                 $badgeCopyPath = $baseUploadPSVBadgeAvatarPath . $badgeCopyFileName;
@@ -838,7 +869,6 @@ class DriverAppController extends Controller
             DB::commit();
 
             return redirect()->route('driver.registration.page')->with('success', 'PSV badge updated successfully');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('PSV Badge Update Error', ['error' => $e->getMessage()]);
