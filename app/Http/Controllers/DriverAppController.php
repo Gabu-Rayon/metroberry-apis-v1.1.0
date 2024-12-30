@@ -1611,27 +1611,25 @@ class DriverAppController extends Controller
 
         $uploadDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
 
-
         // Handle file upload if a new file is provided
         if ($request->hasFile('driver_speed_governor_certificate_copy')) {
             // Delete the old file if it exists
-            $oldFilePath = public_path($uploadDirectory . $speedGovernorCertificate->certificate_copy);
-            if (file_exists($oldFilePath)) {
-                unlink($oldFilePath);  // Delete old file
+            if (!empty($speedGovernorCertificate->certificate_copy)) {
+                $oldFilePath = $uploadDirectory . basename($speedGovernorCertificate->certificate_copy);
+                if (file_exists($oldFilePath)) {
+                    unlink($oldFilePath);
+                }
             }
-
+            
             // Process the new file
             $file = $request->file('driver_speed_governor_certificate_copy');
             $fileName = "driver-{$authUser->name}-{$driverVehicle->model}-{$driverVehicle->plate_number}-{$data['driver_speed_governor_certificate_no']}-vehicle-speed-governor-copy.{$file->getClientOriginalExtension()}";
 
-            // Set the new file path for saving
-            $newFilePath = $uploadDirectory . $fileName;
-
-            // Store the file using Laravel's default storage system
-            $file->move(public_path($uploadDirectory), $fileName);
+            // Store the file in the specified directory
+            $file->move($uploadDirectory, $fileName);
 
             // Update the document path for database storage
-            $driverVehicleSpeedGovernorDocPath = $newFilePath;
+            $driverVehicleSpeedGovernorDocPath = $uploadDirectory . $fileName;
         }
 
         Log::info('The Driver vehicle Speed Governor Certificate Document path to be uploaded: ', [$driverVehicleSpeedGovernorDocPath]);
@@ -1654,6 +1652,5 @@ class DriverAppController extends Controller
         return redirect()->route('driver.vehicle.docs.registration')
             ->with('success', 'Speed Governor Certificate successfully updated.');
     }
-
 
 }

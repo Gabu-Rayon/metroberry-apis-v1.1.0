@@ -114,7 +114,7 @@
                         </div>
                         <!--Input Field Container End-->
 
-                                        <!-- Upload Document -->
+                        <!-- Upload Document -->
                         <div class="form-group">
                             <label class="width-100">
                                 <div class="display-flex justify-content-between">
@@ -133,16 +133,16 @@
                                         <div class="upload-picture-container">
                                             <div class="upload-camera-container text-center">
                                                 <span class="#">
+                                                    <!-- Image preview -->
                                                     <img id="national-id-back-preview"
                                                         src="{{ $speedGovernorCertificate && $speedGovernorCertificate->certificate_copy
                                                             ? asset('uploads/speed-governor-cert-copies/' . basename($speedGovernorCertificate->certificate_copy)) .
                                                                 '?' .
                                                                 time()
                                                             : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                        alt="Driver Vehicle Speed GovernorCertDoc"
+                                                        alt="Driver Vehicle Speed Governor Cert Doc"
                                                         onerror="this.onerror=null; this.src='{{ asset('mobile-app-assets/icons/photocamera.svg') }}';" />
                                                 </span>
-
                                             </div>
                                         </div>
                                     </div>
