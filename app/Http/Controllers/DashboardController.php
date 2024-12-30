@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Charts\MaintenanceCostReport;
-use App\Models\DriversLicenses;
-use App\Models\Expense;
-use App\Models\Income;
-use App\Models\MaintenanceRepair;
-use App\Models\MaintenanceService;
-use App\Models\NTSAInspectionCertificate;
-use App\Models\PSVBadge;
+use Carbon\Carbon;
 use App\Models\Trip;
+use App\Models\Income;
+use App\Models\Expense;
 use App\Models\Vehicle;
+use App\Models\PSVBadge;
+use Illuminate\Http\Request;
+use App\Models\DriversLicenses;
 use App\Models\VehicleInsurance;
 use App\Models\VehicleRefueling;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\MaintenanceRepair;
+use App\Models\MaintenanceService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Charts\MaintenanceCostReport;
+use App\Models\NTSAInspectionCertificate;
+use App\Models\VehicleSpeedGovernorCertificate;
 
 class DashboardController extends Controller
 {
@@ -117,7 +118,7 @@ class DashboardController extends Controller
 
         $expiredLicenses = DriversLicenses::where('driving_license_date_of_expiry', '<', date('Y-m-d'))->get();
         $expiredPSVBadges = PSVBadge::where('psv_badge_date_of_expiry', '<', date('Y-m-d'))->get();
-        $expiredVehicleSpeedGovernorCertificates = PSVBadge::where('expiry_date', '<', date('Y-m-d'))->get();
+        $expiredVehicleSpeedGovernorCertificates = VehicleSpeedGovernorCertificate::where('expiry_date', '<', date('Y-m-d'))->get();
 
         $fuelExpensesSum = VehicleRefueling::where('status', 'billed')->sum('refuelling_cost');
         $serviceExpensesSum = MaintenanceService::where('service_status', 'billed')->sum('service_cost');
