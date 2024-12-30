@@ -42,20 +42,20 @@
             <!--Page Title & Icons End-->
 
             <div class="rest-container">
-                    <div class="address-title">
-                        <span>Speed Governors</span>
+                <div class="address-title">
+                    <span>Speed Governors</span>
 
-                        @if ($driver->vehicle->speedGovernorCertificate)
-                            @if ($driver->vehicle->speedGovernorCertificate->status == 'active')
-                                <span class="badge badge-pill fs-6 badge-success">Active</span>
-                            @else
-                                <span class="badge badge-pill fs-6 badge-danger">Inactive</span>
-                            @endif
+                    @if ($driver->vehicle->speedGovernorCertificate)
+                        @if ($driver->vehicle->speedGovernorCertificate->status == 'active')
+                            <span class="badge badge-pill fs-6 badge-success">Active</span>
                         @else
                             <span class="badge badge-pill fs-6 badge-danger">Inactive</span>
                         @endif
+                    @else
+                        <span class="badge badge-pill fs-6 badge-danger">Inactive</span>
+                    @endif
 
-                    </div>
+                </div>
                 @if (session('success'))
                     <div id="success-message" class="alert alert-success" style="display: none;">
                         {{ session('success') }}
@@ -80,12 +80,12 @@
                         @endif
 
 
-                        <input class="form-control form-control-with-padding" type="hidden" name="driver_speed_governor_vehicle_id"
-                            autocomplete="off" placeholder="Vehicle ID"
+                        <input class="form-control form-control-with-padding" type="hidden"
+                            name="driver_speed_governor_vehicle_id" autocomplete="off" placeholder="Vehicle ID"
                             value="{{ old('driver_speed_governor_vehicle_id', $driver->vehicle->id) }}" readonly />
 
                         <div class="form-group form-control-margin">
-                            {{-- This is used to just show Driver the Vehicle  and its NOT POST TO DATABSE WHEN DOING (post & update) --}}
+                            {{-- This is used to just show Driver the Vehicle  and its NOT POST TO DATABASE WHEN DOING (post & update) --}}
 
                             <label class="label-title">Vehicle</label>
 
@@ -93,7 +93,7 @@
                                 {{ $driver->vehicle->plate_number ?? 'N/A' }}:
                                 {{ optional($driver->vehicle->manufacturer)->name ?? '' }}
                                 {{ $driver->vehicle->model ?? '' }}
-                                
+
                                 <div class="input-group-append">
                                 </div>
                             </div>
@@ -104,7 +104,8 @@
                             <label class="label-title">Certificate No</label>
                             <div class="input-group">
                                 <input class="form-control form-control-with-padding" type="text"
-                                    name="driver_speed_governor_certificate_no" autocomplete="on" placeholder="Driver Certificate No"
+                                    name="driver_speed_governor_certificate_no" autocomplete="on"
+                                    placeholder="Driver Certificate No"
                                     value="{{ old('driver_speed_governor_certificate_no', $driver->vehicle->speedGovernorCertificate->certificate_no ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>
@@ -114,7 +115,7 @@
                         <!--Input Field Container End-->
 
                         <!-- Upload Certificate Copy -->
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label class="width-100">
                                 <div class="display-flex justify-content-between">
                                     <span class="position-relative upload-btn">
@@ -122,8 +123,37 @@
                                         <input class="scan-prompt" type="file" accept="image/*"
                                             name="driver_speed_governor_certificate_copy" id="certificate-copy-input" />
                                     </span>
-                                    <span class="text-uppercase">Certificate Copy</span>
+                                    <span class="text-uppercase">Speed Governor Cert Copy</span>
                                     <span class="delete-btn" id="certificate-copy-delete">
+                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
+                                    </span>
+                                </div>
+                                <div class="scan-your-card-prompt margin-top-5">
+                                    <div class="position-relative">
+                                        <div class="upload-picture-container text-center">
+                                            <img id="certificate-copy-preview"
+                                                src="{{ asset('uploads/speed-governor-cert-copies/' .basename(  $driver->vehicle->speedGovernorCertificate->certificate_copy ))
+                                                 ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                alt="Vehicle Speed Governor CertDoc" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+ --}}
+
+
+                        <!-- Upload Document -->
+                        <div class="form-group">
+                            <label class="width-100">
+                                <div class="display-flex justify-content-between">
+                                    <span class="position-relative upload-btn">
+                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
+                                        <input class="scan-prompt" type="file" accept="image/*"
+                                            name="driver_speed_governor_certificate_copy" id="national-id-back-input" />
+                                    </span>
+                                    <span class="text-uppercase">Speed Governor Cert Copy</span>
+                                    <span class="delete-btn" id="national-id-back-delete">
                                         <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
                                     </span>
                                 </div>
@@ -132,9 +162,13 @@
                                         <div class="upload-picture-container">
                                             <div class="upload-camera-container text-center">
                                                 <span class="#">
-                                                    <img id="certificate-copy-preview"
-                                                        src="{{ asset('uploads/speed-governor-cert-cpoies/' .basename($driver->vehicle->speedGovernorCertificate->certificate_copy))  ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                        alt="Speed Governor Certificate Copy" />
+                                                    <img id="national-id-back-preview"
+                                                        src="{{ $speedGovernorCertificate && $speedGovernorCertificate->certificate_copy
+                                                            ? asset('uploads/speed-governor-cert-copies/' . basename($speedGovernorCertificate->certificate_copy))
+                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}?{{ time() }}"
+                                                        alt="Driver Vehicle Speed GovernorCertDoc"
+                                                        onerror="this.onerror=null; this.src='{{ asset('mobile-app-assets/icons/photocamera.svg') }}';" />
+
                                                 </span>
                                             </div>
                                         </div>
@@ -143,7 +177,7 @@
                             </label>
                         </div>
 
-                         <!--Input Field Container End-->
+                        <!--Input Field Container End-->
                         <div class="form-group">
                             <label class="width-100">
                                 <span class="label-title">Class A*(4 seater) </span>
@@ -165,8 +199,8 @@
                         <div class="form-group form-control-margin">
                             <label class="label-title">Chasis No</label>
                             <div class="input-group">
-                                <input class="form-control form-control-with-padding" type="text" name="driver_vehicle_chasis_no"
-                                    autocomplete="on" placeholder="Driver Class No"
+                                <input class="form-control form-control-with-padding" type="text"
+                                    name="driver_vehicle_chasis_no" autocomplete="on" placeholder="Driver Class No"
                                     value="{{ old('driver_vehicle_chasis_no', $driver->vehicle->speedGovernorCertificate->chasis_no ?? '') }}" />
                                 <div class="input-group-append">
                                     <span class="fas fa-id-card icon-inherited-color"></span>

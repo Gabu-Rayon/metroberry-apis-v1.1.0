@@ -62,7 +62,7 @@
                                             <tbody>
                                                 @foreach ($speed_governors as $speed_governor)
                                                     <tr>
-                                                        <td class="text-center">{{ $speed_governor->vehicle->model }} {{ $speed_governor->vehicle->make }}, {{ $speed_governor->vehicle->plate_number }}</td>
+                                                        <td class="text-center">{{ $speed_governor->vehicle->model }},{{ $speed_governor->vehicle->manufacturer->name }}, {{ $speed_governor->vehicle->plate_number }}</td>
                                                         <td>{{ $speed_governor->certificate_no }}</td>
                                                         <td>{{ $speed_governor->type_of_governor }}</td>
                                                         <td>{{ $speed_governor->date_of_installation }}</td>

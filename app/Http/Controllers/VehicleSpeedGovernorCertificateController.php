@@ -74,7 +74,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
             if ($request->hasFile('copy')) {
                 $file = $request->file('copy');
                 $fileName = "{$vehicle_model}-{$vehicle_plate_number}-{$data['certificate_no']}.{$file->getClientOriginalExtension()}";
-                $driverVehicleSpeedGovernorDocPath = 'uploads/vehicle-speed-governor-copy/' . $fileName;
+                $driverVehicleSpeedGovernorDocPath = 'uploads/speed-governor-cert-copies/' . $fileName;
                 $destinationPath = $avatarDirectory;
 
                 // Move the file to the specified absolute directory
@@ -152,7 +152,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
             $vehicle_plate_number = $vehicle->plate_number;
 
             // Define the absolute directory for storing the certificate copy
-            $avatarDirectory = '//home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
+            $avatarDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/speed-governor-cert-copies/';
 
             // Ensure the directory exists
             if (!File::exists($avatarDirectory)) {
@@ -174,7 +174,7 @@ class VehicleSpeedGovernorCertificateController extends Controller
                 $fileName = "{$vehicle_model}-{$vehicle_plate_number}-{$data['certificate_no']}.{$file->getClientOriginalExtension()}";
 
                 // Update the file path
-                $driverVehicleSpeedGovernorDocPath = 'uploads/vehicle-speed-governor-copy/' . $fileName;
+                $driverVehicleSpeedGovernorDocPath = 'uploads/speed-governor-cert-copies/' . $fileName;
                 $destinationPath = $avatarDirectory;
 
                 // Move the file to the specified directory

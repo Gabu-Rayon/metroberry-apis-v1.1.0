@@ -12,7 +12,7 @@
         $vehicleInsurance = $driver->vehicle->insurance ?? null;
     @endphp
 
-    
+
 
     <div class="row h-100">
         <div class="col-xs-12 col-sm-12">
@@ -273,10 +273,10 @@
                                                 <span class="#">
                                                     <img id="national-id-back-preview"
                                                         src="{{ $vehicleInsurance && $vehicleInsurance->policy_document
-                                                            ? asset('uploads/vehicle_insurance_policy_document/' .basename($vehicleInsurance && $vehicleInsurance->policy_document))
-                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                        alt="Driver Vehicle Insurance Policy Document" />
-
+                                                            ? asset('uploads/vehicle_insurance_policy_document/' . basename($vehicleInsurance->policy_document))
+                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}?{{ time() }}"
+                                                        alt="Driver Vehicle Insurance Policy Document"
+                                                        onerror="this.onerror=null; this.src='{{ asset('mobile-app-assets/icons/photocamera.svg') }}';" />
                                                 </span>
                                             </div>
                                         </div>

@@ -18,7 +18,7 @@
                     <label for="make" class="col-sm-5 col-form-label">Manufacturer <i
                             class="text-danger">*</i></label>
                     <div class="col-sm-7">
-                        {{ $vehicle->make }}
+                        {{ $vehicle->manufacturer->name }}
                     </div>
                 </div>
                 <div class="form-group row my-2">
@@ -39,7 +39,7 @@
                     <label for="fuel_type" class="col-sm-5 col-form-label">Fuel Type <i
                             class="text-danger">*</i></label>
                     <div class="col-sm-7">
-                        {{ $vehicle->fuel_type }}
+                        {{ $vehicle->fuelType->name }}
                     </div>
                 </div>
                 <div class="form-group row my-2">
@@ -69,8 +69,9 @@
                     <label for="vehicle_avatar" class="col-sm-5 col-form-label">Vehicle Avatar</label>
                     <div class="col-sm-7">
                         @if ($vehicle->avatar)
-                            <img src="{{ asset('images/' . $vehicle->avatar) }}" alt="Vehicle Avatar"
-                                class="img-thumbnail mt-2" style="max-height: 150px;">
+                                 <img src="{{ asset( 'uploads/vehicle-avatars/' .basename($vehicle->avatar)) }}" alt="Vehicle Avatar"
+                                 class="img-thumbnail mt-2" style="max-height: 150px;">
+
                         @endif
                     </div>
                 </div>

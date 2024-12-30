@@ -47,7 +47,7 @@
                     </label>
                     <div class="col-sm-7">
                         <input name="avatar" class="form-control" type="file" accept="image/*" id="avatar"
-                            required />
+                             />
                         @if ($certificate->ntsa_inspection_certificate_avatar)
                             <a href="{{ asset($certificate->ntsa_inspection_certificate_avatar) }}"
                                 target="_blank">

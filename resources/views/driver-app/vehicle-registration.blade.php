@@ -45,11 +45,15 @@
             <div class="rest-container">
                 <div class="address-title">
                     <span>Vehicle Registration</span>
-                    
-                    @if ($driver->vehicle->status == 'inactive')
+
+                    {{-- Check if the driver has a vehicle and if so, check its status --}}
+                    @if ($driver->vehicle && $driver->vehicle->status == 'inactive')
                         <span class="badge badge-pill fs-6 badge-danger">Inactive</span>
-                    @else
+                    @elseif ($driver->vehicle && $driver->vehicle->status == 'active')
                         <span class="badge badge-pill fs-6 badge-success">Active</span>
+                    @else
+                        {{-- If there is no vehicle, display a message --}}
+                        <span class="badge badge-pill fs-6 badge-secondary">No Vehicle Found !</span>
                     @endif
 
                 </div>
@@ -122,6 +126,20 @@
                             </div>
                         </div>
 
+                          <div class="form-group">
+                            <label class="width-100 mb-0">
+                                <label class="label-title">Vehicle Color.</label>
+                            </label>
+                            <div class="input-group light-field">
+                                <div class="input-group-prepend">
+                                    <span class=""></span>
+                                </div>
+                                <input class="form-control" type="text" name="driver_vehicle_color"
+                                    value="{{ old('driver_vehicle_color', $driver->vehicle->color ?? '') }}"
+                                    placeholder="black" />
+                            </div>
+                        </div>
+
 
 
                         <div class="form-group">
@@ -143,7 +161,7 @@
                                             <div class="upload-camera-container text-center">
                                                 <span class="#">
                                                     <img id="national-id-back-preview"
-                                                        src="{{ $driver->vehicle && $driver->vehicle->avatar ? asset('uploads/vehicle-avatars/'.basename($driver->vehicle->avatar)) : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                        src="{{ $driver->vehicle && $driver->vehicle->avatar ? asset('uploads/vehicle-avatars/' . basename($driver->vehicle->avatar)) : asset('mobile-app-assets/icons/photocamera.svg') }}?{{ time() }}"
                                                         alt="Back"
                                                         onerror="this.onerror=null; this.src='{{ asset('mobile-app-assets/icons/photocamera.svg') }}';" />
                                                 </span>

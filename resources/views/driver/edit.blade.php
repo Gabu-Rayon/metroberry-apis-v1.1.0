@@ -58,7 +58,7 @@
                             placeholder="Front Page ID Picture" id="front_page_id" value="" />
                         @if ($driver->national_id_front_avatar)
                             <div class="mt-2">
-                                <a href="{{ asset( 'uploads/front-pages-ids/'.basename($driver->national_id_front_avatar)) }}" download>Download
+                                <a href="{{ asset( 'uploads/front-page-ids/'.basename($driver->national_id_front_avatar)) }}" download>Download
                                     Front Page ID</a>
                             </div>
                         @endif

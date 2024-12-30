@@ -70,7 +70,7 @@ class NTSAInspectionCertificateController extends Controller
             $vehicle_model = $vehicle->model;
 
             // Define the path where the avatar will be stored
-            $NtsaIspectionCertUploadpath = "home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies";
+            $NtsaIspectionCertUploadpath = "/home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies";
 
             // Check if a new avatar file is provided
             if ($request->hasFile('avatar')) {
@@ -86,23 +86,20 @@ class NTSAInspectionCertificateController extends Controller
                 $avatarFile->move($NtsaIspectionCertUploadpath, $avatarFileName); // Move the file to the correct path
             }
 
-            // Create or update the NTSA inspection certificate record
-            $inspectionCertificate = NTSAInspectionCertificate::updateOrCreate(
-                ['ntsa_inspection_certificate_no' => $certNo], // Search by certificate number
-                [
-                    'vehicle_id' => $data['vehicle'],
-                    'creator_id' => auth()->id(),
-                    'ntsa_inspection_certificate_no' => $certNo,
-                    'ntsa_inspection_certificate_date_of_issue' => $data['ntsa_inspection_certificate_date_of_issue'],
-                    'ntsa_inspection_certificate_date_of_expiry' => $data['ntsa_inspection_certificate_date_of_expiry'],
-                    'ntsa_inspection_certificate_avatar' => $avatarPath ? 'uploads/ntsa-insp-cert-copies/' . basename($avatarPath) : null,
-                    'cost' => $data['cost'],
-                ]
-            );
+            // Create a new NTSA inspection certificate record
+            $inspectionCertificate = new NTSAInspectionCertificate();
+            $inspectionCertificate->vehicle_id = $data['vehicle'];
+            $inspectionCertificate->creator_id = auth()->id();
+            $inspectionCertificate->ntsa_inspection_certificate_no = $certNo;
+            $inspectionCertificate->ntsa_inspection_certificate_date_of_issue = $data['ntsa_inspection_certificate_date_of_issue'];
+            $inspectionCertificate->ntsa_inspection_certificate_date_of_expiry = $data['ntsa_inspection_certificate_date_of_expiry'];
+            $inspectionCertificate->ntsa_inspection_certificate_avatar = $avatarPath ? 'uploads/ntsa-insp-cert-copies/' . basename($avatarPath) : null;
+            $inspectionCertificate->cost = $data['cost'];
+            $inspectionCertificate->save();
 
             DB::commit();
 
-            return redirect()->route('vehicle.inspection.certificate')->with('success', 'Inspection Certificate added/updated successfully.');
+            return redirect()->route('vehicle.inspection.certificate')->with('success', 'Inspection Certificate added successfully.');
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('STORE INSPECTION CERTIFICATE ERROR');
@@ -169,15 +166,15 @@ class NTSAInspectionCertificateController extends Controller
             $plate_number = $vehicle->plate_number;
             $vehicle_model = $vehicle->model;
 
+            // Define the upload path for the new avatar
+            $NtsaIspectionCertUploadpath = "/home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies";
+
             // Handle the new avatar file upload, if any
             if ($request->hasFile('avatar')) {
                 // Remove the old avatar file if it exists
                 if (File::exists(public_path($avatarPath))) {
                     File::delete(public_path($avatarPath));
                 }
-
-                // Define the upload path for the new avatar
-                $NtsaIspectionCertUploadpath = "/home/kknuicdz/public_html_metroberry_app/uploads/ntsa-insp-cert-copies";
 
                 // Get the uploaded avatar file
                 $avatarFile = $request->file('avatar');
@@ -188,7 +185,7 @@ class NTSAInspectionCertificateController extends Controller
                 $avatarFile->move($NtsaIspectionCertUploadpath, $avatarFileName);
 
                 // Save the relative file path in the database
-                $avatarPath = "{$NtsaIspectionCertUploadpath}/{$avatarFileName}";
+                $avatarPath = "uploads/ntsa-insp-cert-copies/{$avatarFileName}";
             }
 
             // Update the certificate with the new data
@@ -198,7 +195,7 @@ class NTSAInspectionCertificateController extends Controller
                 'ntsa_inspection_certificate_no' => $certNo,
                 'ntsa_inspection_certificate_date_of_issue' => $data['ntsa_inspection_certificate_date_of_issue'],
                 'ntsa_inspection_certificate_date_of_expiry' => $data['ntsa_inspection_certificate_date_of_expiry'],
-                'ntsa_inspection_certificate_avatar' => 'uploads/ntsa-insp-cert-copies/' . $avatarFileName, // Store the relative path
+                'ntsa_inspection_certificate_avatar' => $avatarPath,
                 'verified' => false,
             ]);
 
@@ -218,7 +215,6 @@ class NTSAInspectionCertificateController extends Controller
             return back()->with('error', 'Something went wrong.');
         }
     }
-
 
     public function verifyForm($id)
     {

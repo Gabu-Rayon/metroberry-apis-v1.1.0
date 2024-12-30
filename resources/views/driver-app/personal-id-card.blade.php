@@ -97,7 +97,7 @@
                                                       <img id="national-id-front-preview"
                                                           src="{{ $driver->national_id_front_avatar
                                                               ? asset($driver->national_id_front_avatar)
-                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}?{{ time() }}"
                                                           alt="National ID Front" />
                                                   </span>
                                               </div>
@@ -131,7 +131,7 @@
                                                       <img id="national-id-back-preview"
                                                           src="{{ $driver->national_id_behind_avatar
                                                               ? asset( $driver->national_id_behind_avatar)
-                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}?{{ time() }}"
                                                           alt="National ID Back" />
                                                   </span>
                                               </div>

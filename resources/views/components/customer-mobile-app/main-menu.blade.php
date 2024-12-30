@@ -7,7 +7,11 @@
              </div>
              <div class="profile-picture text-center">
                  @if (Auth::user()->avatar)
-                     <img src="{{ asset(Auth::user()->avatar) }}" alt="Profile Picture" class="rounded-profile-picture" />
+
+                     <img id="profile-picture"
+                         src="{{ Auth::user()->avatar ? asset('uploads/user-avatars/' . basename(Auth::user()->avatar)) : asset('mobile-app-assets/images/avatar.svg') }}?{{ time() }}"
+                         alt="Profile Picture" class="rounded-profile-picture" />
+                         
                  @else
                      <img src="{{ asset('mobile-app-assets/images/anonymous.jpeg') }}" alt="Profile Picture"
                          class="rounded-profile-picture" />

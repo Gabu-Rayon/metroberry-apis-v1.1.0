@@ -50,7 +50,7 @@ class DriversLicensesController extends Controller
                 'license_no' => 'required|string|unique:drivers_licenses,driving_license_no',
                 'first_date_of_issue' => 'required|date|before:' . now()->subYears(5)->toDateString(),
                 'driving_license_renewal_date_issue' => 'required|date',
-                'expiry_date' => 'required|date|after:issue_date',
+                'expiry_date' => 'required|date|after:driving_license_renewal_date_issue',
                 'front_page_id' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
                 'back_page_id' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
@@ -80,7 +80,7 @@ class DriversLicensesController extends Controller
             if ($request->hasFile('front_page_id')) {
                 $frontLicenseFile = $request->file('front_page_id');
                 $frontLicenseExtension = $frontLicenseFile->getClientOriginalExtension();
-                $frontLicenseFileName = "{$licenseNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-front-id.{$frontLicenseExtension}";
+                $frontLicenseFileName = "{$licenseNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-driver-license-front.{$frontLicenseExtension}";
 
                 // Move the file to the specified path
                 $frontLicenseFile->move($frontLicensePath, $frontLicenseFileName);
@@ -90,7 +90,7 @@ class DriversLicensesController extends Controller
             if ($request->hasFile('back_page_id')) {
                 $backLicenseFile = $request->file('back_page_id');
                 $backLicenseExtension = $backLicenseFile->getClientOriginalExtension();
-                $backLicenseFileName = "{$licenseNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-back-id.{$backLicenseExtension}";
+                $backLicenseFileName = "{$licenseNumber}-{$driver_name}-{$driver_email}-{$driver_phone}-driver-license-back.{$backLicenseExtension}";
 
                 // Move the file to the specified path
                 $backLicenseFile->move($backLicensePath, $backLicenseFileName);
@@ -104,7 +104,7 @@ class DriversLicensesController extends Controller
                 'driver_id' => $data['driver'],
                 'driving_license_no' => $licenseNumber,
                 'driving_license_renewal_date_issue' => $data['driving_license_renewal_date_issue'],
-                'first_date_of_issue' => $data['issue_date'],
+                'first_date_of_issue' => $data['first_date_of_issue'],
                 'driving_license_date_of_expiry' => $data['expiry_date'],
                 'driving_license_avatar_front' => 'uploads/front-license-pics/' . $frontLicenseFileName,
                 'driving_license_avatar_back' => 'uploads/back-license-pics/' . $backLicenseFileName,

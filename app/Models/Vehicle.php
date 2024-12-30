@@ -41,8 +41,9 @@ class Vehicle extends Model
 
     public function driver()
     {
-        return $this->belongsTo(Driver::class, 'driver_id');
+        return $this->belongsTo(Driver::class, 'driver_id'); 
     }
+
 
     public function organisation()
     {

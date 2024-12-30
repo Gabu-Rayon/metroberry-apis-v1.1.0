@@ -173,21 +173,18 @@ class DriverAppController extends Controller
             $driver = Driver::findOrFail($id);
 
             // Define the directories for the ID uploads
-            $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/front-page-ids';
-            $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/back-page-ids';
+            $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids';
+            $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids';
 
-            if (app()->environment('local')) {
-                $frontIdDirectory = public_path('uploads/front-page-ids');
-                $backIdDirectory = public_path('uploads/back-page-ids');
-            }
+           
 
             // Upload front and back images
             $national_id_front_avatar = $request->file('national_id_front_avatar');
             $national_id_back_avatar = $request->file('national_id_back_avatar');
 
             // Create file names
-            $frontFileName = "{$driver->email}-national-id-front." . $national_id_front_avatar->getClientOriginalExtension();
-            $backFileName = "{$driver->email}-national-id-back." . $national_id_back_avatar->getClientOriginalExtension();
+            $frontFileName = "driver-{$driver->user->name}-{$driver->user->email}-national-id-front-page." . $national_id_front_avatar->getClientOriginalExtension();
+            $backFileName = "driver-{$driver->user->name}-{$driver->user->email}-national-id-back-page." . $national_id_back_avatar->getClientOriginalExtension();
 
             // Move the uploaded files to the new directories
             $national_id_front_avatar->move($frontIdDirectory, $frontFileName);
@@ -198,7 +195,7 @@ class DriverAppController extends Controller
             $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backFileName;
             $driver->save();
 
-            return redirect()->route('driver.registration.page')->with('success', 'Driver personal documents uploaded successfully.');
+            return redirect()->route('driver.dashboard')->with('success', 'Driver personal documents uploaded successfully.');
         } catch (Exception $e) {
             Log::error('UPLOAD DRIVER PERSONAL DOCUMENTS ERROR');
             Log::error($e->getMessage());
@@ -227,11 +224,11 @@ class DriverAppController extends Controller
 
             $frontIdDirectory = app()->environment('local')
                 ? public_path('uploads/front-page-ids')
-                : '/home/kknuicdz/public_html_metroberry_app/front-page-ids';
+                : '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids';
 
             $backIdDirectory = app()->environment('local')
                 ? public_path('uploads/back-page-ids')
-                : '/home/kknuicdz/public_html_metroberry_app/back-page-ids';
+                : '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids';
 
             if ($request->hasFile('national_id_front_avatar')) {
                 $frontAvatar = $request->file('national_id_front_avatar');
@@ -272,7 +269,7 @@ class DriverAppController extends Controller
     {
         try {
             $data = $request->all();
-            Log::info('Driver License Data From the Form in the Driver App Dashboard : ' . json_encode($data));
+            Log::info('Driver License Data From the Form in the Driver App Dashboard: ' . json_encode($data));
 
             // Validate the incoming request data
             $validator = Validator::make($data, [
@@ -282,34 +279,43 @@ class DriverAppController extends Controller
                 'expiry_date' => 'required|date|after:issue_date',
                 'license_front_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
                 'license_back_avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-
             ]);
 
             if ($validator->fails()) {
                 Log::error('VALIDATION ERROR');
                 Log::error($validator->errors()->all());
-
                 return back()->with('error', $validator->errors()->first())->withInput();
+            }
+
+            // Find the authenticated user
+            $user = auth()->user();
+
+            // Find the associated driver by user_id
+            $driver = Driver::where('user_id', $user->id)->first();
+
+            if (!$driver) {
+                return back()->with('error', 'Driver not found.')->withInput();
             }
 
             DB::beginTransaction();
 
             // Define directories for license uploads
-            $frontLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/front-license-pics';
-            $backLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/back-license-pics';
+            $frontLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics';
+            $backLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics';
 
+            // Upload front license image
             $license_front_avatar = $request->file('license_front_avatar');
-            $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();
+            $frontFileName = "driver-{$driver->user->name}-{$driver->user->email}-Driving-license-front-page." . $license_front_avatar->getClientOriginalExtension();
             $license_front_avatar->move($frontLicenseDirectory, $frontFileName);
 
             // Upload back license image
             $license_back_avatar = $request->file('license_back_avatar');
-            $backFileName = auth()->user()->driver->email . '-back-license.' . $license_back_avatar->getClientOriginalExtension();
+            $backFileName = "driver-{$driver->user->name}-{$driver->user->email}-Driving-license-back-page." . $license_back_avatar->getClientOriginalExtension();
             $license_back_avatar->move($backLicenseDirectory, $backFileName);
 
             // Create a new driver license record with the stored file paths
             DriversLicenses::create([
-                'driver_id' => auth()->user()->driver->id,
+                'driver_id' => $driver->id, // Use the driver ID here
                 'driving_license_no' => $data['driving_license_no'],
                 'driving_license_renewal_date_issue' => $data['driving_license_renewal_date_issue'],
                 'driving_license_date_of_expiry' => $data['expiry_date'],
@@ -321,6 +327,7 @@ class DriverAppController extends Controller
             DB::commit();
 
             return redirect()->route('driver.dashboard')->with('success', 'Driver license uploaded successfully.');
+
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('UPLOAD DRIVER LICENSE ERROR');
@@ -370,8 +377,8 @@ class DriverAppController extends Controller
             $license = Auth::user()->driver->license;
 
             // Define directories for license uploads
-            $frontLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/front-license-pics';
-            $backLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/back-license-pics';
+            $frontLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/front-license-pics';
+            $backLicenseDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/back-license-pics';
 
             // Handle file uploads
             if ($request->hasFile('license_front_avatar')) {
@@ -382,7 +389,7 @@ class DriverAppController extends Controller
 
                 // Upload the new front license image
                 $license_front_avatar = $request->file('license_front_avatar');
-                $frontFileName = auth()->user()->driver->email . '-front-license.' . $license_front_avatar->getClientOriginalExtension();
+                $frontFileName = auth()->user()->driver->email . '-driver-license-front.' . $license_front_avatar->getClientOriginalExtension();
                 $license_front_avatar->move($frontLicenseDirectory, $frontFileName);
                 $license->driving_license_avatar_front = 'uploads/front-license-pics/' . $frontFileName; // Set the new value
             }
@@ -395,7 +402,7 @@ class DriverAppController extends Controller
 
                 // Upload the new back license image
                 $license_back_avatar = $request->file('license_back_avatar');
-                $backFileName = auth()->user()->driver->email . '-back-license.' . $license_back_avatar->getClientOriginalExtension();
+                $backFileName = auth()->user()->driver->email . '-driver-license-back.' . $license_back_avatar->getClientOriginalExtension();
                 $license_back_avatar->move($backLicenseDirectory, $backFileName);
                 $license->driving_license_avatar_back = 'uploads/back-license-pics/' . $backFileName; // Set the new value
             }
@@ -453,14 +460,20 @@ class DriverAppController extends Controller
                 return back()->with('error', $validator->errors()->first())->withInput();
             }
 
+            // Find the authenticated user
+            $user = auth()->user();
+
+            // Find the associated driver by user_id
+            $driver = Driver::where('user_id', $user->id)->first();
+
             DB::beginTransaction();
 
             // Define the directory for storing PSV badge images
-            $psvBadgeDirectory = '/home/kknuicdz/public_html_metroberry_app/psvbadge-avatars';
+            $psvBadgeDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars';
 
             // Handle the file upload
             $badge_copy = $request->file('badge_copy');
-            $badgeFileName = auth()->user()->driver->email . '-psv-badge.' . $badge_copy->getClientOriginalExtension();
+            $badgeFileName = "driver-{$driver->user->name}-{$driver->user->email}-PSV-Badge-Copy." . $badge_copy->getClientOriginalExtension();
             $badge_copy->move($psvBadgeDirectory, $badgeFileName);
 
             // Create a new PSV badge record
@@ -528,7 +541,7 @@ class DriverAppController extends Controller
             // Handle file upload if a new file is provided
             if ($request->hasFile('badge_copy')) {
                 // Define the directory for storing PSV badge images
-                $psvBadgeDirectory = '/home/kknuicdz/public_html_metroberry_app/psvbadge-avatars';
+                $psvBadgeDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars';
 
                 // Handle the file upload
                 $badge_copy = $request->file('badge_copy');
@@ -737,32 +750,36 @@ class DriverAppController extends Controller
         $driver = $user->driver;
 
         if ($request->hasFile('profile_picture')) {
-            // Check if the old profile picture exists and delete it if necessary
+            // Define the base upload path (direct path, no subdirectories)
+            $baseUploadUserAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+
+            // Delete the old profile picture if it exists
             if ($driver->user->avatar) {
-                $oldProfilePath = '/home/kknuicdz/public_html_metroberry_app/' . $driver->user->avatar;
+                $oldProfilePath = $baseUploadUserAvatarPath . $driver->user->avatar;
                 if (file_exists($oldProfilePath)) {
-                    unlink($oldProfilePath); // Delete the old profile picture
+                    unlink($oldProfilePath);
                 }
             }
 
-            // Set the base path for uploading user avatar
-            $baseUploadUserAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
+            // Process the new file
             $file = $request->file('profile_picture');
-            $fileName = time() . '_' . $file->getClientOriginalName(); // Use a unique name for the file
+            $fileName = 'driver-' . preg_replace('/[^a-zA-Z0-9]/', '-', $driver->user->name) . '-' . $driver->user->email . '-profile-avatar.' . $file->getClientOriginalExtension();
 
-            // Assume the directory already exists and move the file to the specified directory
-            $fullDirectoryPath = $baseUploadUserAvatarPath . $user->id . '/';
-            $file->move($fullDirectoryPath, $fileName);
+            // Move the file to the specified directory
+            $file->move($baseUploadUserAvatarPath, $fileName);
 
             // Update the user's profile picture path (store the relative path)
-            $driver->user->avatar = 'uploads/user-avatars/' . $user->id . '/' . $fileName; // Save the relative path
+            $driver->user->avatar = 'user-avatars/' . $fileName; // Relative path
             $driver->user->save();
 
-            return response()->json(['newProfilePictureUrl' => asset($driver->user->avatar)]); // Use asset() to get the URL
+            // Return the new profile picture URL
+            return response()->json(['newProfilePictureUrl' => asset('uploads/' . $driver->user->avatar)]);
         }
 
         return response()->json(['error' => 'Failed to upload profile picture'], 400);
     }
+
+
 
     public function psvbadgeDocumentUpdate(Request $request, $driverId)
     {
@@ -890,6 +907,7 @@ class DriverAppController extends Controller
             'driver_vehicle_model' => 'required|string|max:255',
             'driver_vehicle_plate_number' => 'required|string|max:255',
             'driver_vehicle_seats_no' => 'required|integer',
+            'driver_vehicle_color' => 'nullable|string',
             'driver_vehicle_avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp,jfif|max:2048',
             'driver_vehicle_organisation' => 'required|exists:organisations,id',
             'driver_vehicle_class' => 'required|exists:vehicle_classes,id',
@@ -919,7 +937,7 @@ class DriverAppController extends Controller
         if ($request->hasFile('driver_vehicle_avatar')) {
             $avatarFile = $request->file('driver_vehicle_avatar');
             $avatarExtension = $avatarFile->getClientOriginalExtension();
-            $avatarFileName = "{$driverName}-{$driverPlateNumber}-avatar.{$avatarExtension}";
+            $avatarFileName = "{$driverName}-{$driverPlateNumber}-vehicle-avatar.{$avatarExtension}";
 
             // Set the file path where the avatar will be uploaded
             $avatarPath = 'uploads/vehicle-avatars/' . $avatarFileName;
@@ -931,14 +949,6 @@ class DriverAppController extends Controller
         Log::info('The  vehicle avatar path  to be uploaded : ');
         Log::info($avatarPath);
 
-        $fuelTypeId = $data['driver_vehicle_fuel_type'];
-
-        // Retrieve fuel type name (assuming there's a "name" column in "fuel_types" table)
-        $fuelType = Fueltype::find($fuelTypeId);
-        $fuelTypeName = $fuelType ? $fuelType->name : 'Unknown';
-
-        Log::info('the Fuel Type Name :');
-        Log::info($fuelTypeName);
 
         // Retrieve driver_id from drivers table using the user_id
         $driver = Driver::where('user_id', $authUser->id)->first();
@@ -962,7 +972,6 @@ class DriverAppController extends Controller
             'class' => $data['driver_vehicle_class'],
             'engine_size' => $data['driver_vehicle_engine_size'],
             'avatar' => $avatarPath,
-            'fuel_type' => $fuelTypeName,
             'ride_type_id' => null,
             'status' => $data['status'] ?? 'inactive',
         ]);
@@ -983,6 +992,7 @@ class DriverAppController extends Controller
             'driver_vehicle_model' => 'required|string|max:255',
             'driver_vehicle_plate_number' => 'required|string|max:255',
             'driver_vehicle_seats_no' => 'required|integer',
+            'driver_vehicle_color' => 'nullable|string',
             'driver_vehicle_avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp,jfif|max:2048',
             'driver_vehicle_organisation' => 'required|exists:organisations,id',
             'driver_vehicle_class' => 'required|exists:vehicle_classes,id',
@@ -1027,13 +1037,7 @@ class DriverAppController extends Controller
 
         Log::info('The vehicle avatar path to be uploaded: ', [$avatarPath]);
 
-        // Retrieve the fuel type name based on the provided fuel type ID
-        $fuelTypeId = $data['driver_vehicle_fuel_type'];
-        $fuelType = Fueltype::find($fuelTypeId);
-        $fuelTypeName = $fuelType ? $fuelType->name : 'Unknown';
-
-        Log::info('The Fuel Type Name: ', [$fuelTypeName]);
-
+      
         // Retrieve the driver based on the authenticated user ID
         $driver = Driver::where('user_id', $authUser->id)->first();
         if (!$driver) {
@@ -1057,7 +1061,6 @@ class DriverAppController extends Controller
             'class' => $data['driver_vehicle_class'],
             'engine_size' => $data['driver_vehicle_engine_size'],
             'avatar' => $avatarPath,
-            'fuel_type' => $fuelTypeName,
             'ride_type_id' => null,
             'status' => $data['status'] ?? 'inactive',
         ]);
@@ -1138,7 +1141,7 @@ class DriverAppController extends Controller
 
         if ($request->hasFile('driver_insurance_policy_document')) {
             $file = $request->file('driver_insurance_policy_document');
-            $fileName = "{$authUser->name}-{$authUser->email}-{$request->driver_insurance_policy_no}.{$file->getClientOriginalExtension()}";
+            $fileName = "driver-{$authUser->name}-{$authUser->email}-{$request->driver_insurance_policy_no}-vehicle-insurance-copy.{$file->getClientOriginalExtension()}";
             $driverVehicleInsurancePolicyDocPath = 'uploads/vehicle_insurance_policy_document/' . $fileName;
 
             // Move the uploaded file to the desired location without checking or creating the directory
@@ -1223,7 +1226,7 @@ class DriverAppController extends Controller
 
             // Upload the new document
             $file = $request->file('driver_insurance_policy_document');
-            $fileName = "{$authUser->name}-{$authUser->email}-{$request->driver_insurance_policy_no}.{$file->getClientOriginalExtension()}";
+            $fileName = "driver-{$authUser->name}-{$authUser->email}-{$request->driver_insurance_policy_no}-vehicle-insurance-copy.{$file->getClientOriginalExtension()}";
             $driverVehicleInsurancePolicyDocPath = 'uploads/vehicle_insurance_policy_document/' . $fileName;
 
             $destinationPath = $driverVehicleInsurancePolicyPath;
@@ -1326,7 +1329,7 @@ class DriverAppController extends Controller
 
             if ($request->hasFile('driver_ntsa_certificate_copy')) {
                 $file = $request->file('driver_ntsa_certificate_copy');
-                $fileName = "{$authUser->name}-{$authUser->email}-{$ntsaCertificateNo}.{$file->getClientOriginalExtension()}";
+                $fileName = "driver-{$authUser->name}-{$authUser->email}-{$ntsaCertificateNo}-vehicle-NTSA-INSPECT-CERT-Copy.{$file->getClientOriginalExtension()}";
 
                 // Full path for the file to be saved
                 $destinationPath = $driverNTSAInspectionCertDocPath . $fileName;
@@ -1411,7 +1414,7 @@ class DriverAppController extends Controller
 
             // Handle the new uploaded file
             $file = $request->file('driver_ntsa_certificate_copy');
-            $fileName = "{$authUser->name}-{$authUser->email}-{$ntsaCertificateNo}.{$file->getClientOriginalExtension()}";
+            $fileName = "driver-{$authUser->name}-{$authUser->email}-{$ntsaCertificateNo}-vehicle-NTSA-INSPECT-CERT-Copy.{$file->getClientOriginalExtension()}";
 
             // Set the new file path
             $driverNTSAInspectionCertDocPath = 'uploads/ntsa-insp-cert-copies/' . $fileName;
@@ -1464,11 +1467,13 @@ class DriverAppController extends Controller
 
         $vehicle = $driver->vehicle;
 
-        $speedGovernorCertificate = VehicleSpeedGovernorCertificate::where('vehicle_id', $vehicle->id)->get();
+        // Get the first speed governor certificate for the vehicle
+        $speedGovernorCertificate = VehicleSpeedGovernorCertificate::where('vehicle_id', $vehicle->id)->first();
 
         // Pass the data to the view
         return view('driver-app.speed-governor-registration', compact('driver', 'vehicle', 'speedGovernorCertificate'));
     }
+
 
     public function speedGovernorRegistrationStore(Request $request)
     {
@@ -1514,7 +1519,7 @@ class DriverAppController extends Controller
 
         if ($request->hasFile('driver_speed_governor_certificate_copy')) {
             $file = $request->file('driver_speed_governor_certificate_copy');
-            $fileName = "{$authUser->name}-{$driverVehicle->model}-{$driverVehicle->plate_number}-{$data['driver_speed_governor_certificate_no']}.{$file->getClientOriginalExtension()}";
+            $fileName = "driver-{$authUser->name}-{$driverVehicle->model}-{$driverVehicle->plate_number}-{$data['driver_speed_governor_certificate_no']}-vehicle-speed-governor-copy.{$file->getClientOriginalExtension()}";
 
             // Directly move the file to the specified path without creating the directory
             $file->move($driverVehicleSpeedGovernorDocPath, $fileName);
@@ -1606,7 +1611,7 @@ class DriverAppController extends Controller
 
             // Process the new file
             $file = $request->file('driver_speed_governor_certificate_copy');
-            $fileName = "{$authUser->name}-{$driverVehicle->model}-{$driverVehicle->plate_number}-{$data['driver_speed_governor_certificate_no']}.{$file->getClientOriginalExtension()}";
+            $fileName = "driver-{$authUser->name}-{$driverVehicle->model}-{$driverVehicle->plate_number}-{$data['driver_speed_governor_certificate_no']}-vehicle-speed-governor-copy.{$file->getClientOriginalExtension()}";
 
             // Set the new file path for saving
             $newFilePath = $uploadDirectory . $fileName;

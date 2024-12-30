@@ -33,16 +33,14 @@
                              id="plate_number" value="{{ old('plate_number', $vehicle->plate_number) }}" required>
                      </div>
                  </div>
-                 @php
-                     $vehicle_fuel_type = $fuel_types->findOrFail($vehicle->fuel_type_id);
-                 @endphp
+
                  <div class="form-group row my-2">
                      <label for="fuel_type" class="col-sm-5 col-form-label">Fuel Type</label>
                      <div class="col-sm-7">
                          <select class="form-control basic-single select2" name="fuel_type" id="fuel_type">
                              @foreach ($fuel_types as $fuel_type)
                                  <option value="{{ $fuel_type->id }}"
-                                     {{ old('organisation_id', $vehicle->fuel_type) == $vehicle_fuel_type->id ? 'selected' : '' }}>
+                                     {{ old('fuel_type', $vehicle->fuel_type_id) == $fuel_type->id ? 'selected' : '' }}>
                                      {{ $fuel_type->name }}
                                  </option>
                              @endforeach
@@ -50,6 +48,7 @@
                      </div>
                  </div>
 
+                 
                  <div class="form-group row my-2">
                      <label for="organisation_id" class="col-sm-5 col-form-label">Select Vehicle Organisation</label>
                      <div class="col-sm-7">

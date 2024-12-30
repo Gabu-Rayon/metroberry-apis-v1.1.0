@@ -16,13 +16,14 @@
                         <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <select name="vehicle" class="form-control" id="vehicle" required>
+                        <select name="vehicle_id" class="form-control" id="vehicle" required>
                             <option value="" disabled {{ is_null($certificate->vehicle_id) ? 'selected' : '' }}>
                                 Select a vehicle</option>
                             @foreach ($vehicles as $vehicle)
                                 <option value="{{ $vehicle->id }}"
                                     {{ $vehicle->id == $certificate->vehicle_id ? 'selected' : '' }}>
-                                    {{ $vehicle->make }} {{ $vehicle->model }}, {{ $vehicle->plate_number }}
+                                    {{ $vehicle->manufacturer->name }}, {{ $vehicle->model }},
+                                    {{ $vehicle->plate_number }}
                                 </option>
                             @endforeach
                         </select>
@@ -35,9 +36,8 @@
                         <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <input name="date_of_installation" class="form-control" type="date"
-                            id="date_of_installation" required
-                            value="{{ $certificate->date_of_installation }}" />
+                        <input name="date_of_installation" class="form-control" type="date" id="date_of_installation"
+                            required value="{{ $certificate->date_of_installation }}" />
                     </div>
                 </div>
 
@@ -47,12 +47,12 @@
                     </label>
                     <div class="col-sm-7">
                         <input name="avatar" class="form-control" type="file" accept="image/*" id="avatar" />
-                        @if ($certificate->copy)
+                        @if ($certificate->certificate_copy)
+                            {{-- <a href="{{ asset('uploads/speed-governor-cert-copies/'.basename($certificate->certificate_copy)) }}"
+                                target="_blank"> --}}
 
-                            <a href="{{ asset('uploads/speed-governor-cert-copies'.basename($certificate->copy)) }}"
-                                target="_blank">
-                                <img src="{{ asset('uploads/speed-governor-cert-copies'.basename($certificate->copy)) }}"
-                                    alt="Certificate Copy" class="img-fluid mt-2" />
+                            <img src="{{ asset('uploads/speed-governor-cert-copies/' . basename($certificate->certificate_copy)) }}"
+                                alt="Certificate Copy" class="img-fluid mt-2" />
                             </a>
                         @endif
                     </div>
@@ -64,9 +64,8 @@
                         <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <input name="chasis_no" class="form-control" type="text"
-                            placeholder="Chasis No" id="chasis_no" required
-                            value="{{ $certificate->chasis_no }}">
+                        <input name="chasis_no" class="form-control" type="text" placeholder="Chasis No"
+                            id="chasis_no" required value="{{ $certificate->chasis_no }}">
                     </div>
                 </div>
 
@@ -80,9 +79,8 @@
                         <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <input name="certificate_no" class="form-control" type="text"
-                            placeholder="Certificate No" id="certificate_no" required
-                            value="{{ $certificate->certificate_no }}">
+                        <input name="certificate_no" class="form-control" type="text" placeholder="Certificate No"
+                            id="certificate_no" required value="{{ $certificate->certificate_no }}">
                     </div>
                 </div>
 
@@ -92,8 +90,7 @@
                         <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <input name="expiry_date" class="form-control" type="date"
-                            id="expiry_date" required
+                        <input name="expiry_date" class="form-control" type="date" id="expiry_date" required
                             value="{{ $certificate->expiry_date }}" />
                     </div>
                 </div>
@@ -104,21 +101,24 @@
                         <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <input name="class_no" class="form-control" type="text"
-                            placeholder="Class" id="class_no" required
-                            value="{{ $certificate->class_no }}">
+                        <select class="form-control basic-single select2" name="class_no" id="class_no" tabindex="-1"
+                            aria-hidden="true">
+                            <option value="">Select Class</option>
+                            <option value="A"
+                                {{ old('class_no', $certificate->class_no) == 'A' ? 'selected' : '' }}>A</option>
+                            <option value="B"
+                                {{ old('class_no', $certificate->class_no) == 'B' ? 'selected' : '' }}>B</option>
+                        </select>
                     </div>
                 </div>
-
                 <div class="form-group row my-2">
                     <label for="type_of_governor" class="col-sm-5 col-form-label">
                         Type
                         <i class="text-danger">*</i>
                     </label>
                     <div class="col-sm-7">
-                        <input name="type_of_governor" class="form-control" type="text"
-                            placeholder="Type" id="type_of_governor" required
-                            value="{{ $certificate->type_of_governor }}">
+                        <input name="type_of_governor" class="form-control" type="text" placeholder="Type"
+                            id="type_of_governor" required value="{{ $certificate->type_of_governor }}">
                     </div>
                 </div>
 

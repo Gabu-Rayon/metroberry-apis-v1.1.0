@@ -418,20 +418,7 @@
                 </div>
                 <!-- End of Assgined Completed -->
             </div>
-        </div>
-
-        <!--Terms And Conditions Agreement Container Start-->
-        <div class="text-center col-xs-12 col-sm-12 sms-rate-text font-roboto flex-end margin-bottom-30">
-            <div class="container-sms-rate-text width-100 font-11">
-                <span class="light-gray font-weight-light">
-                </span>
-                <br />
-                <a href="#" class="dark-link">
-                    <span class="font-weight-light">Metroberry Tours & Travel</span>
-                </a>
-            </div>
-        </div>
-        <!--Terms And Conditions Agreement Container End-->
+        </div>    
 
         <!--Main Menu Start-->
         @include('components.driver-mobile-app.main-menu')

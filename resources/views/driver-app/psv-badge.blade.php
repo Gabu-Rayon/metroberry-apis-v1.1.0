@@ -131,7 +131,7 @@
                                                     <img id="national-id-back-preview"
                                                         src="{{ $driver->psvBadge && $driver->psvBadge->psv_badge_avatar
                                                             ? asset('uploads/psvbadge-avatars/' .basename($driver->psvBadge->psv_badge_avatar))
-                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}?{{ time() }}"
                                                         alt="PSV Badge Avatar" />
 
                                                 </span>

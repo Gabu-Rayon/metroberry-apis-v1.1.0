@@ -40,7 +40,7 @@
                         <!--Driver Assigned Item Start-->
                         <div class="border-bottom-primary">
                             <a href="{{ route('trips.assigned.page') }}" class="home-options-list href-decoration-none">
-                                Assgined Trips
+                                Assigned Trips
                                 <span class="fas fa-check icon chosen hidden"></span>
                                 <span class="icon choose float-right">
                                     <img src="{{ asset('mobile-app-assets/icons/angle-right.svg') }}"

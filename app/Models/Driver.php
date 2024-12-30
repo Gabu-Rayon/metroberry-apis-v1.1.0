@@ -33,10 +33,11 @@ class Driver extends Model
         return $this->hasOne(DriversLicenses::class);
     }
 
-    public function vehicle()
+      public function vehicle()
     {
-        return $this->hasOne(Vehicle::class);
+        return $this->hasOne(Vehicle::class, 'driver_id'); 
     }
+
 
     public function organization()
     {

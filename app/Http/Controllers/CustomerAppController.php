@@ -386,102 +386,70 @@ class CustomerAppController extends Controller
         $customer->organisation_id = $request->input('organisation');
         $customer->national_id_no = $request->input('national_id_no');
 
-        // Base path for uploads
+        // Base paths for uploads
         $baseUploadUserAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/user-avatars/';
         $baseUploadIDFrontPagePath = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids/';
         $baseUploadIDBackPagePath = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids/';
 
-        // Function to create directory if it doesn't exist
-        $createDirIfNotExists = function ($path) {
-            if (!File::exists($path)) {
-                File::makeDirectory($path, 0755, true);
-            }
-        };
-
-        // Function to generate file name based on user details
-        $generateFileName = function ($type, $file, $user) {
-            return strtolower(str_replace(['@', '.', ' '], ['', '', '_'], $user->email)) . '-' .
-                strtolower(str_replace([' ', '-', '+'], ['_', '_', ''], $user->phone)) . '-' .
-                strtolower(str_replace(' ', '_', $user->name)) . '-' .
-                time() . '-' . $type . '.' . $file->getClientOriginalExtension();
+        // Function to generate a filename
+        $generateFileName = function ($prefix, $file, $user) {
+            $extension = $file->getClientOriginalExtension();
+            return "{$prefix}-{$user->name}-{$user->email}-{$user->phone}." . $extension;
         };
 
         // Handle profile picture upload (avatar)
         if ($request->hasFile('profile_picture')) {
-            // Check if the old file exists and delete it if necessary
-            if ($customer->profile_picture) {
-                $oldProfilePath = public_path($customer->profile_picture);
-                if (file_exists($oldProfilePath)) {
-                    unlink($oldProfilePath); // Delete the old profile picture
-                }
+            if ($customer->profile_picture && file_exists($customer->profile_picture)) {
+                unlink($customer->profile_picture); // Delete the old profile picture
             }
 
             $file = $request->file('profile_picture');
             $fileName = $generateFileName('profile', $file, $user);
 
-            $userDirPath = $baseUploadUserAvatarPath . $customer->id;
+            $filePath = $baseUploadUserAvatarPath . $fileName;
+            $file->move($baseUploadUserAvatarPath, $fileName);
 
-            // Create the directory if it doesn't exist
-            $createDirIfNotExists($userDirPath);
-
-            // Move the new file to the specified directory
-            $file->move($userDirPath, $fileName);
-            $customer->profile_picture = $userDirPath . '/' . $fileName; // Save the full path
+            $customer->profile_picture = $filePath; // Save the full path
         }
 
         // Handle national ID front avatar upload
         if ($request->hasFile('national_id_front_avatar')) {
-            // Check if the old file exists and delete it if necessary
-            if ($customer->national_id_front_avatar) {
-                $oldFrontIdPath = public_path($customer->national_id_front_avatar);
-                if (file_exists($oldFrontIdPath)) {
-                    unlink($oldFrontIdPath); // Delete the old front ID avatar
-                }
+            if ($customer->national_id_front_avatar && file_exists($customer->national_id_front_avatar)) {
+                unlink($customer->national_id_front_avatar); // Delete the old front ID avatar
             }
 
             $file = $request->file('national_id_front_avatar');
             $fileName = $generateFileName('national_id_front', $file, $user);
 
-            $frontIdDirPath = $baseUploadIDFrontPagePath . $customer->id;
+            $filePath = $baseUploadIDFrontPagePath . $fileName;
+            $file->move($baseUploadIDFrontPagePath, $fileName);
 
-            // Create the directory if it doesn't exist
-            $createDirIfNotExists($frontIdDirPath);
-
-            // Move the new file to the specified directory
-            $file->move($frontIdDirPath, $fileName);
-            $customer->national_id_front_avatar = $frontIdDirPath . '/' . $fileName; // Save the full path
+            $customer->national_id_front_avatar = $filePath; // Save the full path
         }
 
         // Handle national ID behind avatar upload
         if ($request->hasFile('national_id_behind_avatar')) {
-            // Check if the old file exists and delete it if necessary
-            if ($customer->national_id_behind_avatar) {
-                $oldBackIdPath = public_path($customer->national_id_behind_avatar);
-                if (file_exists($oldBackIdPath)) {
-                    unlink($oldBackIdPath); // Delete the old back ID avatar
-                }
+            if ($customer->national_id_behind_avatar && file_exists($customer->national_id_behind_avatar)) {
+                unlink($customer->national_id_behind_avatar); // Delete the old back ID avatar
             }
 
             $file = $request->file('national_id_behind_avatar');
             $fileName = $generateFileName('national_id_behind', $file, $user);
 
-            $behindIdDirPath = $baseUploadIDBackPagePath . $customer->id;
+            $filePath = $baseUploadIDBackPagePath . $fileName;
+            $file->move($baseUploadIDBackPagePath, $fileName);
 
-            // Create the directory if it doesn't exist
-            $createDirIfNotExists($behindIdDirPath);
-
-            // Move the new file to the specified directory
-            $file->move($behindIdDirPath, $fileName);
-            $customer->national_id_behind_avatar = $behindIdDirPath . '/' . $fileName; // Save the full path
+            $customer->national_id_behind_avatar = $filePath; // Save the full path
         }
 
         // Save the updated customer details
         $customer->save();
-        $user->save(); // Don't forget to save the user details
+        $user->save();
 
         // Redirect back with a success message
         return redirect()->route('customer.profile', $id)->with('success', 'Profile updated successfully.');
     }
+
 
 
 

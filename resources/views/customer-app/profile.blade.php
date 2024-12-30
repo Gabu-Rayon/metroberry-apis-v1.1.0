@@ -37,9 +37,12 @@
                       <form id="customer-profile-picture-form" enctype="multipart/form-data">
                           @csrf
                           <div class="profile-picture-container">
+
                               <img id="profile-picture"
-                                  src="{{ $customer->user->avatar ? asset('uploads/user-avatars/' .basename($customer->user->avatar)) : asset('mobile-app-assets/images/avatar.svg') }}"
+                                  src="{{ Auth::user()->avatar ? asset('uploads/user-avatars/' . basename(Auth::user()->avatar)) : asset('mobile-app-assets/images/avatar.svg') }}?{{ time() }}"
                                   alt="Profile Picture" class="rounded-profile-picture" />
+
+
                               <span class="fas fa-camera">
                                   <input class="file-prompt" type="file" accept="image/*"
                                       id="customer-profile-picture-input" name="profile_picture" />
@@ -151,6 +154,19 @@
                               </label>
                           </div>
                           <!--Pickup organisations Field End-->
+                          <!--Input Field Container Start-->
+                          <div class="form-group form-control-margin">
+                              <label class="">Personal ID No</label>
+                              <div class="input-group">
+                                  <input class="form-control form-control-with-padding" type="text"
+                                      name="national_id_no" autocomplete="off" placeholder="Customer ID Number"
+                                      value="{{ $customer->national_id_no }}" />
+                                  <div class="input-group-append">
+                                      <span class="fas fa-id-card icon-inherited-color"></span>
+                                  </div>
+                              </div>
+                          </div>
+                          <!--Input Field Container End-->
 
                           <!-- Upload Front national ID -->
                           <div class="form-group">
@@ -174,9 +190,9 @@
                                               <div class="upload-camera-container text-center">
                                                   <span class="#">
                                                       <img id="national-id-front-preview"
-                                                          src="{{ $customer->national_id_front_avatar
-                                                              ? asset('uploads/front-page-ids/' .basename($customer->national_id_front_avatar))
-                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                          src="{{ $customer && $customer->national_id_front_avatar
+                                                              ? asset('uploads/front-page-ids/' . basename($customer->national_id_front_avatar))
+                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}?{{ time() }}"
                                                           alt="National ID Front" />
                                                   </span>
                                               </div>
@@ -208,9 +224,9 @@
                                               <div class="upload-camera-container text-center">
                                                   <span class="#">
                                                       <img id="national-id-back-preview"
-                                                          src="{{ $customer->national_id_behind_avatar
-                                                              ? asset('uploads/back-page-ids/' .basename($customer->national_id_behind_avatar))
-                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}"
+                                                          src="{{ $customer && $customer->national_id_behind_avatar
+                                                              ? asset('uploads/back-page-ids/' . basename($customer->national_id_behind_avatar))
+                                                              : asset('mobile-app-assets/icons/photocamera.svg') }}?{{ time() }}"
                                                           alt="National ID Back" />
                                                   </span>
                                               </div>

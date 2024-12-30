@@ -287,20 +287,27 @@ class VehicleInsuranceController extends Controller
             ]);
 
             // Update the status of the associated vehicle and driver
-            $vehicleInsurance->vehicle->status = 'inactive';
-            $vehicleInsurance->vehicle->driver->status = 'inactive';
-            $vehicleInsurance->vehicle->save();
-            $vehicleInsurance->vehicle->driver->save();
+            $vehicle = $vehicleInsurance->vehicle;
+            $vehicle->status = 'inactive';
+            $vehicle->save();
 
+            // Update the driver's status if a driver exists
+            $driver = $vehicle->driver;
+            if ($driver) {
+                $driver->status = 'inactive'; 
+                $driver->save();
+            }
+
+            // Commit the transaction if all updates succeed
             DB::commit();
             return redirect()->route('vehicle.insurance.index')->with('success', 'Vehicle Insurance updated successfully.');
         } catch (Exception $e) {
+            // Rollback the transaction on error
             DB::rollBack();
             Log::error('Error updating vehicle insurance: ' . $e->getMessage());
             return back()->with('error', 'An error occurred while updating the insurance. Please try again.');
         }
     }
-
 
 
     /**
