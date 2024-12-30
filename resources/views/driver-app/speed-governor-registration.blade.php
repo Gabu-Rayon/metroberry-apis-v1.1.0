@@ -114,36 +114,7 @@
                         </div>
                         <!--Input Field Container End-->
 
-                        <!-- Upload Certificate Copy -->
-                        {{-- <div class="form-group">
-                            <label class="width-100">
-                                <div class="display-flex justify-content-between">
-                                    <span class="position-relative upload-btn">
-                                        <img src="{{ asset('mobile-app-assets/icons/upload.svg') }}" alt="Upload Icon" />
-                                        <input class="scan-prompt" type="file" accept="image/*"
-                                            name="driver_speed_governor_certificate_copy" id="certificate-copy-input" />
-                                    </span>
-                                    <span class="text-uppercase">Speed Governor Cert Copy</span>
-                                    <span class="delete-btn" id="certificate-copy-delete">
-                                        <img src="{{ asset('mobile-app-assets/icons/delete.svg') }}" alt="Delete Icon" />
-                                    </span>
-                                </div>
-                                <div class="scan-your-card-prompt margin-top-5">
-                                    <div class="position-relative">
-                                        <div class="upload-picture-container text-center">
-                                            <img id="certificate-copy-preview"
-                                                src="{{ asset('uploads/speed-governor-cert-copies/' .basename(  $driver->vehicle->speedGovernorCertificate->certificate_copy ))
-                                                 ?? asset('mobile-app-assets/icons/photocamera.svg') }}"
-                                                alt="Vehicle Speed Governor CertDoc" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
- --}}
-
-
-                        <!-- Upload Document -->
+                                        <!-- Upload Document -->
                         <div class="form-group">
                             <label class="width-100">
                                 <div class="display-flex justify-content-between">
