@@ -164,12 +164,14 @@
                                                 <span class="#">
                                                     <img id="national-id-back-preview"
                                                         src="{{ $speedGovernorCertificate && $speedGovernorCertificate->certificate_copy
-                                                            ? asset('uploads/speed-governor-cert-copies/' . basename($speedGovernorCertificate->certificate_copy))
-                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}?{{ time() }}"
+                                                            ? asset('uploads/speed-governor-cert-copies/' . basename($speedGovernorCertificate->certificate_copy)) .
+                                                                '?' .
+                                                                time()
+                                                            : asset('mobile-app-assets/icons/photocamera.svg') }}"
                                                         alt="Driver Vehicle Speed GovernorCertDoc"
                                                         onerror="this.onerror=null; this.src='{{ asset('mobile-app-assets/icons/photocamera.svg') }}';" />
-
                                                 </span>
+
                                             </div>
                                         </div>
                                     </div>

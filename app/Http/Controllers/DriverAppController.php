@@ -237,11 +237,11 @@ class DriverAppController extends Controller
                 $driver->national_id_front_avatar = 'uploads/front-page-ids/' . $frontFileName;
             }
 
-            if ($request->hasFile('national_id_back_avatar')) {
+            if ($request->hasFile('national_id_xback_avatar')) {
                 $backAvatar = $request->file('national_id_back_avatar');
                 $backFileName = "{$driver->email}-national-id-back." . $backAvatar->getClientOriginalExtension();
                 $backAvatar->move($backIdDirectory, $backFileName);
-                $driver->national_id_back_avatar = 'uploads/back-page-ids/' . $backFileName;
+                $driver->national_id_behind_avatar = 'uploads/back-page-ids/' . $backFileName;
             }
 
             $driver->national_id_no = $request->input('national_id_no');
