@@ -378,6 +378,13 @@ class DriverAppController extends Controller
                 return back()->with('error', $validator->errors()->first())->withInput();
             }
 
+
+            // Find the authenticated user
+            $user = auth()->user();
+
+            // Find the associated driver by user_id
+            $driver = Driver::where('user_id', $user->id)->first();
+
             DB::beginTransaction();
 
             // Get the current license for the authenticated driver
@@ -395,7 +402,7 @@ class DriverAppController extends Controller
 
                 // Upload the new front license image
                 $license_front_avatar = $request->file('license_front_avatar');
-                $frontFileName = auth()->user()->driver->email . '-driver-license-front.' . $license_front_avatar->getClientOriginalExtension();
+                $frontFileName = "driver-{$driver->user->name}-{$driver->user->email}-Driving-license-front-page." . $license_front_avatar->getClientOriginalExtension();
                 $license_front_avatar->move($frontLicenseDirectory, $frontFileName);
                 $license->driving_license_avatar_front = 'uploads/front-license-pics/' . $frontFileName; // Set the new value
             }
@@ -408,7 +415,7 @@ class DriverAppController extends Controller
 
                 // Upload the new back license image
                 $license_back_avatar = $request->file('license_back_avatar');
-                $backFileName = auth()->user()->driver->email . '-driver-license-back.' . $license_back_avatar->getClientOriginalExtension();
+                $backFileName = "driver-{$driver->user->name}-{$driver->user->email}-Driving-license-back-page." . $license_back_avatar->getClientOriginalExtension();
                 $license_back_avatar->move($backLicenseDirectory, $backFileName);
                 $license->driving_license_avatar_back = 'uploads/back-license-pics/' . $backFileName; // Set the new value
             }
