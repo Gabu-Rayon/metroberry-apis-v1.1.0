@@ -176,7 +176,7 @@ class DriverAppController extends Controller
             $frontIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/front-page-ids';
             $backIdDirectory = '/home/kknuicdz/public_html_metroberry_app/uploads/back-page-ids';
 
-           
+
 
             // Upload front and back images
             $national_id_front_avatar = $request->file('national_id_front_avatar');
@@ -804,7 +804,7 @@ class DriverAppController extends Controller
     public function psvbadgeDocumentUpdate(Request $request, $driverId)
     {
         try {
-            // Fetch the driver and their associated PSV badge
+            // Fetch the authenticated user and their associated driver
             $user = Auth::user();
             $driver = $user->driver;
 
@@ -827,43 +827,39 @@ class DriverAppController extends Controller
                 return redirect()->back()->with('error', 'PSV badge not found')->withInput();
             }
 
-            // Find the authenticated user
-            $user = auth()->user();
-
-            // Find the associated driver by user_id
-            $driver = Driver::where('user_id', $user->id)->first();
-
             // Begin transaction
             DB::beginTransaction();
 
-            // Update the PSV badge fields
-            $psvBadge->update([
-                'psv_badge_no' => $request->input('psv_badge_no'),
-                'psv_badge_date_of_issue' => $request->input('psv_badge_date_of_issue'),
-                'psv_badge_date_of_expiry' => $request->input('psv_badge_date_of_expiry'),
-            ]);
+            $badgeCopyPath = $psvBadge->psv_badge_avatar; // Preserve current avatar path
 
             // Define the base path for uploading the PSV badge avatar
-            $baseUploadPSVBadgeAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars/';
+            $baseUploadPSVBadgeAvatarPath = public_path('uploads/psvbadge-avatars/');
 
             // Handle file upload for the badge copy
             if ($request->hasFile('badge_copy')) {
-                // Check if an old file exists and delete it
+                // Delete the old file if it exists
                 if (!empty($psvBadge->psv_badge_avatar) && file_exists(public_path($psvBadge->psv_badge_avatar))) {
                     unlink(public_path($psvBadge->psv_badge_avatar));
                 }
 
                 // Get the uploaded file
                 $badgeCopyFile = $request->file('badge_copy');
-                $badgeCopyFileName = "driver-{$driver->user->name}-{$driver->user->email}-PSV-Badge-Copy." . $badgeCopyFile->getClientOriginalExtension();
+                $badgeCopyFileName = "psv_badge_{$driverId}." . $badgeCopyFile->getClientOriginalExtension();
 
                 // Move the file to the defined directory
-                $badgeCopyPath = $baseUploadPSVBadgeAvatarPath . $badgeCopyFileName;
-                $badgeCopyFile->move(public_path($baseUploadPSVBadgeAvatarPath), $badgeCopyFileName);
+                $badgeCopyFile->move($baseUploadPSVBadgeAvatarPath, $badgeCopyFileName);
 
-                // Update the avatar path in the database
-                $psvBadge->update(['psv_badge_avatar' => $badgeCopyPath]);
+                // Update the avatar path
+                $badgeCopyPath = 'uploads/psvbadge-avatars/' . $badgeCopyFileName;
             }
+
+            // Update the PSV badge fields after successful file upload
+            $psvBadge->update([
+                'psv_badge_no' => $request->input('psv_badge_no'),
+                'psv_badge_date_of_issue' => $request->input('psv_badge_date_of_issue'),
+                'psv_badge_date_of_expiry' => $request->input('psv_badge_date_of_expiry'),
+                'psv_badge_avatar' => $badgeCopyPath,
+            ]);
 
             // Commit transaction
             DB::commit();
@@ -875,8 +871,6 @@ class DriverAppController extends Controller
             return redirect()->back()->with('error', 'An error occurred while updating the PSV badge')->withInput();
         }
     }
-
-
 
     //Methods for the Vehicle Registration 
 
@@ -1067,7 +1061,7 @@ class DriverAppController extends Controller
 
         Log::info('The vehicle avatar path to be uploaded: ', [$avatarPath]);
 
-      
+
         // Retrieve the driver based on the authenticated user ID
         $driver = Driver::where('user_id', $authUser->id)->first();
         if (!$driver) {
