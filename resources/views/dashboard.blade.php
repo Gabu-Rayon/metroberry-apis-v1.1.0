@@ -127,7 +127,7 @@
                                                                     class="fas fa-exclamation-triangle"></i>
                                                                 Expired</button>
                                                         </td>
-                                                        <td>{{ $license->driving_license_date_of_issue }}</td>
+                                                        <td>{{ $license->driving_license_renewal_date_issue	 }}</td>
                                                         <td>{{ $license->driving_license_date_of_expiry }}</td>
                                                     </tr>
                                                 @endforeach
@@ -142,6 +142,20 @@
                                                         </td>
                                                         <td>{{ $badge->psv_badge_date_of_issue }}</td>
                                                         <td>{{ $badge->psv_badge_date_of_expiry }}</td>
+                                                    </tr>
+                                                @endforeach
+
+                                                  @foreach ($expiredVehicleSpeedGovernorCertificates as $speedGovernorCert )
+                                                    <tr>
+                                                        <td>Speed Governor Certificate </td>
+                                                        <td>{{ $speedGovernorCert->vehicle->model }},{{ $speedGovernorCert->vehicle->plate_number }}</td>
+                                                        <td>
+                                                            <button class="btn btn-danger btn-sm rounded-0"><i
+                                                                    class="fas fa-exclamation-triangle"></i>
+                                                                Expired</button>
+                                                        </td>
+                                                        <td>{{ $speedGovernorCert->date_of_installation }}</td>
+                                                        <td>{{ $speedGovernorCert->expiry_date }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
