@@ -833,7 +833,7 @@ class DriverAppController extends Controller
             $badgeCopyPath = $psvBadge->psv_badge_avatar; // Preserve current avatar path
 
             // Define the base path for uploading the PSV badge avatar
-            $baseUploadPSVBadgeAvatarPath = public_path('uploads/psvbadge-avatars/');
+            $baseUploadPSVBadgeAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars/';
 
             // Handle file upload for the badge copy
             if ($request->hasFile('badge_copy')) {
