@@ -523,7 +523,7 @@ class DriverAppController extends Controller
      */
 
 
-    public function updatePsvBadge(Request $request, $id)
+    public function psvbadgeDocumentUpdate(Request $request, $id)
     {
         try {
             $data = $request->all();
@@ -804,74 +804,7 @@ class DriverAppController extends Controller
 
 
 
-    public function psvbadgeDocumentUpdate(Request $request, $driverId)
-    {
-        try {
-            // Fetch the authenticated user and their associated driver
-            $user = Auth::user();
-            $driver = $user->driver;
-
-            // Validate the request
-            $validator = Validator::make($request->all(), [
-                'psv_badge_no' => 'nullable|string',
-                'psv_badge_date_of_issue' => 'nullable|date',
-                'psv_badge_date_of_expiry' => 'nullable|date|after_or_equal:psv_badge_date_of_issue',
-                'badge_copy' => 'nullable|file|mimes:jpg,jpeg,png,webp',
-            ]);
-
-            if ($validator->fails()) {
-                return redirect()->back()->with('error', $validator->errors()->first())->withInput();
-            }
-
-            // Find the existing PSV badge
-            $psvBadge = $driver->psvBadge;
-
-            if (!$psvBadge) {
-                return redirect()->back()->with('error', 'PSV badge not found')->withInput();
-            }
-
-            // Begin transaction
-            DB::beginTransaction();
-
-            $badgeCopyPath = $psvBadge->psv_badge_avatar; // Preserve 
-            $baseUploadPSVBadgeAvatarPath = '/home/kknuicdz/public_html_metroberry_app/uploads/psvbadge-avatars/';
-
-            // Handle file upload for the badge copy
-            if ($request->hasFile('badge_copy')) {
-                // Delete the old file if it exists
-                if (!empty($psvBadge->psv_badge_avatar) && file_exists(public_path($psvBadge->psv_badge_avatar))) {
-                    unlink(public_path($psvBadge->psv_badge_avatar));
-                }
-
-                // Get the uploaded file
-                $badgeCopyFile = $request->file('badge_copy');
-                $badgeCopyFileName = "psv_badge_{$driverId}." . $badgeCopyFile->getClientOriginalExtension();
-
-                // Move the file to the defined directory
-                $badgeCopyFile->move($baseUploadPSVBadgeAvatarPath, $badgeCopyFileName);
-
-                // Update the avatar path
-                $badgeCopyPath = 'uploads/psvbadge-avatars/' . $badgeCopyFileName;
-            }
-
-            // Update the PSV badge fields after successful file upload
-            $psvBadge->update([
-                'psv_badge_no' => $request->input('psv_badge_no'),
-                'psv_badge_date_of_issue' => $request->input('psv_badge_date_of_issue'),
-                'psv_badge_date_of_expiry' => $request->input('psv_badge_date_of_expiry'),
-                'psv_badge_avatar' => $badgeCopyPath,
-            ]);
-
-            // Commit transaction
-            DB::commit();
-
-            return redirect()->route('driver.registration.page')->with('success', 'PSV badge updated successfully');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('PSV Badge Update Error', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'An error occurred while updating the PSV badge')->withInput();
-        }
-    }
+   
 
     //Methods for the Vehicle Registration 
 
